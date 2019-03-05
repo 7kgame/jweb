@@ -1,4 +1,4 @@
-import { Application, ErrorEvent } from '../lib';
+import { Application, AppErrorEvent } from '../lib';
 
 import * as Path from 'path';
 
@@ -11,7 +11,7 @@ Application.create()
   })
   .start(__dirname)
   .then(application => { // test event
-    application.on(ErrorEvent.REQUEST, err => {
+    application.on(AppErrorEvent.REQUEST, err => {
       console.error('app error: ', err);
     });
   });

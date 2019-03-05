@@ -82,7 +82,7 @@ class Controller {
                                             res.append(data);
                                             responseCallStack();
                                         }).catch(err => {
-                                            application.emit(application_2.ErrorEvent.REQUEST, err);
+                                            application.emit(application_2.AppErrorEvent.REQUEST, err);
                                             reject(err);
                                         });
                                     }

@@ -17,7 +17,7 @@ const defaultOptions = {
   tplExt: 'html'
 };
 
-export enum ErrorEvent {
+export enum AppErrorEvent {
   REQUEST = 'error_request'
 }
 
@@ -83,7 +83,7 @@ export default class Application extends EventEmitter {
   }
 
   private bindEvent (): void {
-    this.on(ErrorEvent.REQUEST, err => {
+    this.on(AppErrorEvent.REQUEST, err => {
       console.error("Request error: ", err);
     });
   }
@@ -103,12 +103,14 @@ export default class Application extends EventEmitter {
     return this;
   }
 
-  public route (option: any): void {
+  public route (option: any): Application {
     this.server.route(option);
+    return this;
   }
 
-  public addProperty (property): void {
+  public addProperty (property): Application {
     Hoek.merge(this.properties, property, false, true);
+    return this;
   }
 
   private registerExit (): void {

@@ -11,7 +11,7 @@ lib_1.Application.create()
 })
     .start(__dirname)
     .then(application => {
-    application.on(lib_1.ErrorEvent.REQUEST, err => {
+    application.on(lib_1.AppErrorEvent.REQUEST, err => {
         console.error('app error: ', err);
     });
 });

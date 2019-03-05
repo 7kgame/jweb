@@ -23,10 +23,10 @@ const defaultOptions = {
     viewDir: 'view',
     tplExt: 'html'
 };
-var ErrorEvent;
-(function (ErrorEvent) {
-    ErrorEvent["REQUEST"] = "error_request";
-})(ErrorEvent = exports.ErrorEvent || (exports.ErrorEvent = {}));
+var AppErrorEvent;
+(function (AppErrorEvent) {
+    AppErrorEvent["REQUEST"] = "error_request";
+})(AppErrorEvent = exports.AppErrorEvent || (exports.AppErrorEvent = {}));
 class Application extends events_1.EventEmitter {
     constructor() {
         super();
@@ -66,7 +66,7 @@ class Application extends events_1.EventEmitter {
         });
     }
     bindEvent() {
-        this.on(ErrorEvent.REQUEST, err => {
+        this.on(AppErrorEvent.REQUEST, err => {
             console.error("Request error: ", err);
         });
     }
@@ -85,9 +85,11 @@ class Application extends events_1.EventEmitter {
     }
     route(option) {
         this.server.route(option);
+        return this;
     }
     addProperty(property) {
         Hoek.merge(this.properties, property, false, true);
+        return this;
     }
     registerExit() {
         let exitHandler = function (options, code) {
