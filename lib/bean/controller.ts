@@ -1,12 +1,14 @@
 import * as Path from 'path';
 import * as Hoek from "hoek";
 import * as Hapi from 'hapi';
+import * as Util from 'util';
 
 import BeanFactory from './index';
 import Middleware from './middleware';
 import Application from '../application';
 import { Request, Response } from '../base';
 import getInnerMiddleware from '../middleware';
+import { getObjectType } from '../utils';
 
 const URL_PATH_TRIM = /^\/*|\/*$/g;
 
@@ -80,8 +82,18 @@ export default class Controller {
                 if (ret === null) {
                   return;
                 }
-                res.append(ret);
-                responseCallStack();
+                if (Util.types.isPromise(ret)) {
+                // if (getObjectType(ret) === 'promise') {
+                  ret.then(data => {
+                    res.append(data);
+                    responseCallStack();
+                  }).catch(err => {
+                    reject(err);
+                  });
+                } else {
+                  res.append(ret);
+                  responseCallStack();
+                }
               } else if (reqCallIdx < mlen) {
                 let middleware = Middleware.getBean(allMiddlewares[reqCallIdx]);
                 middleware.pre(req, res, requestCallStack);

@@ -8,6 +8,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const lib_1 = require("../../lib");
 const UserService_1 = require("../lib/account/UserService");
@@ -23,7 +31,11 @@ class User extends lib_1.BaseController {
         console.log('init user');
     }
     process({ uid }) {
-        return '<div style="color: red">' + 'this is user process ' + uid + ', ' + this.userService.hello() + ', ' + this.payService.hello() + '</div>';
+        return __awaiter(this, void 0, void 0, function* () {
+            let data = yield this.userService.hello();
+            console.log(data);
+            return '<div style="color: red">' + 'this is user process ' + uid + ', ' + JSON.stringify(data) + ', ' + this.payService.hello() + '</div>';
+        });
     }
     list() {
         this.templateValue('contentInfo', './header/css/main.css');
@@ -58,7 +70,7 @@ __decorate([
     lib_1.Get('/process/{uid}'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], User.prototype, "process", null);
 __decorate([
     lib_1.Get('/list'),

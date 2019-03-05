@@ -1,48 +1,23 @@
 import * as Hapi from 'hapi';
-import * as Hoek from "hoek";
 import * as Boom from 'boom';
 
-export default class Response {
+import ReqRes from './reqres';
 
-  private static primaryTypes = ['boolean', 'number', 'string'];
+export default class Response extends ReqRes {
 
-  private data;
+  public static primaryTypes = ['boolean', 'number', 'string'];
+
   private request: Hapi.Request;
   private response: Hapi.ResponseToolkit;
   private resolve;
   private reject;
 
   constructor (request: Hapi.Request, response: Hapi.ResponseToolkit, resolve: any, reject: any) {
+    super();
     this.request = request;
     this.response = response;
     this.resolve = resolve;
     this.reject = reject;
-  }
-
-  public append (data: any): void {
-    if (data === null || data === undefined) {
-      return;
-    }
-    if (this.data === null || this.data === undefined) {
-      this.data = data;
-    } else {
-      let dataType = typeof data;
-      if (Array.isArray(data)) {
-        this.data = this.data.concat(data);
-      } else if (Response.primaryTypes.indexOf(dataType) >= 0) {
-        this.data = data;
-      } else {
-        Hoek.merge(this.data, data);
-      }
-    }
-  }
-
-  public setData (data: any): void {
-    this.data = data;
-  }
-
-  public getData () {
-    return this.data;
   }
 
   public write (data: any): void {
@@ -56,12 +31,21 @@ export default class Response {
   }
 
   public flush (): void {
-    this.data = null;
     this.request.raw.res.end();
   }
 
   public writeAndFlush (data: any): void {
     this.write(data);
+    this.flush();
+  }
+
+  public redirect (url: string, code?: number): void {
+    if (code === undefined) {
+      code = 302;
+    }
+    this.request.raw.res.writeHead(code, {
+      Location: url
+    });
     this.flush();
   }
 

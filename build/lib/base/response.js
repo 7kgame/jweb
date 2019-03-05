@@ -1,39 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const Hoek = require("hoek");
 const Boom = require("boom");
-class Response {
+const reqres_1 = require("./reqres");
+class Response extends reqres_1.default {
     constructor(request, response, resolve, reject) {
+        super();
         this.request = request;
         this.response = response;
         this.resolve = resolve;
         this.reject = reject;
-    }
-    append(data) {
-        if (data === null || data === undefined) {
-            return;
-        }
-        if (this.data === null || this.data === undefined) {
-            this.data = data;
-        }
-        else {
-            let dataType = typeof data;
-            if (Array.isArray(data)) {
-                this.data = this.data.concat(data);
-            }
-            else if (Response.primaryTypes.indexOf(dataType) >= 0) {
-                this.data = data;
-            }
-            else {
-                Hoek.merge(this.data, data);
-            }
-        }
-    }
-    setData(data) {
-        this.data = data;
-    }
-    getData() {
-        return this.data;
     }
     write(data) {
         if (data === null || data === undefined) {
@@ -45,11 +20,19 @@ class Response {
         this.request.raw.res.write(data);
     }
     flush() {
-        this.data = null;
         this.request.raw.res.end();
     }
     writeAndFlush(data) {
         this.write(data);
+        this.flush();
+    }
+    redirect(url, code) {
+        if (code === undefined) {
+            code = 302;
+        }
+        this.request.raw.res.writeHead(code, {
+            Location: url
+        });
         this.flush();
     }
     setHeader(name, value) {

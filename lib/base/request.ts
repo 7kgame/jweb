@@ -1,6 +1,8 @@
 import * as Hapi from 'hapi';
 
-export default class Request {
+import ReqRes from './reqres';
+
+export default class Request extends ReqRes {
 
   public url;
   public path;
@@ -15,6 +17,7 @@ export default class Request {
   private reject;
 
   constructor (request: Hapi.Request, response: Hapi.ResponseToolkit, resolve: any, reject: any) {
+    super();
     this.url = request.url;
     this.path = request.path;
     this.payload = request.payload;

@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const Path = require("path");
 const Hoek = require("hoek");
+const Util = require("util");
 const index_1 = require("./index");
 const middleware_1 = require("./middleware");
 const application_1 = require("../application");
@@ -74,8 +75,19 @@ class Controller {
                                     if (ret === null) {
                                         return;
                                     }
-                                    res.append(ret);
-                                    responseCallStack();
+                                    if (Util.types.isPromise(ret)) {
+                                        // if (getObjectType(ret) === 'promise') {
+                                        ret.then(data => {
+                                            res.append(data);
+                                            responseCallStack();
+                                        }).catch(err => {
+                                            reject(err);
+                                        });
+                                    }
+                                    else {
+                                        res.append(ret);
+                                        responseCallStack();
+                                    }
                                 }
                                 else if (reqCallIdx < mlen) {
                                     let middleware = middleware_1.default.getBean(allMiddlewares[reqCallIdx]);

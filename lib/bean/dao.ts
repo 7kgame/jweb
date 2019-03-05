@@ -27,7 +27,7 @@ export default class Dao {
         dataConfig = [dataConfig];
       }
       if (!dataConfig[0].dao) {
-        continue;
+        throw new Error(db + '.dao is required.');
       }
       let daoPath = dataConfig[0].dao;
       let dao = require(daoPath);

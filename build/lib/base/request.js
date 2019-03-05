@@ -1,7 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-class Request {
+const reqres_1 = require("./reqres");
+class Request extends reqres_1.default {
     constructor(request, response, resolve, reject) {
+        super();
         this.url = request.url;
         this.path = request.path;
         this.payload = request.payload;
