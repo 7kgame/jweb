@@ -1,7 +1,7 @@
 import * as Path from 'path';
 import * as Hoek from "hoek";
 import * as Hapi from 'hapi';
-import * as Util from 'util';
+// import * as Util from 'util';
 
 import BeanFactory from './index';
 import Middleware from './middleware';
@@ -83,8 +83,8 @@ export default class Controller {
                 if (ret === null) {
                   return;
                 }
-                if (Util.types.isPromise(ret)) {
-                // if (getObjectType(ret) === 'promise') {
+                // if (Util.types.isPromise(ret)) {
+                if (getObjectType(ret) === 'promise') {
                   ret.then(data => {
                     res.append(data);
                     responseCallStack();

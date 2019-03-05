@@ -10,13 +10,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const Path = require("path");
 const Hoek = require("hoek");
-const Util = require("util");
+// import * as Util from 'util';
 const index_1 = require("./index");
 const middleware_1 = require("./middleware");
 const application_1 = require("../application");
 const application_2 = require("../application");
 const base_1 = require("../base");
 const middleware_2 = require("../middleware");
+const utils_1 = require("../utils");
 const URL_PATH_TRIM = /^\/*|\/*$/g;
 class Controller {
     static init() {
@@ -76,8 +77,8 @@ class Controller {
                                     if (ret === null) {
                                         return;
                                     }
-                                    if (Util.types.isPromise(ret)) {
-                                        // if (getObjectType(ret) === 'promise') {
+                                    // if (Util.types.isPromise(ret)) {
+                                    if (utils_1.getObjectType(ret) === 'promise') {
                                         ret.then(data => {
                                             res.append(data);
                                             responseCallStack();
