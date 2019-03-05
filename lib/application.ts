@@ -2,6 +2,7 @@ import * as Path from 'path';
 import * as Hapi from "hapi";
 import * as Inert from "inert";
 import * as Hoek from "hoek";
+import { EventEmitter } from "events";
 
 import BeanFactory from './bean';
 import PreStart from './prestart';
@@ -16,7 +17,11 @@ const defaultOptions = {
   tplExt: 'html'
 };
 
-export default class Application {
+export enum ErrorEvent {
+  REQUEST = 'error_request'
+}
+
+export default class Application extends EventEmitter {
 
   private static ins: Application;
 
@@ -32,6 +37,10 @@ export default class Application {
   public tplExt: string;
 
   private server: Hapi.Server;
+
+  constructor () {
+    super();
+  }
 
   public static create (): Application {
     const ins = Application.ins = new Application();
@@ -65,13 +74,21 @@ export default class Application {
     this.viewDir = this.appOptions.viewDir;
     this.tplExt = this.appOptions.tplExt;
 
+    this.bindEvent();
+
     this.server = new Hapi.Server({
       port: this.appOptions.port,
       host: this.appOptions.host
     });
   }
 
-  public async start (root: string): Promise<void> {
+  private bindEvent (): void {
+    this.on(ErrorEvent.REQUEST, err => {
+      console.error("Request error: ", err);
+    });
+  }
+
+  public async start (root: string): Promise<Application> {
     this.init(root);
     PreStart(this);
 
@@ -83,6 +100,7 @@ export default class Application {
     console.log(`Server running at: ${this.server.info.uri}`);
 
     this.registerExit();
+    return this;
   }
 
   public route (option: any): void {

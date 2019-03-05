@@ -5,6 +5,8 @@ function __export(m) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const application_1 = require("./application");
 exports.Application = application_1.default;
+const application_2 = require("./application");
+exports.ErrorEvent = application_2.ErrorEvent;
 const controller_1 = require("./mvc/controller");
 exports.BaseController = controller_1.default;
 __export(require("./decorator"));

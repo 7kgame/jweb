@@ -14,6 +14,7 @@ const Util = require("util");
 const index_1 = require("./index");
 const middleware_1 = require("./middleware");
 const application_1 = require("../application");
+const application_2 = require("../application");
 const base_1 = require("../base");
 const middleware_2 = require("../middleware");
 const URL_PATH_TRIM = /^\/*|\/*$/g;
@@ -81,6 +82,7 @@ class Controller {
                                             res.append(data);
                                             responseCallStack();
                                         }).catch(err => {
+                                            application.emit(application_2.ErrorEvent.REQUEST, err);
                                             reject(err);
                                         });
                                     }

@@ -18,3 +18,7 @@ export class Application {
   route (option: any): void;
   addConfiguration (configuration: any): void;
 }
+
+export interface ErrorEvent {
+  readonly REQUEST: string;
+}

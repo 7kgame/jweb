@@ -26,13 +26,7 @@ class Template {
     }
     render(fileName, data, options) {
         const tpl = Template.getTemplateFile(fileName);
-        let html = null;
-        try {
-            html = ejs.render(tpl, data ? data : this.data, options);
-        }
-        catch (e) {
-            console.log(e);
-        }
+        let html = ejs.render(tpl, data ? data : this.data, options);
         return html;
     }
     static getTemplateFile(fileName) {

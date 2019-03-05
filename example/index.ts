@@ -1,4 +1,4 @@
-import { Application } from '../lib';
+import { Application, ErrorEvent } from '../lib';
 
 import * as Path from 'path';
 
@@ -9,4 +9,9 @@ Application.create()
     host: 'localhost',
     propertyNS: 'node-web',
   })
-  .start(__dirname);
+  .start(__dirname)
+  .then(application => { // test event
+    application.on(ErrorEvent.REQUEST, err => {
+      console.error('app error: ', err);
+    });
+  });

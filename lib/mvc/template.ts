@@ -29,12 +29,7 @@ export default class Template {
 
   public render (fileName: string, data?: object, options?: object): string {
     const tpl = Template.getTemplateFile(fileName);
-    let html:string = null;
-    try {
-      html = ejs.render(tpl, data ? data : this.data, options);
-    } catch (e) {
-      console.log(e);
-    }
+    let html:string = ejs.render(tpl, data ? data : this.data, options);
     return html;
   }
 
@@ -42,7 +37,6 @@ export default class Template {
     if ( !Template.tpls[fileName] ) {
       Template.tpls[fileName] = FS.readFileSync(fileName, 'utf8');
     }
-
     return Template.tpls[fileName];
   }
 

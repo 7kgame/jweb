@@ -12,6 +12,7 @@ const Path = require("path");
 const Hapi = require("hapi");
 const Inert = require("inert");
 const Hoek = require("hoek");
+const events_1 = require("events");
 const bean_1 = require("./bean");
 const prestart_1 = require("./prestart");
 const defaultOptions = {
@@ -22,8 +23,13 @@ const defaultOptions = {
     viewDir: 'view',
     tplExt: 'html'
 };
-class Application {
+var ErrorEvent;
+(function (ErrorEvent) {
+    ErrorEvent["REQUEST"] = "error_request";
+})(ErrorEvent = exports.ErrorEvent || (exports.ErrorEvent = {}));
+class Application extends events_1.EventEmitter {
     constructor() {
+        super();
         this.appOptions = {};
         this.properties = {};
     }
@@ -53,9 +59,15 @@ class Application {
         this.controllerDir = this.appOptions.controllerDir;
         this.viewDir = this.appOptions.viewDir;
         this.tplExt = this.appOptions.tplExt;
+        this.bindEvent();
         this.server = new Hapi.Server({
             port: this.appOptions.port,
             host: this.appOptions.host
+        });
+    }
+    bindEvent() {
+        this.on(ErrorEvent.REQUEST, err => {
+            console.error("Request error: ", err);
         });
     }
     start(root) {
@@ -68,6 +80,7 @@ class Application {
             yield this.server.start();
             console.log(`Server running at: ${this.server.info.uri}`);
             this.registerExit();
+            return this;
         });
     }
     route(option) {

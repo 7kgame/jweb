@@ -6,6 +6,7 @@ import * as Util from 'util';
 import BeanFactory from './index';
 import Middleware from './middleware';
 import Application from '../application';
+import { ErrorEvent } from '../application';
 import { Request, Response } from '../base';
 import getInnerMiddleware from '../middleware';
 import { getObjectType } from '../utils';
@@ -88,6 +89,7 @@ export default class Controller {
                     res.append(data);
                     responseCallStack();
                   }).catch(err => {
+                    application.emit(ErrorEvent.REQUEST, err);
                     reject(err);
                   });
                 } else {

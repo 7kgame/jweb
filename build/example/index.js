@@ -9,4 +9,9 @@ lib_1.Application.create()
     host: 'localhost',
     propertyNS: 'node-web',
 })
-    .start(__dirname);
+    .start(__dirname)
+    .then(application => {
+    application.on(lib_1.ErrorEvent.REQUEST, err => {
+        console.error('app error: ', err);
+    });
+});
