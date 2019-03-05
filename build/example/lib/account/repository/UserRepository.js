@@ -28,14 +28,12 @@ let UserRepository = class UserRepository {
             // return Util.promisify(client.query)("select * from test.User limit 10");
             return new Promise((resolve, reject) => {
                 client.query("select * from test.User limit 10", function (err, res) {
-                    // console.log(err);
                     if (err) {
-                        // reject(err);
+                        reject(err);
                     }
                     else {
-                        // resolve(res);
+                        resolve(res);
                     }
-                    resolve(res);
                 });
             });
         });
@@ -58,7 +56,7 @@ let UserRepository = class UserRepository {
             return new Promise((resolve, reject) => {
                 client.get('test', (err, val) => {
                     if (err) {
-                        // reject(err);
+                        reject(err);
                     }
                     else {
                         resolve(val);
