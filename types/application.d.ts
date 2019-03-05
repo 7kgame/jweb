@@ -21,6 +21,6 @@ export class Application extends EventEmitter {
   addProperty (property: any): Application;
 }
 
-export interface AppErrorEvent {
-  readonly REQUEST: string;
+export class AppErrorEvent {
+  static readonly REQUEST: string;
 }
