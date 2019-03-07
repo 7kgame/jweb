@@ -33,28 +33,30 @@ class Application extends events_1.EventEmitter {
         this.appOptions = {};
         this.properties = {};
     }
-    static create() {
+    static create(options) {
         const ins = Application.ins = new Application();
-        ins.appOptions = Hoek.applyToDefaults(defaultOptions, ins.appOptions);
+        ins.appOptions = Hoek.applyToDefaults(defaultOptions, options);
         return ins;
     }
     static getIns() {
         return Application.ins;
     }
-    options(options) {
-        Hoek.merge(this.appOptions, options, false, true);
-        return this;
-    }
+    // public options (options: object): Application {
+    //   Hoek.merge(this.appOptions, options, false, true);
+    //   return this;
+    // }
     init(root) {
         if (!root) {
             console.log('root path is required!');
             process.exit();
         }
         this.root = root;
-        if (typeof this.appOptions.resource === 'undefined') {
-            this.appOptions.resource = Path.dirname(root) + Path.sep + 'public';
+        if (typeof this.appOptions.assets !== 'undefined') {
+            this.assets = this.appOptions.assets;
+            if (!Path.isAbsolute(this.assets)) {
+                this.assets = Path.join(root, this.assets);
+            }
         }
-        this.resource = this.appOptions.resource;
         this.configNS = this.appOptions.configNS;
         this.controllerDir = this.appOptions.controllerDir;
         this.viewDir = this.appOptions.viewDir;
@@ -77,6 +79,19 @@ class Application extends events_1.EventEmitter {
             let dirs = this.appOptions.componentDirs || [this.root];
             yield bean_1.default.scan(dirs);
             yield this.server.register(Inert);
+            if (this.assets) {
+                this.route({
+                    method: 'GET',
+                    path: '/{param*}',
+                    handler: {
+                        directory: {
+                            path: this.assets,
+                            redirectToSlash: false,
+                            index: true,
+                        }
+                    }
+                });
+            }
             yield this.server.start();
             console.log(`Server running at: ${this.server.info.uri}`);
             this.registerExit();

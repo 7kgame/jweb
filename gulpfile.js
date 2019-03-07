@@ -61,17 +61,25 @@ gulp.task('configs', (cb) => {
 });
 
 /**
- * Copy public files
+ * Copy assets files
  */
-gulp.task('public', (cb) => {
-  return gulp.src('example/public/**/*.*')
-    .pipe(gulp.dest('./build/example/public'));
+gulp.task('assets', (cb) => {
+  return gulp.src('example/assets/**/*.*')
+    .pipe(gulp.dest('./build/example/assets'));
+});
+
+/**
+ * Copy view files
+ */
+gulp.task('view', (cb) => {
+  return gulp.src('example/view/**/*.*')
+    .pipe(gulp.dest('./build/example/view'));
 });
 
 /**
  * Build the project.
  */
-gulp.task('build', gulp.series('tslint', 'compile', 'configs', 'public', (done) => {
+gulp.task('build', gulp.series('tslint', 'compile', 'configs', 'view', 'assets', (done) => {
   console.log('Building the project ...');
   done && done();
 }));

@@ -123,15 +123,16 @@ export default class Controller {
   private static addMVCProperty (controller: any, metas: any) {
     const application: Application = Application.getIns();
     let controllerPath = metas.file.split(application.controllerDir);
+    let viewDir = application.viewDir;
+    if (!Path.isAbsolute(viewDir)) {
+      viewDir = Path.join(application.root, viewDir);
+    }
 
     controller.__file = metas.file;
-    controller.__tplDir = application.resource + Path.sep
-                            + application.viewDir + Path.sep
+    controller.__tplDir = viewDir + Path.sep
                             + 'template' + Path.sep
                             + controllerPath.pop().replace(URL_PATH_TRIM, '').slice(0, -3).toLowerCase() + Path.sep;
-    controller.__layoutDir = application.resource + Path.sep
-                            + application.viewDir + Path.sep
-                            + 'layout' + Path.sep;
+    controller.__layoutDir = viewDir + Path.sep + 'layout' + Path.sep;
     controller.__tplExt = application.tplExt;
     // controller.__method = method.toLowerCase();
   }
@@ -147,7 +148,7 @@ export default class Controller {
         methods: {},
         responseFormat:{ clz: null, method: {} },
         file: BeanFactory.currentFilePath,
-        viewDir: application.resource + Path.sep + application.viewDir,
+        // viewDir: application.resource + Path.sep + application.viewDir,
         ins: null
       });
     }

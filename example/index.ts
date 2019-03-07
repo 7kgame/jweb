@@ -2,9 +2,8 @@ import { Application, AppErrorEvent } from '../lib';
 
 import * as Path from 'path';
 
-Application.create()
-  .options({
-    resource: __dirname + Path.sep + 'public',
+Application.create({
+    assets: __dirname + Path.sep + 'assets',
     port: 8080,
     host: 'localhost',
     propertyNS: 'node-web',

@@ -2,9 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const lib_1 = require("../lib");
 const Path = require("path");
-lib_1.Application.create()
-    .options({
-    resource: __dirname + Path.sep + 'public',
+lib_1.Application.create({
+    assets: __dirname + Path.sep + 'assets',
     port: 8080,
     host: 'localhost',
     propertyNS: 'node-web',

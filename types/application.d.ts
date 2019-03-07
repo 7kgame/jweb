@@ -15,7 +15,7 @@ export class Application extends EventEmitter {
 
   static create (): Application;
   static getIns (): Application;
-  options (options: any): Application;
+  // options (options: any): Application;
   start (root: string): Promise<Application>;
   route (option: any): Application;
   addProperty (property: any): Application;
