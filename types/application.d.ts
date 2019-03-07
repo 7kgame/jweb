@@ -13,12 +13,12 @@ export class Application extends EventEmitter {
   readonly viewDir: string;
   readonly tplExt: string;
 
-  static create (): Application;
+  static create (option: object): Application;
   static getIns (): Application;
   // options (options: any): Application;
   start (root: string): Promise<Application>;
-  route (option: any): Application;
-  addProperty (property: any): Application;
+  route (option: object): Application;
+  addProperty (property: object): Application;
 }
 
 export class AppErrorEvent {
