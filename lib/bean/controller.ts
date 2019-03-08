@@ -77,16 +77,14 @@ export default class Controller {
             let requestCallStack = function () {
               reqCallIdx++;
               if (reqCallIdx >= mlen) {
-                let ret = null;
+                let params: Array<any> = [req, res];
                 if (request.params && Object.keys(request.params).length > 0) {
-                  ret = controllerMetas.ins[handler](request.params, req, res);
-                } else {
-                  ret = controllerMetas.ins[handler](req, res);
+                  params.unshift(request.params);
                 }
+                let ret = controllerMetas.ins[handler](...params);
                 if (ret === null) {
                   return;
                 }
-                // if (Util.types.isPromise(ret)) {
                 if (getObjectType(ret) === 'promise') {
                   ret.then(data => {
                     res.append(data);
@@ -108,7 +106,12 @@ export default class Controller {
             if (!responseMiddleware) {
               res.type('text/html');
             }
-            requestCallStack();
+            try {
+              requestCallStack();
+            } catch (err) {
+              application.emit(AppErrorEvent.REQUEST, err);
+              reject(err);
+            }
           });
         };
         application.route({

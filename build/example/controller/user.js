@@ -32,6 +32,7 @@ class User extends lib_1.BaseController {
     }
     process({ uid }) {
         return __awaiter(this, void 0, void 0, function* () {
+            console.log('uid is ' + uid);
             let data = yield this.userService.hello();
             console.log(data);
             return '<div style="color: red">' + 'this is user process ' + uid + ', ' + JSON.stringify(data) + ', ' + this.payService.hello() + '</div>';

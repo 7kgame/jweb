@@ -70,13 +70,15 @@ class Controller {
                             let requestCallStack = function () {
                                 reqCallIdx++;
                                 if (reqCallIdx >= mlen) {
-                                    let ret = null;
+                                    let params = [req, res];
                                     if (request.params && Object.keys(request.params).length > 0) {
-                                        ret = controllerMetas.ins[handler](request.params, req, res);
+                                        // ret = controllerMetas.ins[handler](request.params, req, res);
+                                        params.unshift(request.params);
                                     }
                                     else {
-                                        ret = controllerMetas.ins[handler](req, res);
+                                        // ret = controllerMetas.ins[handler](req, res);
                                     }
+                                    let ret = controllerMetas.ins[handler](...params);
                                     if (ret === null) {
                                         return;
                                     }
@@ -103,7 +105,13 @@ class Controller {
                             if (!responseMiddleware) {
                                 res.type('text/html');
                             }
-                            requestCallStack();
+                            try {
+                                requestCallStack();
+                            }
+                            catch (err) {
+                                application.emit(application_2.AppErrorEvent.REQUEST, err);
+                                reject(err);
+                            }
                         });
                     });
                     application.route({

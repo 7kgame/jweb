@@ -9,7 +9,6 @@ export default class Index extends BaseController {
 
   @Get('/')
   public index () {
-    console.log('index');
     return 'hello';
   }
 }

@@ -15,7 +15,6 @@ let Index = class Index extends lib_1.BaseController {
         super();
     }
     index() {
-        console.log('index');
         return 'hello';
     }
 };
