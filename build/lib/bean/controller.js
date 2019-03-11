@@ -35,9 +35,10 @@ class Controller {
                 Object.keys(controllerMetas.methods).forEach(method => {
                     let { requestMethod, path, handler, middlewares } = controllerMetas.methods[method];
                     path = controllerPath + path.replace(URL_PATH_TRIM, '');
-                    if (path.length < 1) {
-                        path = '/';
-                    }
+                    // if (path.length < 1) {
+                    //   path = '/';
+                    // }
+                    path = '/' + path.replace(URL_PATH_TRIM, '');
                     let requestHandler = (request, h) => __awaiter(this, void 0, void 0, function* () {
                         if (request.method === 'options') {
                             return '';
@@ -72,17 +73,12 @@ class Controller {
                                 if (reqCallIdx >= mlen) {
                                     let params = [req, res];
                                     if (request.params && Object.keys(request.params).length > 0) {
-                                        // ret = controllerMetas.ins[handler](request.params, req, res);
                                         params.unshift(request.params);
-                                    }
-                                    else {
-                                        // ret = controllerMetas.ins[handler](req, res);
                                     }
                                     let ret = controllerMetas.ins[handler](...params);
                                     if (ret === null) {
                                         return;
                                     }
-                                    // if (Util.types.isPromise(ret)) {
                                     if (utils_1.getObjectType(ret) === 'promise') {
                                         ret.then(data => {
                                             res.append(data);

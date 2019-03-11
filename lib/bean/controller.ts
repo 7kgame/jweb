@@ -37,9 +37,10 @@ export default class Controller {
         let { requestMethod, path, handler, middlewares } = controllerMetas.methods[method];
 
         path = controllerPath + path.replace(URL_PATH_TRIM, '');
-        if (path.length < 1) {
-          path = '/';
-        }
+        // if (path.length < 1) {
+        //   path = '/';
+        // }
+        path = '/' + path.replace(URL_PATH_TRIM, '');
 
         let requestHandler = async (request: Hapi.Request, h: Hapi.ResponseToolkit) => {
           if (request.method === 'options') {
