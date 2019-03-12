@@ -25,6 +25,8 @@ export default class Application extends EventEmitter {
 
   private static ins: Application;
 
+  public isDev: boolean = process.env.NODE_ENV === 'development';
+
   private appOptions: any = {};
   public properties = {};
 
@@ -51,11 +53,6 @@ export default class Application extends EventEmitter {
   public static getIns (): Application {
     return Application.ins;
   }
-
-  // public options (options: object): Application {
-  //   Hoek.merge(this.appOptions, options, false, true);
-  //   return this;
-  // }
 
   private init (root: string): void {
     if ( !root ) {

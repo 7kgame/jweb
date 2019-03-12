@@ -35,9 +35,6 @@ class Controller {
                 Object.keys(controllerMetas.methods).forEach(method => {
                     let { requestMethod, path, handler, middlewares } = controllerMetas.methods[method];
                     path = controllerPath + path.replace(URL_PATH_TRIM, '');
-                    // if (path.length < 1) {
-                    //   path = '/';
-                    // }
                     path = '/' + path.replace(URL_PATH_TRIM, '');
                     let requestHandler = (request, h) => __awaiter(this, void 0, void 0, function* () {
                         if (request.method === 'options') {

@@ -4,6 +4,8 @@ import * as Hoek from "hoek";
 
 export default class Template {
 
+  private isDev: boolean = process.env.NODE_ENV === 'development';
+
   private static tpls = {};
   private data = {};
 
@@ -21,25 +23,22 @@ export default class Template {
   }
 
   public assignFile (name: string, fileName: string, data?: object, options?: object): void {
-    const tpl = Template.getTemplateFile(fileName);
     data = data || {};
     Hoek.merge(data, this.data);
     this.assign(name, this.render(fileName, data, options));
   }
 
   public render (fileName: string, data?: object, options?: object): string {
-    const tpl = Template.getTemplateFile(fileName);
+    const tpl = this.getTemplateFile(fileName);
     let html:string = ejs.render(tpl, data ? data : this.data, options);
     return html;
   }
 
-  private static getTemplateFile (fileName: string): string {
-    if ( !Template.tpls[fileName] ) {
+  private getTemplateFile (fileName: string): string {
+    if ( this.isDev || !Template.tpls[fileName] ) {
       Template.tpls[fileName] = FS.readFileSync(fileName, 'utf8');
     }
     return Template.tpls[fileName];
   }
-
-
 
 }

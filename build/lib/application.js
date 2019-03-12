@@ -30,6 +30,7 @@ var AppErrorEvent;
 class Application extends events_1.EventEmitter {
     constructor() {
         super();
+        this.isDev = process.env.NODE_ENV === 'development';
         this.appOptions = {};
         this.properties = {};
     }
@@ -41,10 +42,6 @@ class Application extends events_1.EventEmitter {
     static getIns() {
         return Application.ins;
     }
-    // public options (options: object): Application {
-    //   Hoek.merge(this.appOptions, options, false, true);
-    //   return this;
-    // }
     init(root) {
         if (!root) {
             console.log('root path is required!');

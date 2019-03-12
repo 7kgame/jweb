@@ -1,6 +1,6 @@
 {
   "name": "jweb",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "description": "A typeScript httpServer support annotation",
   "main": "build/lib/index.js",
   "typings": "types/index.d.ts",
@@ -13,6 +13,7 @@
     "tsc-watch": "tsc -w",
     "build": "gulp build",
     "start": "node build/example/index.js",
+    "dev": "NODE_ENV=development node build/example/index.js",
     "setup": "npm install",
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "nodemon --watch build/ build/lib/index.js"
