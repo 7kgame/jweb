@@ -25,7 +25,7 @@ let UserRepository = class UserRepository {
     hello() {
         return __awaiter(this, void 0, void 0, function* () {
             let client = this.mysql.getClient();
-            // return Util.promisify(client.query)("select * from test.User limit 10");
+            // return Util.promisify(client.query)("select * from test.User limit 10")
             return new Promise((resolve, reject) => {
                 client.query("select * from test.User limit 10", function (err, res) {
                     if (err) {
@@ -45,14 +45,14 @@ let UserRepository = class UserRepository {
             const db = client.db(dbName);
             const col = db.collection('user');
             let res = col.find({});
-            // return Util.promisify(res.toArray)();
+            // return Util.promisify(res.toArray)()
             return res.toArray();
         });
     }
     helloRedis() {
         return __awaiter(this, void 0, void 0, function* () {
             let client = this.redis.getClient();
-            // return Util.promisify(client.get)("test");
+            // return Util.promisify(client.get)("test")
             return new Promise((resolve, reject) => {
                 client.get('test', (err, val) => {
                     if (err) {

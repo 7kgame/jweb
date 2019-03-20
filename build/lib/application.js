@@ -61,7 +61,10 @@ class Application extends events_1.EventEmitter {
         this.bindEvent();
         this.server = new Hapi.Server({
             port: this.appOptions.port,
-            host: this.appOptions.host
+            host: this.appOptions.host,
+            state: {
+                strictHeader: false
+            }
         });
     }
     bindEvent() {

@@ -22,7 +22,7 @@ const UserService_1 = require("../lib/account/UserService");
 const PayService_1 = require("../lib/account/PayService");
 const Auth_1 = require("../lib/middleware/Auth");
 const Test_1 = require("../lib/middleware/Test");
-//import * as ejs from 'ejs';
+//import * as ejs from 'ejs'
 let User = 
 // @ResponseXML
 class User extends lib_1.BaseController {

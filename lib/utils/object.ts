@@ -1,74 +1,74 @@
-import * as Hoek from "hoek";
+import * as Hoek from "hoek"
 
 export function redefineProperty (target, key, config) {
   if (!config) {
-    return;
+    return
   }
   let config0 = {
     enumerable: true,
     configurable: true
-  };
-  Hoek.merge(config0, config);
+  }
+  Hoek.merge(config0, config)
 
   if (delete target[key]) {
-    Object.defineProperty(target, key, config0);
+    Object.defineProperty(target, key, config0)
   }
 }
 
 export function getObjectType(obj) {
   if (obj === null) {
-    return 'null';
+    return 'null'
   }
   if (obj === undefined) {
-    return 'undefined';
+    return 'undefined'
   }
-  return Object.prototype.toString.call(obj).match(/^\[object (.*)\]$/)[1].toLowerCase();
+  return Object.prototype.toString.call(obj).match(/^\[object (.*)\]$/)[1].toLowerCase()
 }
 
 export function xmlEncode(ret: any) {
-  let xmlContent = [];
+  let xmlContent = []
 
   switch (getObjectType(ret)) {
     case 'map':
       ret.forEach((value , key) => {
         if (getObjectType(value) === 'object') {
-          let res = xmlEncode(value);
-          xmlContent.push('<' + key + '>' + res + '</' + key + '>');
+          let res = xmlEncode(value)
+          xmlContent.push('<' + key + '>' + res + '</' + key + '>')
         } else {
-          xmlContent.push('<' + key + '>' + value + '</' + key + '>');
+          xmlContent.push('<' + key + '>' + value + '</' + key + '>')
         }
-      });
-      break;
+      })
+      break
     case 'object':
-      let key: any;
+      let key: any
       for (key in ret) {
         if (getObjectType(ret[key]) === 'object') {
-          let res = xmlEncode(ret[key]);
-          xmlContent.push('<' + key + '>' + res + '</' + key + '>');
+          let res = xmlEncode(ret[key])
+          xmlContent.push('<' + key + '>' + res + '</' + key + '>')
         } else {
-          xmlContent.push('<' + key + '>' + ret[key] + '</' + key + '>');
+          xmlContent.push('<' + key + '>' + ret[key] + '</' + key + '>')
         }
       }
-      break;
+      break
     default:
-      xmlContent = ret;
+      xmlContent = ret
   }
 
-  return xmlContent.join('');
+  return xmlContent.join('')
 }
 
 export function jsonEncode(ret: any) {
-  let type = getObjectType(ret);
+  let type = getObjectType(ret)
 
   if (type === 'string') {
-    return ret;
+    return ret
   } else if (type === 'map') {
-    let obj = Object.create(null);
+    let obj = Object.create(null)
     for (let [k, v] of ret) {
-      obj[k] = v;
+      obj[k] = v
     }
-    ret = obj;
+    ret = obj
   }
 
-  return JSON.stringify(ret);
+  return JSON.stringify(ret)
 }

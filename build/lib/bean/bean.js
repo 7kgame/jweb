@@ -20,10 +20,10 @@ class Bean {
             if (!name.name) {
                 return;
             }
-            return `${name.name[0].toLowerCase()}${name.name.slice(1)}`;
+            return name.name.toLowerCase();
         }
         else {
-            return name;
+            return name.toLowerCase();
         }
     }
     static addBean0(container, target, options) {

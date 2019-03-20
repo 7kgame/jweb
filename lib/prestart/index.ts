@@ -1,5 +1,5 @@
-import ConfigProcess from './config';
+import ConfigProcess from './config'
 
 export default function (option?: object) {
-  ConfigProcess(option);
+  ConfigProcess(option)
 }

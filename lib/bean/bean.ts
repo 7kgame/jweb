@@ -1,7 +1,7 @@
 
 export default class Bean {
 
-  private static container = new Map();
+  private static container = new Map()
 
   public static init (): void {
   }
@@ -12,47 +12,47 @@ export default class Bean {
   private static getKey (name): string {
     if ( name && typeof name !== 'string' ) {
       if ( !name.name ) {
-        return;
+        return
       }
-      return `${name.name[0].toLowerCase()}${name.name.slice(1)}`;
+      return name.name.toLowerCase()
     } else {
-      return name;
+      return name.toLowerCase()
     }
   }
 
   public static addBean0 (container, target, options): void {
-    let key = Bean.getKey(options.key);
+    let key = Bean.getKey(options.key)
     if ( container.get(key) ) {
-      return;
+      return
     }
     container.set(key, {
       target: target,
       ins: null
-    });
+    })
   }
 
   public static addBean(target, options): void {
-    Bean.addBean0(Bean.container, target, options);
+    Bean.addBean0(Bean.container, target, options)
   }
 
   public static getBean0 (container, name) {
-    let key = Bean.getKey(name);
+    let key = Bean.getKey(name)
     if ( !container.get(key) ) {
-      return;
+      return
     }
-    const beanInfo = container.get(key);
+    const beanInfo = container.get(key)
     if ( !beanInfo.ins ) {
-      beanInfo.ins = new (beanInfo.target)();
+      beanInfo.ins = new (beanInfo.target)()
     }
-    return beanInfo.ins;
+    return beanInfo.ins
   }
 
   public static getBean(name) {
-    return Bean.getBean0(Bean.container, name);
+    return Bean.getBean0(Bean.container, name)
   }
 
   public static async destroy (): Promise<void> {
-    Bean.container = null;
+    Bean.container = null
   }
 
   public static remove (name): void {

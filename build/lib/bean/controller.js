@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const Path = require("path");
 const Hoek = require("hoek");
-// import * as Util from 'util';
+// import * as Util from 'util'
 const index_1 = require("./index");
 const middleware_1 = require("./middleware");
 const application_1 = require("../application");
@@ -129,7 +129,7 @@ class Controller {
             + controllerPath.pop().replace(URL_PATH_TRIM, '').slice(0, -3).toLowerCase() + Path.sep;
         controller.__layoutDir = viewDir + Path.sep + 'layout' + Path.sep;
         controller.__tplExt = application.tplExt;
-        // controller.__method = method.toLowerCase();
+        // controller.__method = method.toLowerCase()
     }
     static getCurrentController() {
         if (!index_1.default.currentFilePath) {

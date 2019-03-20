@@ -1,9 +1,8 @@
-import { Application, AppErrorEvent } from '../lib';
+import { Application, AppErrorEvent } from '../lib'
 
-import * as Path from 'path';
+import * as Path from 'path'
 
-const viewDir = Path.join(Path.dirname(Path.dirname(__dirname)), 'example', 'view');
-console.log(viewDir, '===');
+const viewDir = Path.join(Path.dirname(Path.dirname(__dirname)), 'example', 'view')
 
 Application.create({
     assets: __dirname + Path.sep + 'assets',
@@ -15,6 +14,6 @@ Application.create({
   .start(__dirname)
   .then(application => { // test event
     application.on(AppErrorEvent.REQUEST, err => {
-      console.error('app error: ', err);
-    });
-  });
+      console.error('app error: ', err)
+    })
+  })

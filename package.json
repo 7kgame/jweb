@@ -1,6 +1,6 @@
 {
   "name": "jweb",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "description": "A typeScript httpServer support annotation",
   "main": "build/lib/index.js",
   "typings": "types/index.d.ts",
@@ -69,5 +69,9 @@
     "tslint": "^5.12.1",
     "typescript": "^3.2.2",
     "typescript-eslint-parser": "^21.0.2"
+  },
+  "engines": {
+    "node": ">= 10.0.0",
+    "npm": ">= 6.0.0"
   }
 }

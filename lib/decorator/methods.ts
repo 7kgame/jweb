@@ -1,36 +1,36 @@
-import Controller from '../bean/controller';
+import Controller from '../bean/controller'
 
 function decoratorFactory(method: string, path: string, middlewares?: any) {
   return (target: any, key: string, descriptor: any) => {
-    Controller.addMethod(target, method, path, key, middlewares);
-    return descriptor;
-  };
+    Controller.addMethod(target, method, path, key, middlewares)
+    return descriptor
+  }
 }
 
 export function All(path: string, middleware?: any) {
-  return decoratorFactory('*', path, middleware);
+  return decoratorFactory('*', path, middleware)
 }
 
 export function Get(path: string, middleware?: any) {
-  decoratorFactory('OPTIONS', path, middleware);
-  return decoratorFactory('GET', path, middleware);
+  decoratorFactory('OPTIONS', path, middleware)
+  return decoratorFactory('GET', path, middleware)
 }
 
 export function Post(path: string, middleware?: any) {
-  decoratorFactory('OPTIONS', path, middleware);
-  return decoratorFactory('POST', path, middleware);
+  decoratorFactory('OPTIONS', path, middleware)
+  return decoratorFactory('POST', path, middleware)
 }
 
 export function Put(path: string, middleware?: any) {
-  return decoratorFactory('PUT', path, middleware);
+  return decoratorFactory('PUT', path, middleware)
 }
 
 export function Patch(path: string, middleware?: any) {
-  return decoratorFactory('PATCH', path, middleware);
+  return decoratorFactory('PATCH', path, middleware)
 }
 
 export function Options(path: string, middleware?: any) {
-  return decoratorFactory('OPTIONS', path, middleware);
+  return decoratorFactory('OPTIONS', path, middleware)
 }
 
 /*

@@ -1,62 +1,62 @@
-import MongoDao from 'jweb-Mongo';
-import MysqlDao from 'jweb-Mysql';
-import RedisDao from 'jweb-Redis';
-import * as Util from 'util';
+import MongoDao from 'jweb-mongo'
+import MysqlDao from 'jweb-mysql'
+import RedisDao from 'jweb-redis'
+import * as Util from 'util'
 
-import { Repository, Autowired } from '../../../../lib';
+import { Repository, Autowired } from '../../../../lib'
 
 @Repository
 export default class UserRepository {
 
   @Autowired('mongo.primary')
-  private mongo: MongoDao;
+  private mongo: MongoDao
 
   @Autowired('mysql.primary')
-  private mysql: MysqlDao;
+  private mysql: MysqlDao
 
   @Autowired('redis.primary')
-  private redis: RedisDao;
+  private redis: RedisDao
 
   constructor () {
-    console.log('new userRepository');
+    console.log('new userRepository')
   }
 
   public async hello () {
-    let client = this.mysql.getClient();
-    // return Util.promisify(client.query)("select * from test.User limit 10");
+    let client = this.mysql.getClient()
+    // return Util.promisify(client.query)("select * from test.User limit 10")
     return new Promise((resolve, reject) => {
       client.query("select * from test.User limit 10", function(err, res) {
         if (err) {
-          reject(err);
+          reject(err)
         } else {
-          resolve(res);
+          resolve(res)
         }
-      });
-    });
+      })
+    })
   }
 
   public async helloMongo ()  {
-    let dbName = 'test';
-    let client = this.mongo.getClient();
-    const db = client.db(dbName);
-    const col = db.collection('user');
-    let res = col.find({});
-    // return Util.promisify(res.toArray)();
-    return res.toArray();
+    let dbName = 'test'
+    let client = this.mongo.getClient()
+    const db = client.db(dbName)
+    const col = db.collection('user')
+    let res = col.find({})
+    // return Util.promisify(res.toArray)()
+    return res.toArray()
   }
 
   public async helloRedis () {
-    let client = this.redis.getClient();
-    // return Util.promisify(client.get)("test");
+    let client = this.redis.getClient()
+    // return Util.promisify(client.get)("test")
     return new Promise((resolve, reject) => {
       client.get('test', (err, val) => {
         if (err) {
-          reject(err);
+          reject(err)
         } else {
-          resolve(val);
+          resolve(val)
         }
-      });
-    });
+      })
+    })
   }
 
 }

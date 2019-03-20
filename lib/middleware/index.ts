@@ -1,13 +1,13 @@
-import ResponseJSON from './ResponseJSON';
-import ResponseXML from './ResponseXML';
+import ResponseJSON from './ResponseJSON'
+import ResponseXML from './ResponseXML'
 
 export default function getInnerMiddleware (type) {
   switch (type) {
     case 'json':
-      return ResponseJSON;
+      return ResponseJSON
     case 'xml':
-      return ResponseXML;
+      return ResponseXML
     default:
-      return null;
+      return null
   }
 }

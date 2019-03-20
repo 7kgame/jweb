@@ -1,12 +1,12 @@
-import Repository from '../bean/repository';
+import Repository from '../bean/repository'
 
 export default function (name: any) {
   if (typeof name === 'string') {
     return (target): void => {
-        Repository.addBean(name || target, target);
-    };
+        Repository.addBean(name || target, target)
+    }
   } else {
-    Repository.addBean(name, name);
-    return name;
+    Repository.addBean(name, name)
+    return name
   }
 }

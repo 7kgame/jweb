@@ -1,72 +1,72 @@
-import * as Hapi from 'hapi';
-import * as Boom from 'boom';
+import * as Hapi from 'hapi'
+import * as Boom from 'boom'
 
-import ReqRes from './reqres';
+import ReqRes from './reqres'
 
 export default class Response extends ReqRes {
 
-  public static primaryTypes = ['boolean', 'number', 'string'];
+  public static primaryTypes = ['boolean', 'number', 'string']
 
-  private request: Hapi.Request;
-  private response: Hapi.ResponseToolkit;
-  private resolve;
-  private reject;
+  private request: Hapi.Request
+  private response: Hapi.ResponseToolkit
+  private resolve
+  private reject
 
   constructor (request: Hapi.Request, response: Hapi.ResponseToolkit, resolve: any, reject: any) {
-    super();
-    this.request = request;
-    this.response = response;
-    this.resolve = resolve;
-    this.reject = reject;
+    super()
+    this.request = request
+    this.response = response
+    this.resolve = resolve
+    this.reject = reject
   }
 
   public write (data: any): void {
     if (data === null || data === undefined) {
-      return;
+      return
     }
     if (typeof data !== 'string') {
-      data = JSON.stringify(data);
+      data = JSON.stringify(data)
     }
-    this.request.raw.res.write(data);
+    this.request.raw.res.write(data)
   }
 
   public flush (): void {
-    this.request.raw.res.end();
+    this.request.raw.res.end()
   }
 
   public writeAndFlush (data: any): void {
-    this.write(data);
-    this.flush();
+    this.write(data)
+    this.flush()
   }
 
   public redirect (url: string, code?: number): void {
     if (code === undefined) {
-      code = 302;
+      code = 302
     }
     this.request.raw.res.writeHead(code, {
       Location: url
-    });
-    this.flush();
+    })
+    this.flush()
   }
 
   public setHeader (name: string, value: string): void {
-    this.request.raw.res.setHeader(name, value);
+    this.request.raw.res.setHeader(name, value)
   }
 
   public type (mimeType: string): void {
-    this.setHeader('Content-Type', mimeType);
+    this.setHeader('Content-Type', mimeType)
   }
 
   public setCookie (name: string, value: object | string, options?: any): void {
-    this.response.response().state(name, value, options);
+    this.response.response().state(name, value, options)
   }
 
   public delCookie (name: string, options?: any): void {
-    this.response.response().unstate(name, options);
+    this.response.response().unstate(name, options)
   }
 
   public error(message?: string): void {
-    this.reject(Boom.badGateway(message));
+    this.reject(Boom.badGateway(message))
   }
 
 }

@@ -1,50 +1,50 @@
-import { redefineProperty } from '../utils';
+import { redefineProperty } from '../utils'
 
-import Service from '../bean/service';
-import Repository from '../bean/repository';
-import Bean from '../bean/bean';
-import Dao from '../bean/dao';
+import Service from '../bean/service'
+import Repository from '../bean/repository'
+import Bean from '../bean/bean'
+import Dao from '../bean/dao'
 
-let compileTrick: any;
+let compileTrick: any
 
 let getBean = function (key) {
-  let ins = null;
-  let target = [];
+  let ins = null
+  let target = []
   if ( key.indexOf('ervice') >= 0 ) {
-    target.push(Service);
-    target.push(Repository);
-    target.push(Dao);
+    target.push(Service)
+    target.push(Repository)
+    target.push(Dao)
   } else {
-    target.push(Dao);
-    target.push(Repository);
-    target.push(Service);
+    target.push(Dao)
+    target.push(Repository)
+    target.push(Service)
   }
-  target.push(Bean);
+  target.push(Bean)
 
   for ( let i = 0; i < target.length; i++) {
-    ins = target[i].getBean(key);
+    ins = target[i].getBean(key)
     if (ins) {
-      return ins;
+      return ins
     }
   }
-  return null;
-};
+  return null
+}
 
 export default function (component: any, propertyName?: string) {
   if (typeof component === 'string') {
     return (target: any, key: string) => {
       redefineProperty(target, key, {
         get: function () {
-          return getBean(component || key);
+          return getBean(component || key)
         }
-      });
-    };
+      })
+    }
   } else {
     redefineProperty(component, propertyName, {
       get: function () {
-        return getBean(propertyName);
+        return getBean(propertyName)
       }
-    });
-    return compileTrick;
+    })
+    return compileTrick
   }
 }
