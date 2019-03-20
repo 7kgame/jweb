@@ -99,6 +99,7 @@ class Application extends events_1.EventEmitter {
         });
     }
     route(option) {
+        option.options = { cors: true };
         this.server.route(option);
         return this;
     }

@@ -119,6 +119,7 @@ export default class Application extends EventEmitter {
   }
 
   public route (option: any): Application {
+    option.options = {cors: true}
     this.server.route(option)
     return this
   }

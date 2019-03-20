@@ -51,9 +51,9 @@ class User extends lib_1.BaseController {
         return this.show('page');
     }
     info(request, response) {
-        console.log('user/info exec');
-        response.error('出错啦');
-        return null;
+        // console.log('user/info exec')
+        // response.error('出错啦')
+        // return null
         let test = new Map();
         test.set("a", { k: 1, k2: null, k3: false, k4: 'hello' });
         return test;
