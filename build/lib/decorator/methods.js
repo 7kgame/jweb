@@ -1,42 +1,45 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const controller_1 = require("../bean/controller");
-function decoratorFactory(method, path, middlewares) {
-    return (target, key, descriptor) => {
-        controller_1.default.addMethod(target, method, path, key, middlewares);
-        return descriptor;
-    };
-}
-function All(path, middleware) {
-    return decoratorFactory('*', path, middleware);
+const jbean_1 = require("jbean");
+const callback = function (target, method, descriptor, anno, requestMethod, path) {
+    // console.log(anno)
+    // console.log(requestMethod, path)
+    jbean_1.BeanFactory.addAnnotation(jbean_1.AnnotationType.method, target, method, anno, [requestMethod, path]);
+    // console.log("method", method, target['__ctorId'], target.constructor['__ctorId'])
+    // target.constructor._id = 'a123'
+    // console.log('method', prop, target.constructor._id)
+    // console.log(target)
+    // console.log('method1 ---- ', typeof target)
+    // console.log(target.constructor)
+    // console.log(path, prop, target)
+    // console.log(typeof target)
+    // redefineProperty(target, prop, {
+    //   get: function () {
+    //     return BeanFactory.getBean(name)
+    //   }
+    // })
+};
+function All(path) {
+    return jbean_1.annotationHelper(jbean_1.AnnotationType.method, callback, [All, '*', path]);
 }
 exports.All = All;
-function Get(path, middleware) {
-    decoratorFactory('OPTIONS', path, middleware);
-    return decoratorFactory('GET', path, middleware);
+function Get(path) {
+    return jbean_1.annotationHelper(jbean_1.AnnotationType.method, callback, [Get, 'GET', path]);
 }
 exports.Get = Get;
-function Post(path, middleware) {
-    decoratorFactory('OPTIONS', path, middleware);
-    return decoratorFactory('POST', path, middleware);
+function Post(path) {
+    return jbean_1.annotationHelper(jbean_1.AnnotationType.method, callback, [Post, 'POST', path]);
 }
 exports.Post = Post;
-function Put(path, middleware) {
-    return decoratorFactory('PUT', path, middleware);
+function Put(path) {
+    return jbean_1.annotationHelper(jbean_1.AnnotationType.method, callback, [Put, 'PUT', path]);
 }
 exports.Put = Put;
-function Patch(path, middleware) {
-    return decoratorFactory('PATCH', path, middleware);
+function Patch(path) {
+    return jbean_1.annotationHelper(jbean_1.AnnotationType.method, callback, [Patch, 'PATCH', path]);
 }
 exports.Patch = Patch;
-function Options(path, middleware) {
-    return decoratorFactory('OPTIONS', path, middleware);
+function Options(path) {
+    return jbean_1.annotationHelper(jbean_1.AnnotationType.method, callback, [Options, 'OPTIONS', path]);
 }
 exports.Options = Options;
-/*
- * TODO: HAPI not support HEAD
- * refer: https://hapijs.com/api#route.options.handler
-export function Head(path: string, middleware?: any) {
-  return decoratorFactory('HEAD', path, middleware)
-}
-*/

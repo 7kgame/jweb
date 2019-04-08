@@ -14,7 +14,7 @@ let Index = class Index extends lib_1.BaseController {
     constructor() {
         super();
     }
-    index() {
+    static index() {
         return 'hello';
     }
 };
@@ -23,7 +23,7 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
-], Index.prototype, "index", null);
+], Index, "index", null);
 Index = __decorate([
     lib_1.Controller('/'),
     __metadata("design:paramtypes", [])

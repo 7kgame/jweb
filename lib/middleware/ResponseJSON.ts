@@ -19,3 +19,4 @@ export default class ResponseJSON implements IMiddleware {
   }
 
 }
+

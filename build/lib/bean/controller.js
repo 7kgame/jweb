@@ -149,6 +149,7 @@ class Controller {
         return Controller.container.get(index_1.default.currentFilePath);
     }
     static addBean(target, { path, middlewares }) {
+        return;
         if (!Controller.getCurrentController()) {
             return;
         }
@@ -160,6 +161,7 @@ class Controller {
         });
     }
     static addMethod(target, method, path, handler, middleware) {
+        return;
         if (!path || !method || !Controller.getCurrentController()) {
             return;
         }
@@ -172,6 +174,7 @@ class Controller {
         };
     }
     static addResponseFormat(target, handler, type) {
+        return;
         let responseFormat = Controller.getCurrentController().responseFormat;
         if (typeof target === "object") {
             responseFormat['method'][handler] = type;

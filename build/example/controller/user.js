@@ -50,7 +50,7 @@ class User extends lib_1.BaseController {
         this.templateValue('name', '<span>tim</span>');
         return this.show('page');
     }
-    info(request, response) {
+    static info(request, response) {
         // console.log('user/info exec')
         // response.error('出错啦')
         // return null
@@ -91,7 +91,7 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [lib_1.Request, lib_1.Response]),
     __metadata("design:returntype", void 0)
-], User.prototype, "info", null);
+], User, "info", null);
 User = __decorate([
     lib_1.Controller('/user', [Auth_1.default, Test_1.default])
     // @ResponseXML

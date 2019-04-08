@@ -34,10 +34,10 @@
   },
   "homepage": "https://github.com/7kgame/jweb#readme",
   "dependencies": {
+    "boom": "7.x.x",
     "ejs": "^2.x.x",
     "hapi": "^17.x.x",
     "hoek": "^6.x.x",
-    "boom": "7.x.x",
     "inert": "^5.x.x",
     "yaml": "^1.x.x"
   },

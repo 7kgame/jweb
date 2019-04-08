@@ -7,6 +7,7 @@ import Test from '../lib/middleware/Test'
 //import * as ejs from 'ejs'
 
 @Controller('/user', [Auth, Test])
+// @Auth
 // @ResponseXML
 export default class User extends BaseController {
 
@@ -47,8 +48,9 @@ export default class User extends BaseController {
 
   @Get('/info')
   @ResponseJSON
+  // @Auth('ignore')
   // @ResponseXML
-  public info(request: Request, response: Response) {
+  public static info(request: Request, response: Response) {
     // console.log('user/info exec')
     // response.error('出错啦')
     // return null

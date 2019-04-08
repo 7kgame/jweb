@@ -8,7 +8,7 @@ export default class Index extends BaseController {
   }
 
   @Get('/')
-  public index () {
+  public static index () {
     return 'hello'
   }
 }

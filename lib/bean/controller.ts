@@ -157,6 +157,7 @@ export default class Controller {
   }
 
   public static addBean(target, { path, middlewares }): void {
+    return
     if ( !Controller.getCurrentController() ) {
       return
     }
@@ -169,6 +170,7 @@ export default class Controller {
   }
 
   public static addMethod (target, method: string, path: string, handler: string, middleware?: any): void {
+    return
     if ( !path || !method || !Controller.getCurrentController() ) {
       return
     }
@@ -183,6 +185,7 @@ export default class Controller {
   }
 
   public static addResponseFormat(target: any, handler: string, type: string) {
+    return
     let responseFormat = Controller.getCurrentController().responseFormat
     if (typeof target === "object") {
       responseFormat['method'][handler] = type
