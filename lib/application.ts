@@ -4,7 +4,7 @@ import * as Inert from "inert"
 import * as Hoek from "hoek"
 import { EventEmitter } from "events"
 
-import { BeanTarget, readDirSync } from 'jbean'
+import { BeanMeta, readDirSync } from 'jbean'
 
 import BeanFactory from './bean'
 import PreStart from './prestart'

@@ -24,6 +24,7 @@ const Auth_1 = require("../lib/middleware/Auth");
 const Test_1 = require("../lib/middleware/Test");
 //import * as ejs from 'ejs'
 let User = 
+// @Auth
 // @ResponseXML
 class User extends lib_1.BaseController {
     constructor() {
@@ -94,6 +95,7 @@ __decorate([
 ], User, "info", null);
 User = __decorate([
     lib_1.Controller('/user', [Auth_1.default, Test_1.default])
+    // @Auth
     // @ResponseXML
     ,
     __metadata("design:paramtypes", [])
