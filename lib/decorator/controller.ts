@@ -1,23 +1,121 @@
-// import Controller from '../bean/controller'
-// import IMiddleware from '../base/middleware'
+import * as Hapi from 'hapi'
+import { AnnotationType, annotationHelper, BeanFactory, BeanMeta, CTOR_ID, getObjectType, ReflectHelper } from 'jbean'
 
-import { AnnotationType, annotationHelper, BeanFactory, redefineProperty } from 'jbean'
+import Application, { AppErrorEvent } from '../application'
+import { Request, Response } from '../base'
 
-const callback = function (ctor: Function, path?: string) {
-  BeanFactory.addAnnotation(AnnotationType.clz, ctor, null, Controller, [path])
-  console.log(ctor.name, ctor['__ctorId'])
+export function Controller (component?: any, path?: any) {
+  return annotationHelper(AnnotationType.clz, controllerCallback, arguments)
 }
 
-export default function Controller (component?: any, path?: any) {
-  return annotationHelper(AnnotationType.clz, callback, arguments)
+export function Get(path: string) {
+  return annotationHelper(AnnotationType.method, methodCallback, ['GET', path])
 }
 
-// export default function (path?: string, middlewares?: any) {
-//   console.log('controller: ', path)
-//   return (target): void => {
-//     Controller.addBean(target, {
-//       path: path,
-//       middlewares: middlewares
-//     })
-//   }
-// }
+export function Post(path: string) {
+  return annotationHelper(AnnotationType.method, methodCallback, ['POST', path])
+}
+
+export function Put(path: string) {
+  return annotationHelper(AnnotationType.method, methodCallback, ['PUT', path])
+}
+
+export function Patch(path: string) {
+  return annotationHelper(AnnotationType.method, methodCallback, ['PATCH', path])
+}
+
+export function Options(path: string) {
+  return annotationHelper(AnnotationType.method, methodCallback, ['OPTIONS', path])
+}
+
+const controllerCallback = function (annoType: AnnotationType, ctor: Function, path?: string) {
+  controllers.push(ctor)
+  addAnno(ctor, path)
+}
+
+const methodCallback = function (annoType: AnnotationType, target: object, method: string, descriptor: PropertyDescriptor, requestMethod: string, path?: string) {
+  addAnno(target, path, method, requestMethod, true)
+}
+
+const URL_PATH_TRIM = /^\/*|\/*$/g
+
+const controllerMetas = {}
+const controllers: Function[] = []
+
+const addAnno = function (target: object | Function, path: string, method?: string, requestMethod?: string, requestMapping?: boolean) {
+  let ctor = target
+  if (typeof target === 'object') {
+    ctor = target.constructor
+  }
+  let ctorId = ctor[CTOR_ID]
+  if (typeof controllerMetas[ctorId] === 'undefined') {
+    controllerMetas[ctorId] = {
+      ctor: ctor,
+      methods: [],
+      path: ''
+    }
+  }
+  let metas = controllerMetas[ctorId]
+  if (!method) {
+    metas.path = '/' + (path || '').replace(URL_PATH_TRIM, '')
+    metas.path = (metas.path === '/') ? metas.path : (metas.path + '/')
+  } else {
+    metas.methods.push({
+      target: target,
+      method: method,
+      requestMethod: requestMethod,
+      subPath: (path || '').replace(URL_PATH_TRIM, ''),
+      requestMapping: requestMapping
+    })
+  }
+}
+
+BeanFactory.registerInitBean(() => {
+  controllers.forEach((controller: Function) => {
+    ReflectHelper.resetClass(controller)
+  })
+})
+
+BeanFactory.registerStartBean(() => {
+  Object.values(controllerMetas).forEach(({ctor,  methods, path}) => {
+    methods.forEach(({target, method, requestMethod, subPath, requestMapping}) => {
+      if (requestMapping) {
+        const app = Application.getIns()
+        app.route({
+          method: requestMethod,
+          path: path + subPath,
+          handler: async (request: Hapi.Request, h: Hapi.ResponseToolkit) => {
+            return new Promise((resolve, reject) => {
+              const req = new Request(request, h)
+              const res = new Response(request, h)
+              let ins = target
+              if (typeof target !== 'function') {
+                ins = new ctor(req, res)
+              }
+              let params: any[] = [req, res]
+              if (request.params && Object.keys(request.params).length > 0) {
+                params.push(request.params)
+              }
+              try {
+                const ret = ins[method](...params)
+                if (getObjectType(ret) === 'promise') {
+                  ret.then(data => {
+                    res.writeAndFlush(data)
+                  }).catch(e => {
+                    app.emit(AppErrorEvent.REQUEST, e)
+                    res.error('Internal Server Error')
+                  })
+                } else {
+                  res.writeAndFlush(ret)
+                }
+              } catch (e) {
+                app.emit(AppErrorEvent.REQUEST, e)
+                res.error('Internal Server Error')
+              }
+            })
+          }
+        })
+      }
+    })
+  })
+})

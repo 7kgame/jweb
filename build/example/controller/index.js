@@ -10,6 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const lib_1 = require("../../lib");
+const Auth_1 = require("../annos/Auth");
 let Index = class Index extends lib_1.BaseController {
     constructor() {
         super();
@@ -20,6 +21,7 @@ let Index = class Index extends lib_1.BaseController {
 };
 __decorate([
     lib_1.Get('/'),
+    Auth_1.default('this is auth for index'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)

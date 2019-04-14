@@ -1,6 +1,6 @@
 export function Controller(path?: string, middlewares?: any)
 
-export function All(path: string, middleware?: any)
+// export function All(path: string, middleware?: any)
 export function Get(path: string, middleware?: any)
 export function Post(path: string, middleware?: any)
 export function Put(path: string, middleware?: any)

@@ -1,12 +1,10 @@
 import { BaseController, Controller, Get, Post, Autowired, ResponseJSON, ResponseXML, Request, Response } from '../../lib'
 import UserService from '../lib/account/UserService'
 import PayService from '../lib/account/PayService'
-import Auth from '../lib/middleware/Auth'
-import Test from '../lib/middleware/Test'
+import Auth from '../annos/Auth'
 
-//import * as ejs from 'ejs'
-
-@Controller('/user', [Auth, Test])
+@Controller('/user')
+@Auth
 // @Auth
 // @ResponseXML
 export default class User extends BaseController {
@@ -22,12 +20,29 @@ export default class User extends BaseController {
     console.log('init user')
   }
 
+  private async beforeCall () {
+    // console.log('beforeCall')
+  }
+
+  public async afterCall (ret) {
+    console.log('afterCall', arguments)
+    return ret
+  }
+
   @Get('/process/{uid}')
-  public async process ({ uid }) {
-    console.log('uid is ' + uid)
-    let data = await this.userService.hello()
-    console.log(data)
-    return '<div style="color: red">' + 'this is user process ' + uid + ', ' + JSON.stringify(data) + ', ' + this.payService.hello() + '</div>'
+  @Auth
+  public async process (request: Request, response: Response, { uid }) {
+    // console.log('uid is ' + uid)
+    // return uid
+    // throw new Error('test err')
+    // let data = await this.userService.hello()
+    // return '<div style="color: red">' + 'this is user process ' + uid + ', ' + JSON.stringify(data) + ', ' + this.payService.hello() + '</div>'
+    let data = {
+      a: 1,
+      b: [2, 3, 4],
+      uid: uid
+    }
+    return data
   }
 
   @Get('/list')

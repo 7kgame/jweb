@@ -20,8 +20,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const lib_1 = require("../../lib");
 const UserService_1 = require("../lib/account/UserService");
 const PayService_1 = require("../lib/account/PayService");
-const Auth_1 = require("../lib/middleware/Auth");
-const Test_1 = require("../lib/middleware/Test");
+// import Auth from '../lib/middleware/Auth'
+// import Test from '../lib/middleware/Test'
+const Auth_1 = require("../annos/Auth");
 //import * as ejs from 'ejs'
 let User = 
 // @Auth
@@ -31,12 +32,30 @@ class User extends lib_1.BaseController {
         super();
         console.log('init user');
     }
-    process({ uid }) {
+    beforeCall() {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log('uid is ' + uid);
-            let data = yield this.userService.hello();
-            console.log(data);
-            return '<div style="color: red">' + 'this is user process ' + uid + ', ' + JSON.stringify(data) + ', ' + this.payService.hello() + '</div>';
+            // console.log('beforeCall')
+        });
+    }
+    afterCall(ret) {
+        return __awaiter(this, arguments, void 0, function* () {
+            console.log('afterCall', arguments);
+            return ret;
+        });
+    }
+    process(request, response, { uid }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            // console.log('uid is ' + uid)
+            // return uid
+            // throw new Error('test err')
+            // let data = await this.userService.hello()
+            // return '<div style="color: red">' + 'this is user process ' + uid + ', ' + JSON.stringify(data) + ', ' + this.payService.hello() + '</div>'
+            let data = {
+                a: 1,
+                b: [2, 3, 4],
+                uid: uid
+            };
+            return data;
         });
     }
     list() {
@@ -70,8 +89,9 @@ __decorate([
 ], User.prototype, "payService", void 0);
 __decorate([
     lib_1.Get('/process/{uid}'),
+    Auth_1.default,
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [lib_1.Request, lib_1.Response, Object]),
     __metadata("design:returntype", Promise)
 ], User.prototype, "process", null);
 __decorate([
@@ -94,7 +114,8 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], User, "info", null);
 User = __decorate([
-    lib_1.Controller('/user', [Auth_1.default, Test_1.default])
+    lib_1.Controller('/user'),
+    Auth_1.default
     // @Auth
     // @ResponseXML
     ,

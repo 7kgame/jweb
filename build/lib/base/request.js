@@ -2,7 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const reqres_1 = require("./reqres");
 class Request extends reqres_1.default {
-    constructor(request, response, resolve, reject) {
+    // constructor (request: Hapi.Request, response: Hapi.ResponseToolkit, resolve: any, reject: any) {
+    constructor(request, response) {
         super();
         this.url = request.url;
         this.path = request.path;
@@ -12,8 +13,6 @@ class Request extends reqres_1.default {
         this.paramsArray = request.paramsArray;
         this.headers = request.headers;
         this.cookies = request.state;
-        this.resolve = resolve;
-        this.reject = reject;
     }
 }
 exports.default = Request;

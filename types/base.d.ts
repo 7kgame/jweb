@@ -21,6 +21,7 @@ export interface Response {
   flush (): void
   writeAndFlush (data: any): void
   redirect (url: string, code?: number): void
+  writeHeader (code: number, reason?: string)
   setHeader (name: string, value: string): void
   type (mimeType: string): void
   setCookie (name: string, value: object | string, options?: any): void

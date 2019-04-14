@@ -45,8 +45,8 @@ export default class Controller {
           }
 
           return new Promise((resolve, reject) => {
-            let req = new Request(request, h, resolve, reject),
-                res = new Response(request, h, resolve, reject)
+            let req = new Request(request, h),
+                res = new Response(request, h)
 
             if ( !controllerMetas.ins ) {
               controllerMetas.ins = new controllerCls()

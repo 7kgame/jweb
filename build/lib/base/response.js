@@ -1,14 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const Boom = require("boom");
 const reqres_1 = require("./reqres");
 class Response extends reqres_1.default {
-    constructor(request, response, resolve, reject) {
+    // constructor (request: Hapi.Request, response: Hapi.ResponseToolkit, resolve: any, reject: any) {
+    constructor(request, response) {
         super();
         this.request = request;
         this.response = response;
-        this.resolve = resolve;
-        this.reject = reject;
     }
     write(data) {
         if (data === null || data === undefined) {
@@ -35,6 +33,9 @@ class Response extends reqres_1.default {
         });
         this.flush();
     }
+    writeHeader(code, reason) {
+        this.request.raw.res.writeHead(code, reason);
+    }
     setHeader(name, value) {
         this.request.raw.res.setHeader(name, value);
     }
@@ -48,7 +49,8 @@ class Response extends reqres_1.default {
         this.response.response().unstate(name, options);
     }
     error(message) {
-        this.reject(Boom.badGateway(message));
+        this.writeHeader(500, message);
+        this.flush();
     }
 }
 Response.primaryTypes = ['boolean', 'number', 'string'];

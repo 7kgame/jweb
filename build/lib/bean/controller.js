@@ -41,7 +41,7 @@ class Controller {
                             return '';
                         }
                         return new Promise((resolve, reject) => {
-                            let req = new base_1.Request(request, h, resolve, reject), res = new base_1.Response(request, h, resolve, reject);
+                            let req = new base_1.Request(request, h), res = new base_1.Response(request, h);
                             if (!controllerMetas.ins) {
                                 controllerMetas.ins = new controllerCls();
                                 Controller.addMVCProperty(controllerMetas.ins, controllerMetas);

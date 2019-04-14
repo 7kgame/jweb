@@ -4,9 +4,8 @@ import * as Inert from "inert"
 import * as Hoek from "hoek"
 import { EventEmitter } from "events"
 
-import { BeanMeta, readDirSync } from 'jbean'
+import { BeanFactory, BeanMeta, readDirSync } from 'jbean'
 
-import BeanFactory from './bean'
 import PreStart from './prestart'
 
 const defaultOptions = {
@@ -93,11 +92,13 @@ export default class Application extends EventEmitter {
   }
 
   public async start (root: string): Promise<Application> {
+    BeanFactory.initBean()
     this.init(root)
+    BeanFactory.startBean()
     PreStart(this)
 
     let dirs = this.appOptions.componentDirs || [this.root]
-    await BeanFactory.scan(dirs)
+    // await BeanFactory.scan(dirs)
 
     await this.server.register(Inert)
     if (this.assets) {
@@ -135,7 +136,7 @@ export default class Application extends EventEmitter {
     let exitHandler = function (options, code) {
       if (options && options.exit) {
         console.log('application exit at', code)
-        BeanFactory.destroy()
+        // BeanFactory.destroy()
         process.exit()
       } else {
         console.log('exception', code)

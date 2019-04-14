@@ -9,15 +9,11 @@ export default class Response extends ReqRes {
 
   private request: Hapi.Request
   private response: Hapi.ResponseToolkit
-  private resolve
-  private reject
-
-  constructor (request: Hapi.Request, response: Hapi.ResponseToolkit, resolve: any, reject: any) {
+  // constructor (request: Hapi.Request, response: Hapi.ResponseToolkit, resolve: any, reject: any) {
+  constructor (request: Hapi.Request, response: Hapi.ResponseToolkit) {
     super()
     this.request = request
     this.response = response
-    this.resolve = resolve
-    this.reject = reject
   }
 
   public write (data: any): void {
@@ -34,7 +30,7 @@ export default class Response extends ReqRes {
     this.request.raw.res.end()
   }
 
-  public writeAndFlush (data: any): void {
+  public writeAndFlush (data?: any): void {
     this.write(data)
     this.flush()
   }
@@ -47,6 +43,10 @@ export default class Response extends ReqRes {
       Location: url
     })
     this.flush()
+  }
+
+  public writeHeader (code: number, reason?: string) {
+    this.request.raw.res.writeHead(code, reason)
   }
 
   public setHeader (name: string, value: string): void {
@@ -66,7 +66,8 @@ export default class Response extends ReqRes {
   }
 
   public error(message?: string): void {
-    this.reject(Boom.badGateway(message))
+    this.writeHeader(500, message)
+    this.flush()
   }
 
 }

@@ -9,21 +9,19 @@ const viewDir = Path.join(Path.dirname(Path.dirname(__dirname)), 'example', 'vie
 class App {
 
   public static main (configs) {
-    console.log('-----', configs)
+    Application.create({
+      assets: __dirname + Path.sep + 'assets',
+      port: 8080,
+      host: 'localhost',
+      propertyNS: 'node-web',
+      viewDir: viewDir
+    })
+    .start(__dirname)
+    .then(application => { // test event
+      application.on(AppErrorEvent.REQUEST, err => {
+        // console.error('app error: ', err)
+      })
+    })
   }
 
 }
-
-// Application.create({
-//     assets: __dirname + Path.sep + 'assets',
-//     port: 8080,
-//     host: 'localhost',
-//     propertyNS: 'node-web',
-//     viewDir: viewDir
-//   })
-//   .start(__dirname)
-//   .then(application => { // test event
-//     application.on(AppErrorEvent.REQUEST, err => {
-//       console.error('app error: ', err)
-//     })
-//   })

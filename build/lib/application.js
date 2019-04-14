@@ -13,7 +13,7 @@ const Hapi = require("hapi");
 const Inert = require("inert");
 const Hoek = require("hoek");
 const events_1 = require("events");
-const bean_1 = require("./bean");
+const jbean_1 = require("jbean");
 const prestart_1 = require("./prestart");
 const defaultOptions = {
     port: 3000,
@@ -74,10 +74,12 @@ class Application extends events_1.EventEmitter {
     }
     start(root) {
         return __awaiter(this, void 0, void 0, function* () {
+            jbean_1.BeanFactory.initBean();
             this.init(root);
+            jbean_1.BeanFactory.startBean();
             prestart_1.default(this);
             let dirs = this.appOptions.componentDirs || [this.root];
-            yield bean_1.default.scan(dirs);
+            // await BeanFactory.scan(dirs)
             yield this.server.register(Inert);
             if (this.assets) {
                 this.route({
@@ -111,7 +113,7 @@ class Application extends events_1.EventEmitter {
         let exitHandler = function (options, code) {
             if (options && options.exit) {
                 console.log('application exit at', code);
-                bean_1.default.destroy();
+                // BeanFactory.destroy()
                 process.exit();
             }
             else {
