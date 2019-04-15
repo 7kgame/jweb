@@ -8,14 +8,10 @@ exports.Put = controller_1.Put;
 exports.Patch = controller_1.Patch;
 exports.Options = controller_1.Options;
 // import { All, Get, Post, Put, Patch, Options } from './methods'
-const autowired_1 = require("./autowired");
-exports.Autowired = autowired_1.default;
-const service_1 = require("./service");
-exports.Service = service_1.default;
-const repository_1 = require("./repository");
-exports.Repository = repository_1.default;
-const middleware_1 = require("./middleware");
-exports.Middleware = middleware_1.default;
+// import Autowired from './autowired'
+// import Service from './service'
+// import Repository from './repository'
+// import Middleware from './middleware'
 const response_1 = require("./response");
 exports.ResponseXML = response_1.ResponseXML;
 exports.ResponseJSON = response_1.ResponseJSON;

@@ -10,20 +10,20 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const utils_1 = require("../utils");
 const dao_1 = require("./dao");
-const bean_1 = require("./bean");
-const service_1 = require("./service");
-const repository_1 = require("./repository");
-const controller_1 = require("./controller");
-const middleware_1 = require("./middleware");
+// import Bean from './bean'
+// import Service from './service'
+// import Repository from './repository'
+// import Controller from './controller'
+// import Middleware from './middleware'
 class BeanFactory {
     static scan(dirs) {
         return __awaiter(this, void 0, void 0, function* () {
-            bean_1.default.init();
+            // Bean.init()
             dao_1.default.init();
-            service_1.default.init();
-            repository_1.default.init();
-            middleware_1.default.init();
-            controller_1.default.init();
+            // Service.init()
+            // Repository.init()
+            // Middleware.init()
+            // Controller.init()
             dirs.forEach(dir => {
                 utils_1.readDirSync(dir, (fpath, isFile) => {
                     if (fpath.endsWith('.js')) {
@@ -33,20 +33,20 @@ class BeanFactory {
                 });
             });
             yield dao_1.default.initBeans();
-            yield bean_1.default.initBeans();
-            yield service_1.default.initBeans();
-            yield repository_1.default.initBeans();
-            yield middleware_1.default.initBeans();
-            yield controller_1.default.initBeans();
+            // await Bean.initBeans()
+            // await Service.initBeans()
+            // await Repository.initBeans()
+            // await Middleware.initBeans()
+            // await Controller.initBeans()
         });
     }
     static destroy() {
         return __awaiter(this, void 0, void 0, function* () {
-            yield controller_1.default.destroy();
-            yield middleware_1.default.destroy();
-            yield service_1.default.destroy();
-            yield repository_1.default.destroy();
-            yield bean_1.default.destroy();
+            // await Controller.destroy()
+            // await Middleware.destroy()
+            // await Service.destroy()
+            // await Repository.destroy()
+            // await Bean.destroy()
             yield dao_1.default.destroy();
         });
     }

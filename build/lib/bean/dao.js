@@ -22,6 +22,7 @@ class Dao {
                 !applicationProperties[configNS].data) {
                 return;
             }
+            console.log(applicationProperties, '00000');
             const dataConfigs = applicationProperties[configNS].data;
             let dbKeys = Object.keys(dataConfigs);
             for (let i0 = 0; i0 < dbKeys.length; i0++) {

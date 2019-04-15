@@ -12,9 +12,9 @@ const Path = require("path");
 const Hapi = require("hapi");
 const Inert = require("inert");
 const Hoek = require("hoek");
+const YAML = require("yaml");
 const events_1 = require("events");
 const jbean_1 = require("jbean");
-const prestart_1 = require("./prestart");
 const defaultOptions = {
     port: 3000,
     host: 'localhost',
@@ -27,6 +27,12 @@ var AppErrorEvent;
 (function (AppErrorEvent) {
     AppErrorEvent["REQUEST"] = "error_request";
 })(AppErrorEvent = exports.AppErrorEvent || (exports.AppErrorEvent = {}));
+jbean_1.registerConfigParser('yml', function (content) {
+    if (!content) {
+        return null;
+    }
+    return YAML.parse(content);
+});
 class Application extends events_1.EventEmitter {
     constructor() {
         super();
@@ -77,8 +83,7 @@ class Application extends events_1.EventEmitter {
             jbean_1.BeanFactory.initBean();
             this.init(root);
             jbean_1.BeanFactory.startBean();
-            prestart_1.default(this);
-            let dirs = this.appOptions.componentDirs || [this.root];
+            // let dirs = this.appOptions.componentDirs || [this.root]
             // await BeanFactory.scan(dirs)
             yield this.server.register(Inert);
             if (this.assets) {

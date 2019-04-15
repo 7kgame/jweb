@@ -1,8 +1,8 @@
 "use strict";
+// import Controller from "../bean/controller"
 Object.defineProperty(exports, "__esModule", { value: true });
-const controller_1 = require("../bean/controller");
 function ResponseFactory(type, target, handler = '') {
-    controller_1.default.addResponseFormat(target, handler, type);
+    // Controller.addResponseFormat(target, handler, type)
 }
 function ResponseXML(target, handler) {
     ResponseFactory('xml', target, handler);

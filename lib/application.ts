@@ -2,11 +2,10 @@ import * as Path from 'path'
 import * as Hapi from "hapi"
 import * as Inert from "inert"
 import * as Hoek from "hoek"
+import * as YAML from 'yaml'
 import { EventEmitter } from "events"
 
-import { BeanFactory, BeanMeta, readDirSync } from 'jbean'
-
-import PreStart from './prestart'
+import { BeanFactory, getApplicationConfigs, registerConfigParser } from 'jbean'
 
 const defaultOptions = {
   port: 3000,
@@ -21,6 +20,13 @@ const defaultOptions = {
 export enum AppErrorEvent {
   REQUEST = 'error_request'
 }
+
+registerConfigParser('yml', function (content) {
+  if (!content) {
+    return null
+  }
+  return YAML.parse(content)
+})
 
 export default class Application extends EventEmitter {
 
@@ -95,10 +101,6 @@ export default class Application extends EventEmitter {
     BeanFactory.initBean()
     this.init(root)
     BeanFactory.startBean()
-    PreStart(this)
-
-    let dirs = this.appOptions.componentDirs || [this.root]
-    // await BeanFactory.scan(dirs)
 
     await this.server.register(Inert)
     if (this.assets) {

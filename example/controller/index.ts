@@ -1,4 +1,4 @@
-import { BaseController, Controller, Get, Post, Autowired, ResponseJSON, ResponseXML, Request, Response } from '../../lib'
+import { BaseController, Controller, Get } from '../../lib'
 import Auth from '../annos/Auth'
 
 @Controller('/')

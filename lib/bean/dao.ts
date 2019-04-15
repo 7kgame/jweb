@@ -16,6 +16,7 @@ export default class Dao {
         !applicationProperties[configNS].data ) {
       return
     }
+    console.log(applicationProperties, '00000')
 
     const dataConfigs = applicationProperties[configNS].data
     let dbKeys = Object.keys(dataConfigs)
