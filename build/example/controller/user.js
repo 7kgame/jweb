@@ -17,13 +17,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const jbean_1 = require("jbean");
 const lib_1 = require("../../lib");
 const UserService_1 = require("../lib/account/UserService");
 const PayService_1 = require("../lib/account/PayService");
-// import Auth from '../lib/middleware/Auth'
-// import Test from '../lib/middleware/Test'
 const Auth_1 = require("../annos/Auth");
-//import * as ejs from 'ejs'
 let User = 
 // @Auth
 // @ResponseXML
@@ -34,26 +32,29 @@ class User extends lib_1.BaseController {
     }
     beforeCall() {
         return __awaiter(this, void 0, void 0, function* () {
-            // console.log('beforeCall')
+            console.log('beforeCall');
         });
     }
     afterCall(ret) {
-        return __awaiter(this, arguments, void 0, function* () {
-            console.log('afterCall', arguments);
+        return __awaiter(this, void 0, void 0, function* () {
+            console.log('afterCall');
             return ret;
         });
     }
     process(request, response, { uid }) {
         return __awaiter(this, void 0, void 0, function* () {
+            console.log('userService is', this.userService);
             // console.log('uid is ' + uid)
             // return uid
             // throw new Error('test err')
             // let data = await this.userService.hello()
             // return '<div style="color: red">' + 'this is user process ' + uid + ', ' + JSON.stringify(data) + ', ' + this.payService.hello() + '</div>'
+            let u = yield this.userService.hello();
             let data = {
                 a: 1,
                 b: [2, 3, 4],
-                uid: uid
+                uid: uid,
+                u: u
             };
             return data;
         });
@@ -80,11 +81,11 @@ class User extends lib_1.BaseController {
     }
 };
 __decorate([
-    lib_1.Autowired('userService0'),
+    jbean_1.Autowired('userService0'),
     __metadata("design:type", UserService_1.default)
 ], User.prototype, "userService", void 0);
 __decorate([
-    lib_1.Autowired,
+    jbean_1.Autowired,
     __metadata("design:type", PayService_1.default)
 ], User.prototype, "payService", void 0);
 __decorate([

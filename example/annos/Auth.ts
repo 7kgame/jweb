@@ -18,6 +18,6 @@ Auth.preCall = function () {
 }
 
 Auth.postCall = function (ret) {
-  console.log('auth.postcall', arguments)
+  console.log('auth.postcall')
   return JSON.stringify(ret)
 }

@@ -17,10 +17,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const lib_1 = require("../../../../lib");
+const jbean_1 = require("jbean");
 let UserRepository = class UserRepository {
     constructor() {
         console.log('new userRepository');
+    }
+    postInit() {
+        console.log('userRepository.postInit');
     }
     hello() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -67,19 +70,19 @@ let UserRepository = class UserRepository {
     }
 };
 __decorate([
-    lib_1.Autowired('mongo.primary'),
+    jbean_1.Autowired('mongo.primary'),
     __metadata("design:type", Object)
 ], UserRepository.prototype, "mongo", void 0);
 __decorate([
-    lib_1.Autowired('mysql.primary'),
+    jbean_1.Autowired('mysql.primary'),
     __metadata("design:type", Object)
 ], UserRepository.prototype, "mysql", void 0);
 __decorate([
-    lib_1.Autowired('redis.primary'),
+    jbean_1.Autowired('redis.primary'),
     __metadata("design:type", Object)
 ], UserRepository.prototype, "redis", void 0);
 UserRepository = __decorate([
-    lib_1.Repository,
+    jbean_1.Repository('userRepository0'),
     __metadata("design:paramtypes", [])
 ], UserRepository);
 exports.default = UserRepository;

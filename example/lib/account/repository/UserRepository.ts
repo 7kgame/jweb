@@ -1,11 +1,9 @@
 import MongoDao from 'jweb-mongo'
 import MysqlDao from 'jweb-mysql'
 import RedisDao from 'jweb-redis'
-import * as Util from 'util'
+import { Autowired, Repository } from 'jbean'
 
-import { Repository, Autowired } from '../../../../lib'
-
-@Repository
+@Repository('userRepository0')
 export default class UserRepository {
 
   @Autowired('mongo.primary')
@@ -19,6 +17,10 @@ export default class UserRepository {
 
   constructor () {
     console.log('new userRepository')
+  }
+
+  private postInit (): void {
+    console.log('userRepository.postInit')
   }
 
   public async hello () {

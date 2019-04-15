@@ -1,10 +1,10 @@
-import { Service, Autowired } from '../../../lib'
+import { Autowired, Service } from 'jbean'
 import UserRepository from './repository/UserRepository'
 
 @Service('userService0')
 export default class UserService {
 
-  @Autowired
+  @Autowired('userRepository0')
   private userRepository: UserRepository
 
   constructor () {
@@ -12,10 +12,12 @@ export default class UserService {
   }
 
   public async hello () {
-    let res1 = this.userRepository.hello()
-    let res2 = this.userRepository.helloMongo()
-    let res3 = this.userRepository.helloRedis()
-    return Promise.all([res1, res2, res3])
+    console.log(this.userRepository)
+    // let res1 = this.userRepository.hello()
+    // let res2 = this.userRepository.helloMongo()
+    // let res3 = this.userRepository.helloRedis()
+    // return Promise.all([res1, res2, res3])
+    return 'hello'
   }
 
 }

@@ -78,6 +78,7 @@ jbean_1.BeanFactory.registerInitBean(() => {
         jbean_1.ReflectHelper.resetClass(controller);
     });
 });
+const controllerIns = {};
 jbean_1.BeanFactory.registerStartBean(() => {
     Object.values(controllerMetas).forEach(({ ctor, methods, path }) => {
         methods.forEach(({ target, method, requestMethod, subPath, requestMapping }) => {
@@ -92,7 +93,10 @@ jbean_1.BeanFactory.registerStartBean(() => {
                             const res = new base_1.Response(request, h);
                             let ins = target;
                             if (typeof target !== 'function') {
-                                ins = new ctor(req, res);
+                                if (typeof controllerIns[ctor[jbean_1.CTOR_ID]] === 'undefined') {
+                                    controllerIns[ctor[jbean_1.CTOR_ID]] = new ctor();
+                                }
+                                ins = controllerIns[ctor[jbean_1.CTOR_ID]];
                             }
                             let params = [req, res];
                             if (request.params && Object.keys(request.params).length > 0) {

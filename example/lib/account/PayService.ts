@@ -1,4 +1,4 @@
-import { Service, Autowired } from '../../../lib'
+import { Service } from 'jbean'
 
 @Service
 export default class PayService {

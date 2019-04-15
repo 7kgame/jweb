@@ -76,8 +76,10 @@ BeanFactory.registerInitBean(() => {
   })
 })
 
+const controllerIns = {}
+
 BeanFactory.registerStartBean(() => {
-  Object.values(controllerMetas).forEach(({ctor,  methods, path}) => {
+  Object.values(controllerMetas).forEach(({ctor, methods, path}) => {
     methods.forEach(({target, method, requestMethod, subPath, requestMapping}) => {
       if (requestMapping) {
         const app = Application.getIns()
@@ -90,7 +92,10 @@ BeanFactory.registerStartBean(() => {
               const res = new Response(request, h)
               let ins = target
               if (typeof target !== 'function') {
-                ins = new ctor(req, res)
+                if (typeof controllerIns[ctor[CTOR_ID]] === 'undefined') {
+                  controllerIns[ctor[CTOR_ID]] = new ctor()
+                }
+                ins = controllerIns[ctor[CTOR_ID]]
               }
               let params: any[] = [req, res]
               if (request.params && Object.keys(request.params).length > 0) {

@@ -1,4 +1,5 @@
-import { BaseController, Controller, Get, Post, Autowired, ResponseJSON, ResponseXML, Request, Response } from '../../lib'
+import { Autowired } from 'jbean'
+import { BaseController, Controller, Get, Post, ResponseJSON, ResponseXML, Request, Response } from '../../lib'
 import UserService from '../lib/account/UserService'
 import PayService from '../lib/account/PayService'
 import Auth from '../annos/Auth'
@@ -21,26 +22,29 @@ export default class User extends BaseController {
   }
 
   private async beforeCall () {
-    // console.log('beforeCall')
+    console.log('beforeCall')
   }
 
   public async afterCall (ret) {
-    console.log('afterCall', arguments)
+    console.log('afterCall')
     return ret
   }
 
   @Get('/process/{uid}')
   @Auth
   public async process (request: Request, response: Response, { uid }) {
+    console.log('userService is', this.userService)
     // console.log('uid is ' + uid)
     // return uid
     // throw new Error('test err')
     // let data = await this.userService.hello()
     // return '<div style="color: red">' + 'this is user process ' + uid + ', ' + JSON.stringify(data) + ', ' + this.payService.hello() + '</div>'
+    let u = await this.userService.hello()
     let data = {
       a: 1,
       b: [2, 3, 4],
-      uid: uid
+      uid: uid,
+      u: u
     }
     return data
   }
