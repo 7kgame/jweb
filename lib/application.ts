@@ -138,7 +138,7 @@ export default class Application extends EventEmitter {
     let exitHandler = function (options, code) {
       if (options && options.exit) {
         console.log('application exit at', code)
-        // BeanFactory.destroy()
+        BeanFactory.destroyBean()
         process.exit()
       } else {
         console.log('exception', code)

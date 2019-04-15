@@ -83,8 +83,6 @@ class Application extends events_1.EventEmitter {
             jbean_1.BeanFactory.initBean();
             this.init(root);
             jbean_1.BeanFactory.startBean();
-            // let dirs = this.appOptions.componentDirs || [this.root]
-            // await BeanFactory.scan(dirs)
             yield this.server.register(Inert);
             if (this.assets) {
                 this.route({
@@ -118,7 +116,7 @@ class Application extends events_1.EventEmitter {
         let exitHandler = function (options, code) {
             if (options && options.exit) {
                 console.log('application exit at', code);
-                // BeanFactory.destroy()
+                jbean_1.BeanFactory.destroyBean();
                 process.exit();
             }
             else {
