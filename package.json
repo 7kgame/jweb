@@ -1,6 +1,6 @@
 {
   "name": "jweb",
-  "version": "0.0.17",
+  "version": "1.0.0",
   "description": "A typeScript httpServer support annotation",
   "main": "build/lib/index.js",
   "typings": "types/index.d.ts",
@@ -34,6 +34,7 @@
   },
   "homepage": "https://github.com/7kgame/jweb#readme",
   "dependencies": {
+    "jbean": "x.x.x",
     "boom": "7.x.x",
     "ejs": "^2.x.x",
     "hapi": "^17.x.x",
