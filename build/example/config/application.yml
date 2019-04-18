@@ -1,0 +1,36 @@
+node-web:
+  app:
+    assets: assets
+    port: 8080
+    host: localhost
+    viewDir: view
+    controllerDir: controller
+  data:
+    #mongo: // one connection
+      # url: mongodb://localhost:27017
+      #auth:
+        #  user: ''
+        #  password: ''
+    mongo:
+      -
+        dao: jweb-mongo
+        bean: primary
+        url: mongodb://localhost:27017
+        poolSize: 10
+     #-
+        #url: mongodb://localhost:27017
+    mysql:
+      -
+        dao: jweb-mysql
+        bean: primary
+        host: 127.0.0.1
+        port: 3306
+        user: root
+        password: ''
+        connectionLimit: 10
+    redis:
+      -
+        dao: jweb-redis
+        bean: primary
+        host: 127.0.0.1
+        port: 6379
