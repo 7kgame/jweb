@@ -1,5 +1,4 @@
 import * as Hoek from "hoek"
-import { getObjectType } from '../utils'
 
 const PrimaryTypes = ['boolean', 'number', 'string']
 
@@ -33,7 +32,7 @@ export default class ReqRes {
   }
 
   public getData (key?: string) {
-    if (key && getObjectType(key) === 'object') {
+    if (key) {
       return this.data[key]
     } else {
       return this.data

@@ -1,10 +1,6 @@
-import { readDirSync } from './fs'
-import { redefineProperty, getObjectType, xmlEncode, jsonEncode } from './object'
+import { jsonEncode, xmlEncode } from './encoder'
 
 export {
-  readDirSync,
-  redefineProperty,
-  getObjectType,
   xmlEncode,
   jsonEncode
 }

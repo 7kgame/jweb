@@ -30,7 +30,7 @@ ResponseBody.postCall = function (ret, type, req, res) {
     switch (type) {
         case 'json':
             if (typeof ret === 'object') {
-                ret = JSON.stringify(ret);
+                ret = utils_1.jsonEncode(ret);
             }
             break;
         case 'xml':

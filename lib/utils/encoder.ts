@@ -1,29 +1,4 @@
-import * as Hoek from "hoek"
-
-export function redefineProperty (target, key, config) {
-  if (!config) {
-    return
-  }
-  let config0 = {
-    enumerable: true,
-    configurable: true
-  }
-  Hoek.merge(config0, config)
-
-  if (delete target[key]) {
-    Object.defineProperty(target, key, config0)
-  }
-}
-
-export function getObjectType(obj) {
-  if (obj === null) {
-    return 'null'
-  }
-  if (obj === undefined) {
-    return 'undefined'
-  }
-  return Object.prototype.toString.call(obj).match(/^\[object (.*)\]$/)[1].toLowerCase()
-}
+import { getObjectType } from 'jbean'
 
 export function xmlEncode(ret: any) {
   let xmlContent = []

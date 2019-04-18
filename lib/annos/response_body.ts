@@ -1,6 +1,6 @@
 import { AnnotationType, annotationHelper, BeanFactory, CTOR_ID, getObjectType, isAsyncFunction } from 'jbean'
 import { Request, Response } from '../base'
-import { xmlEncode } from '../utils'
+import { jsonEncode, xmlEncode } from '../utils'
 
 export default function ResponseBody (component?: any, type?: any) {
   return annotationHelper(arguments, callback)
@@ -31,7 +31,7 @@ ResponseBody.postCall = function (ret: any, type: string, req: Request, res: Res
   switch (type) {
     case 'json':
       if (typeof ret === 'object') {
-        ret = JSON.stringify(ret)
+        ret = jsonEncode(ret)
       }
       break
     case 'xml':

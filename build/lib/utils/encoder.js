@@ -1,36 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const Hoek = require("hoek");
-function redefineProperty(target, key, config) {
-    if (!config) {
-        return;
-    }
-    let config0 = {
-        enumerable: true,
-        configurable: true
-    };
-    Hoek.merge(config0, config);
-    if (delete target[key]) {
-        Object.defineProperty(target, key, config0);
-    }
-}
-exports.redefineProperty = redefineProperty;
-function getObjectType(obj) {
-    if (obj === null) {
-        return 'null';
-    }
-    if (obj === undefined) {
-        return 'undefined';
-    }
-    return Object.prototype.toString.call(obj).match(/^\[object (.*)\]$/)[1].toLowerCase();
-}
-exports.getObjectType = getObjectType;
+const jbean_1 = require("jbean");
 function xmlEncode(ret) {
     let xmlContent = [];
-    switch (getObjectType(ret)) {
+    switch (jbean_1.getObjectType(ret)) {
         case 'map':
             ret.forEach((value, key) => {
-                if (getObjectType(value) === 'object') {
+                if (jbean_1.getObjectType(value) === 'object') {
                     let res = xmlEncode(value);
                     xmlContent.push('<' + key + '>' + res + '</' + key + '>');
                 }
@@ -42,7 +18,7 @@ function xmlEncode(ret) {
         case 'object':
             let key;
             for (key in ret) {
-                if (getObjectType(ret[key]) === 'object') {
+                if (jbean_1.getObjectType(ret[key]) === 'object') {
                     let res = xmlEncode(ret[key]);
                     xmlContent.push('<' + key + '>' + res + '</' + key + '>');
                 }
@@ -58,7 +34,7 @@ function xmlEncode(ret) {
 }
 exports.xmlEncode = xmlEncode;
 function jsonEncode(ret) {
-    let type = getObjectType(ret);
+    let type = jbean_1.getObjectType(ret);
     if (type === 'string') {
         return ret;
     }

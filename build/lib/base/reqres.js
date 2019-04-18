@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const Hoek = require("hoek");
-const utils_1 = require("../utils");
 const PrimaryTypes = ['boolean', 'number', 'string'];
 class ReqRes {
     constructor() {
@@ -30,7 +29,7 @@ class ReqRes {
         this.data = data;
     }
     getData(key) {
-        if (key && utils_1.getObjectType(key) === 'object') {
+        if (key) {
             return this.data[key];
         }
         else {
