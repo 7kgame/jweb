@@ -12,7 +12,11 @@ const callback = function (annoType: AnnotationType, ctor: object | Function) {
   }
 }
 
-Auth.preCall = function () {
+Auth.preCall = function (param: string) {
+  if (param === 'ignore') {
+    console.log('return login data')
+    return null
+  }
 }
 
 Auth.postCall = function (ret: any) {
