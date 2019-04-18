@@ -1,8 +1,7 @@
 import { AnnotationType, annotationHelper, BeanFactory, CTOR_ID, getObjectType, isAsyncFunction } from 'jbean'
-import * as util from 'util'
 
 export default function Auth (component?: any, options?: any) {
-  return annotationHelper(AnnotationType.clz, callback, arguments)
+  return annotationHelper(arguments, callback)
 }
 
 const callback = function (annoType: AnnotationType, ctor: object | Function) {
@@ -14,10 +13,8 @@ const callback = function (annoType: AnnotationType, ctor: object | Function) {
 }
 
 Auth.preCall = function () {
-  // console.log('auth.precall')
 }
 
-Auth.postCall = function (ret) {
-  console.log('auth.postcall')
-  return JSON.stringify(ret)
+Auth.postCall = function (ret: any) {
+  return ret
 }

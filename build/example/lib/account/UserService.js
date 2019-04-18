@@ -25,12 +25,12 @@ let UserService = class UserService {
     }
     hello() {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log(this.userRepository);
-            // let res1 = this.userRepository.hello()
-            // let res2 = this.userRepository.helloMongo()
-            // let res3 = this.userRepository.helloRedis()
-            // return Promise.all([res1, res2, res3])
-            return 'hello';
+            // console.log(this.userRepository)
+            let res1 = this.userRepository.hello();
+            let res2 = this.userRepository.helloMongo();
+            let res3 = this.userRepository.helloRedis();
+            return Promise.all([res1, res2, res3]);
+            // return 'hello'
         });
     }
 };

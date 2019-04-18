@@ -1,5 +1,5 @@
 import { Autowired } from 'jbean'
-import { BaseController, Controller, Get, Post, ResponseJSON, ResponseXML, Request, Response } from '../../lib'
+import { BaseController, Controller, Get, Post, ResponseBody, Request, Response } from '../../lib'
 import UserService from '../lib/account/UserService'
 import PayService from '../lib/account/PayService'
 import Auth from '../annos/Auth'
@@ -31,7 +31,7 @@ export default class User extends BaseController {
   }
 
   @Get('/process/{uid}')
-  @Auth
+  @ResponseBody('json')
   public async process (request: Request, response: Response, { uid }) {
     console.log('userService is', this.userService)
     // console.log('uid is ' + uid)
@@ -66,10 +66,10 @@ export default class User extends BaseController {
   }
 
   @Get('/info')
-  @ResponseJSON
-  // @Auth('ignore')
+  @ResponseBody('xml')
+  @Auth('ignore')
   // @ResponseXML
-  public static info(request: Request, response: Response) {
+  public info(request: Request, response: Response) {
     // console.log('user/info exec')
     // response.error('出错啦')
     // return null

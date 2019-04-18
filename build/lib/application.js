@@ -15,6 +15,7 @@ const Hoek = require("hoek");
 const YAML = require("yaml");
 const events_1 = require("events");
 const jbean_1 = require("jbean");
+const starters_1 = require("./starters");
 const defaultOptions = {
     port: 3000,
     host: 'localhost',
@@ -39,50 +40,54 @@ class Application extends events_1.EventEmitter {
         this.isDev = process.env.NODE_ENV === 'development';
         this.appOptions = {};
         this.properties = {};
+        this.applicationConfigs = {};
     }
     static create(options) {
         const ins = Application.ins = new Application();
-        ins.appOptions = Hoek.applyToDefaults(defaultOptions, options);
+        ins.appOptions = Hoek.applyToDefaults(defaultOptions, options || {});
+        ins.configNS = ins.appOptions.configNS;
+        ins.applicationConfigs = jbean_1.getApplicationConfigs();
         return ins;
     }
     static getIns() {
         return Application.ins;
     }
-    init(root) {
-        if (!root) {
-            console.log('root path is required!');
-            process.exit();
-        }
-        this.root = root;
-        if (typeof this.appOptions.assets !== 'undefined') {
-            this.assets = this.appOptions.assets;
-            if (!Path.isAbsolute(this.assets)) {
-                this.assets = Path.join(root, this.assets);
-            }
-        }
-        this.configNS = this.appOptions.configNS;
-        this.controllerDir = this.appOptions.controllerDir;
-        this.viewDir = this.appOptions.viewDir;
-        this.tplExt = this.appOptions.tplExt;
+    init() {
+        this.root = Path.dirname(require.main.filename);
+        const appConfigs = this.applicationConfigs[this.configNS].app;
         this.bindEvent();
-        this.server = new Hapi.Server({
-            port: this.appOptions.port,
-            host: this.appOptions.host,
-            state: {
-                strictHeader: false
+        this.isWebApp = true;
+        if (this.isWebApp) {
+            this.server = new Hapi.Server({
+                port: appConfigs.port || defaultOptions.port,
+                host: appConfigs.host || defaultOptions.host,
+                state: {
+                    strictHeader: false
+                }
+            });
+            if (typeof appConfigs.assets !== 'undefined') {
+                this.assets = appConfigs.assets;
+                if (!Path.isAbsolute(this.assets)) {
+                    this.assets = Path.join(Path.dirname(this.root), this.assets);
+                }
             }
-        });
+            this.controllerDir = appConfigs.controllerDir || defaultOptions.controllerDir;
+            if (process.env.NODE_ENV === 'development') {
+                this.viewDir = Path.join(Path.dirname(Path.dirname(this.root)), 'src', appConfigs.viewDir || defaultOptions.viewDir);
+            }
+            else {
+                this.viewDir = appConfigs.viewDir || defaultOptions.viewDir;
+            }
+            this.tplExt = appConfigs.tplExt || defaultOptions.tplExt;
+        }
     }
     bindEvent() {
         this.on(AppErrorEvent.REQUEST, err => {
             console.error("Request error: ", err);
         });
     }
-    start(root) {
+    runWebServer() {
         return __awaiter(this, void 0, void 0, function* () {
-            jbean_1.BeanFactory.initBean();
-            this.init(root);
-            jbean_1.BeanFactory.startBean();
             yield this.server.register(Inert);
             if (this.assets) {
                 this.route({
@@ -99,8 +104,22 @@ class Application extends events_1.EventEmitter {
             }
             yield this.server.start();
             console.log(`Server running at: ${this.server.info.uri}`);
-            this.registerExit();
-            return this;
+        });
+    }
+    static start() {
+        return __awaiter(this, void 0, void 0, function* () {
+            jbean_1.BeanFactory.initBean();
+            const application = Application.create();
+            application.init();
+            jbean_1.BeanFactory.startBean();
+            yield starters_1.default(application);
+            if (application.isWebApp) {
+                yield application.runWebServer();
+            }
+            else {
+            }
+            application.registerExit();
+            return application;
         });
     }
     route(option) {

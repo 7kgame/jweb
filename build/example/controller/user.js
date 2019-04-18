@@ -71,7 +71,7 @@ class User extends lib_1.BaseController {
         this.templateValue('name', '<span>tim</span>');
         return this.show('page');
     }
-    static info(request, response) {
+    info(request, response) {
         // console.log('user/info exec')
         // response.error('出错啦')
         // return null
@@ -90,7 +90,7 @@ __decorate([
 ], User.prototype, "payService", void 0);
 __decorate([
     lib_1.Get('/process/{uid}'),
-    Auth_1.default,
+    lib_1.ResponseBody('json'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [lib_1.Request, lib_1.Response, Object]),
     __metadata("design:returntype", Promise)
@@ -109,11 +109,12 @@ __decorate([
 ], User.prototype, "list2", null);
 __decorate([
     lib_1.Get('/info'),
-    lib_1.ResponseJSON,
+    lib_1.ResponseBody('xml'),
+    Auth_1.default('ignore'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [lib_1.Request, lib_1.Response]),
     __metadata("design:returntype", void 0)
-], User, "info", null);
+], User.prototype, "info", null);
 User = __decorate([
     lib_1.Controller('/user'),
     Auth_1.default

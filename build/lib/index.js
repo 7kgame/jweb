@@ -9,5 +9,5 @@ const application_2 = require("./application");
 exports.AppErrorEvent = application_2.AppErrorEvent;
 const controller_1 = require("./mvc/controller");
 exports.BaseController = controller_1.default;
-__export(require("./decorator"));
+__export(require("./annos"));
 __export(require("./base"));

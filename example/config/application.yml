@@ -1,4 +1,10 @@
 node-web:
+  app:
+    assets: assets
+    port: 8080
+    host: localhost
+    viewDir: view
+    controllerDir: controller
   data:
     #mongo: // one connection
       # url: mongodb://localhost:27017

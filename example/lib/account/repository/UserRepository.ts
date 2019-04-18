@@ -27,7 +27,7 @@ export default class UserRepository {
     let client = this.mysql.getClient()
     // return Util.promisify(client.query)("select * from test.User limit 10")
     return new Promise((resolve, reject) => {
-      client.query("select * from test.User limit 10", function(err, res) {
+      client.query("select * from shoucai.User limit 10", function(err, res) {
         if (err) {
           reject(err)
         } else {

@@ -5,7 +5,8 @@ import * as Hoek from "hoek"
 import * as YAML from 'yaml'
 import { EventEmitter } from "events"
 
-import { BeanFactory, getApplicationConfigs, registerConfigParser } from 'jbean'
+import { BeanFactory, getApplicationConfigs, registerConfigParser, JBootApplication } from 'jbean'
+import starters from './starters'
 
 const defaultOptions = {
   port: 3000,
@@ -36,6 +37,7 @@ export default class Application extends EventEmitter {
 
   private appOptions: any = {}
   public properties = {}
+  public applicationConfigs = {}
 
   public root: string
   public assets: string
@@ -45,6 +47,8 @@ export default class Application extends EventEmitter {
   public viewDir: string
   public tplExt: string
 
+  public isWebApp: boolean
+
   private server: Hapi.Server
 
   constructor () {
@@ -53,7 +57,9 @@ export default class Application extends EventEmitter {
 
   public static create (options?: object): Application {
     const ins = Application.ins = new Application()
-    ins.appOptions = Hoek.applyToDefaults(defaultOptions, options)
+    ins.appOptions = Hoek.applyToDefaults(defaultOptions, options || {})
+    ins.configNS = ins.appOptions.configNS
+    ins.applicationConfigs = getApplicationConfigs()
     return ins
   }
 
@@ -61,34 +67,39 @@ export default class Application extends EventEmitter {
     return Application.ins
   }
 
-  private init (root: string): void {
-    if ( !root ) {
-      console.log('root path is required!')
-      process.exit()
-    }
-    this.root = root
+  public init (): void {
+    this.root = Path.dirname(require.main.filename)
 
-    if (typeof this.appOptions.assets !== 'undefined') {
-      this.assets = this.appOptions.assets
-      if (!Path.isAbsolute(this.assets)) {
-        this.assets = Path.join(root, this.assets)
-      }
-    }
-
-    this.configNS = this.appOptions.configNS
-    this.controllerDir = this.appOptions.controllerDir
-    this.viewDir = this.appOptions.viewDir
-    this.tplExt = this.appOptions.tplExt
+    const appConfigs = this.applicationConfigs[this.configNS].app
 
     this.bindEvent()
 
-    this.server = new Hapi.Server({
-      port: this.appOptions.port,
-      host: this.appOptions.host,
-      state: {
-        strictHeader: false
+    this.isWebApp = true
+
+    if (this.isWebApp) {
+      this.server = new Hapi.Server({
+        port: appConfigs.port || defaultOptions.port,
+        host: appConfigs.host || defaultOptions.host,
+        state: {
+          strictHeader: false
+        }
+      })
+
+      if (typeof appConfigs.assets !== 'undefined') {
+        this.assets = appConfigs.assets
+        if (!Path.isAbsolute(this.assets)) {
+          this.assets = Path.join(Path.dirname(this.root), this.assets)
+        }
       }
-    })
+
+      this.controllerDir = appConfigs.controllerDir || defaultOptions.controllerDir
+      if (process.env.NODE_ENV === 'development') {
+        this.viewDir = Path.join(Path.dirname(Path.dirname(this.root)), 'src', appConfigs.viewDir || defaultOptions.viewDir)
+      } else {
+        this.viewDir = appConfigs.viewDir || defaultOptions.viewDir
+      }
+      this.tplExt = appConfigs.tplExt || defaultOptions.tplExt
+    }
   }
 
   private bindEvent (): void {
@@ -97,11 +108,7 @@ export default class Application extends EventEmitter {
     })
   }
 
-  public async start (root: string): Promise<Application> {
-    BeanFactory.initBean()
-    this.init(root)
-    BeanFactory.startBean()
-
+  public async runWebServer () {
     await this.server.register(Inert)
     if (this.assets) {
       this.route({
@@ -118,9 +125,26 @@ export default class Application extends EventEmitter {
     }
     await this.server.start()
     console.log(`Server running at: ${this.server.info.uri}`)
+  }
 
-    this.registerExit()
-    return this
+  public static async start (): Promise<Application> {
+    BeanFactory.initBean()
+
+    const application = Application.create()
+    application.init()
+
+    BeanFactory.startBean()
+
+    await starters(application)
+
+    if (application.isWebApp) {
+      await application.runWebServer()
+    } else {
+
+    }
+    application.registerExit()
+
+    return application
   }
 
   public route (option: any): Application {
@@ -134,7 +158,7 @@ export default class Application extends EventEmitter {
     return this
   }
 
-  private registerExit (): void {
+  public registerExit (): void {
     let exitHandler = function (options, code) {
       if (options && options.exit) {
         console.log('application exit at', code)

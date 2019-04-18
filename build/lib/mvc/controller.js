@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const Path = require("path");
 const template_1 = require("./template");
+const controller_1 = require("../annos/controller");
 class Controller {
     initTemplate() {
         if (!this.tpl) {
@@ -9,6 +11,9 @@ class Controller {
     }
     template(name, fileName, data, options) {
         this.initTemplate();
+        if (!Path.isAbsolute(fileName)) {
+            fileName = this[controller_1.TPL_DIR_KEY] + fileName;
+        }
         this.tpl.assignFile(name, fileName, data, options);
     }
     templateValue(name, value) {
@@ -23,19 +28,17 @@ class Controller {
     show(fileName, contentKey, withoutDefaultLayoutDir) {
         this.initTemplate();
         if (!withoutDefaultLayoutDir) {
-            fileName = this['__layoutDir'] + fileName + '.' + this['__tplExt'];
+            fileName = this[controller_1.LAYOUT_DIR_KEY] + fileName + '.' + this[controller_1.EXT_KEY];
         }
         if (!contentKey) {
             contentKey = 'content';
         }
-        if (contentKey) {
-            let fileName1 = this['__tplDir'] + this['__method'] + '.' + this['__tplExt'];
-            this.template(contentKey, fileName1, null, {
-                filename: this['__tplDir']
-            });
-        }
+        let tplFileName = this[controller_1.TPL_DIR_KEY] + this[controller_1.METHOD_KEY] + '.' + this[controller_1.EXT_KEY];
+        this.template(contentKey, tplFileName, null, {
+            filename: this[controller_1.TPL_DIR_KEY]
+        });
         return this.tpl.render(fileName, null, {
-            filename: this['__layoutDir']
+            filename: this[controller_1.LAYOUT_DIR_KEY]
         });
     }
 }

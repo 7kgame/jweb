@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const jbean_1 = require("jbean");
 function Auth(component, options) {
-    return jbean_1.annotationHelper(jbean_1.AnnotationType.clz, callback, arguments);
+    return jbean_1.annotationHelper(arguments, callback);
 }
 exports.default = Auth;
 const callback = function (annoType, ctor) {
@@ -14,9 +14,7 @@ const callback = function (annoType, ctor) {
     }
 };
 Auth.preCall = function () {
-    // console.log('auth.precall')
 };
 Auth.postCall = function (ret) {
-    console.log('auth.postcall');
-    return JSON.stringify(ret);
+    return ret;
 };
