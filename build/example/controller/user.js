@@ -44,6 +44,7 @@ class User extends lib_1.BaseController {
     process(request, response, { uid }) {
         return __awaiter(this, void 0, void 0, function* () {
             console.log('userService is', this.userService);
+            throw new Error('hdhhsh');
             // console.log('uid is ' + uid)
             // return uid
             // throw new Error('test err')
@@ -110,7 +111,7 @@ __decorate([
 __decorate([
     lib_1.Get('/info'),
     lib_1.ResponseBody('xml'),
-    Auth_1.default('ignore'),
+    Auth_1.default(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [lib_1.Request, lib_1.Response]),
     __metadata("design:returntype", void 0)

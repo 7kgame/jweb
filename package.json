@@ -13,6 +13,7 @@
     "tsc-watch": "tsc -w",
     "build": "gulp build",
     "start": "node build/example/index.js",
+    "cron": "node build/example/index.js -t hello -f world -n 123",
     "dev": "NODE_ENV=development node build/example/index.js",
     "setup": "npm install",
     "test": "echo \"Error: no test specified\" && exit 1",

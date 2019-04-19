@@ -13,6 +13,8 @@ class Request extends reqres_1.default {
         this.paramsArray = request.paramsArray;
         this.headers = request.headers;
         this.cookies = request.state;
+        this.request = request;
+        this.response = response;
     }
 }
 exports.default = Request;

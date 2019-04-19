@@ -46,7 +46,7 @@ let UserRepository = class UserRepository {
             let dbName = 'test';
             let client = this.mongo.getClient();
             const db = client.db(dbName);
-            const col = db.collection('user');
+            const col = db.collection('runoob');
             let res = col.find({});
             // return Util.promisify(res.toArray)()
             return res.toArray();

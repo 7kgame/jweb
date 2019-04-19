@@ -1,5 +1,6 @@
 node-web:
   app:
+    cors: true
     assets: assets
     port: 8080
     host: localhost

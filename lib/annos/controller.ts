@@ -2,7 +2,7 @@ import * as Path from 'path'
 import * as Hapi from 'hapi'
 import { AnnotationType, annotationHelper, BeanFactory, BeanMeta, CTOR_ID, getObjectType, ReflectHelper } from 'jbean'
 
-import Application, { AppErrorEvent } from '../application'
+import Application, { AppErrorEvent, ApplicationType } from '../application'
 import { Request, Response } from '../base'
 
 export function Controller (component?: any, path?: any) {
@@ -110,12 +110,15 @@ const addTemplateDir = function (ctor: Function, ins: object | Function) {
 }
 
 BeanFactory.registerStartBean(() => {
+  const app = Application.getIns()
+  if (app.applicationType !== ApplicationType.web) {
+    return
+  }
   Object.values(controllerMetas).forEach(({ctor, methods, path}) => {
     methods.forEach(({target, method, requestMethod, subPath, requestMapping}) => {
       if (!requestMapping) {
         return
       }
-      const app = Application.getIns()
       app.route({
         method: requestMethod,
         path: path + subPath,

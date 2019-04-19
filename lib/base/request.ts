@@ -13,6 +13,9 @@ export default class Request extends ReqRes {
   public headers
   public cookies
 
+  private request: Hapi.Request
+  private response: Hapi.ResponseToolkit
+
   // constructor (request: Hapi.Request, response: Hapi.ResponseToolkit, resolve: any, reject: any) {
   constructor (request: Hapi.Request, response: Hapi.ResponseToolkit) {
     super()
@@ -24,6 +27,9 @@ export default class Request extends ReqRes {
     this.paramsArray = request.paramsArray
     this.headers = request.headers
     this.cookies = request.state
+
+    this.request = request
+    this.response = response
   }
 
 }

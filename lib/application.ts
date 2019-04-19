@@ -5,7 +5,7 @@ import * as Hoek from "hoek"
 import * as YAML from 'yaml'
 import { EventEmitter } from "events"
 
-import { BeanFactory, getApplicationConfigs, registerConfigParser, JBootApplication } from 'jbean'
+import { BeanFactory, getApplicationConfigs, isAsyncFunction, SCHEDULED_KEY, ReflectHelper, registerConfigParser } from 'jbean'
 import starters from './starters'
 
 const defaultOptions = {
@@ -15,14 +15,23 @@ const defaultOptions = {
   configNS: 'node-web',
   controllerDir: 'controller',
   viewDir: 'view',
-  tplExt: 'html'
+  tplExt: 'html',
+
+  taskDir: 'task'
 }
+
+const TASK_ARG_NAME: string = 't'
 
 export enum AppErrorEvent {
   REQUEST = 'error_request'
 }
 
-registerConfigParser('yml', function (content) {
+export enum ApplicationType {
+  web,
+  task
+}
+
+registerConfigParser('yml', function (content: any) {
   if (!content) {
     return null
   }
@@ -36,8 +45,9 @@ export default class Application extends EventEmitter {
   public isDev: boolean = process.env.NODE_ENV === 'development'
 
   private appOptions: any = {}
-  public properties = {}
   public applicationConfigs = {}
+
+  public cmdArgs = {}
 
   public root: string
   public assets: string
@@ -46,8 +56,11 @@ export default class Application extends EventEmitter {
   public controllerDir: string
   public viewDir: string
   public tplExt: string
+  public taskDir: string
 
-  public isWebApp: boolean
+  private taskScript: string
+
+  public applicationType: ApplicationType
 
   private server: Hapi.Server
 
@@ -55,7 +68,7 @@ export default class Application extends EventEmitter {
     super()
   }
 
-  public static create (options?: object): Application {
+  private static create (options?: object): Application {
     const ins = Application.ins = new Application()
     ins.appOptions = Hoek.applyToDefaults(defaultOptions, options || {})
     ins.configNS = ins.appOptions.configNS
@@ -67,38 +80,61 @@ export default class Application extends EventEmitter {
     return Application.ins
   }
 
-  public init (): void {
-    this.root = Path.dirname(require.main.filename)
+  public static async start (): Promise<Application> {
+    BeanFactory.initBean()
 
-    const appConfigs = this.applicationConfigs[this.configNS].app
+    const application = Application.create()
+    application.registerExit()
+    application.init()
 
-    this.bindEvent()
+    BeanFactory.startBean()
+    await starters(application)
 
-    this.isWebApp = true
+    switch (application.applicationType) {
+      case ApplicationType.web:
+        application.runWebServer()
+        break
+      case ApplicationType.task:
+        application.runTask()
+        break
+      default:
+        break
+    }
 
-    if (this.isWebApp) {
-      this.server = new Hapi.Server({
-        port: appConfigs.port || defaultOptions.port,
-        host: appConfigs.host || defaultOptions.host,
-        state: {
-          strictHeader: false
-        }
-      })
+    return application
+  }
 
-      if (typeof appConfigs.assets !== 'undefined') {
-        this.assets = appConfigs.assets
-        if (!Path.isAbsolute(this.assets)) {
-          this.assets = Path.join(Path.dirname(this.root), this.assets)
-        }
-      }
+  private getAppConfigs (): any {
+    if (typeof this.applicationConfigs[this.configNS] === 'undefined'
+        || typeof this.applicationConfigs[this.configNS].app === 'undefined') {
+      return {}
+    }
+    return this.applicationConfigs[this.configNS].app
+  }
 
-      this.controllerDir = appConfigs.controllerDir || defaultOptions.controllerDir
-      if (process.env.NODE_ENV === 'development') {
-        this.viewDir = Path.join(Path.dirname(Path.dirname(this.root)), 'src', appConfigs.viewDir || defaultOptions.viewDir)
+  private parseCmdArgs (): void {
+    const args: string[] = process.argv
+    if (args.length < 3) {
+      return
+    }
+    let argName = null
+    for (let i = 2; i < args.length; i++) {
+      if (args[i].substr(0, 1) === '-') {
+        argName = args[i].replace(/^\-*/g, '')
       } else {
-        this.viewDir = appConfigs.viewDir || defaultOptions.viewDir
+        if (argName) {
+          this.cmdArgs[argName] = args[i].replace(/^\-*/g, '')
+        }
+        argName = null
       }
-      this.tplExt = appConfigs.tplExt || defaultOptions.tplExt
+    }
+  }
+
+  private checkAppType (): void {
+    if (typeof this.cmdArgs[TASK_ARG_NAME] !== 'undefined') {
+      this.applicationType = ApplicationType.task
+    } else {
+      this.applicationType = ApplicationType.web
     }
   }
 
@@ -106,6 +142,62 @@ export default class Application extends EventEmitter {
     this.on(AppErrorEvent.REQUEST, err => {
       console.error("Request error: ", err)
     })
+  }
+
+  public init (): void {
+    this.root = Path.dirname(require.main.filename)
+    this.parseCmdArgs()
+    this.checkAppType()
+
+    this.bindEvent()
+
+    switch (this.applicationType) {
+      case ApplicationType.web:
+        this.initWebServer()
+        break
+      case ApplicationType.task:
+        this.initTask()
+        break
+      default:
+        break
+    }
+  }
+
+  private initWebServer (): void {
+    const appConfigs = this.getAppConfigs()
+    this.server = new Hapi.Server({
+      port: appConfigs.port || defaultOptions.port,
+      host: appConfigs.host || defaultOptions.host,
+      state: {
+        strictHeader: false
+      }
+    })
+
+    if (typeof appConfigs.assets !== 'undefined') {
+      this.assets = appConfigs.assets
+      if (!Path.isAbsolute(this.assets)) {
+        this.assets = Path.join(Path.dirname(this.root), this.assets)
+      }
+    }
+
+    this.controllerDir = appConfigs.controllerDir || defaultOptions.controllerDir
+    if (process.env.NODE_ENV === 'development') {
+      this.viewDir = Path.join(Path.dirname(Path.dirname(this.root)), 'src', appConfigs.viewDir || defaultOptions.viewDir)
+    } else {
+      this.viewDir = appConfigs.viewDir || defaultOptions.viewDir
+    }
+    this.tplExt = appConfigs.tplExt || defaultOptions.tplExt
+  }
+
+  private initTask () {
+    let taskScript: string = this.cmdArgs[TASK_ARG_NAME]
+    const appConfigs = this.getAppConfigs()
+    this.taskDir = appConfigs.taskDir || defaultOptions.taskDir
+    if (taskScript.substr(0, 1) === '/') {
+      this.taskScript = Path.join(this.root, taskScript)
+    } else {
+      this.taskScript = Path.join(this.root, this.taskDir, taskScript)
+    }
   }
 
   public async runWebServer () {
@@ -127,34 +219,52 @@ export default class Application extends EventEmitter {
     console.log(`Server running at: ${this.server.info.uri}`)
   }
 
-  public static async start (): Promise<Application> {
-    BeanFactory.initBean()
-
-    const application = Application.create()
-    application.init()
-
-    BeanFactory.startBean()
-
-    await starters(application)
-
-    if (application.isWebApp) {
-      await application.runWebServer()
-    } else {
-
+  public async runTask () {
+    let task = require(this.taskScript)
+    if (task.default) {
+      task = task.default
     }
-    application.registerExit()
+    if (typeof task !== 'function') {
+      console.error('typeof ' + this.taskScript + ' is not class.')
+      process.emit('exit', -1)
+      return
+    }
+    if (typeof task[SCHEDULED_KEY] !== 'object') {
+      console.error('schedule of ' + task.name + ' is not exist.')
+      process.emit('exit', -1)
+      return
+    }
+    const {cron, size} = task[SCHEDULED_KEY]
+    // TODO 重复执行次数，循环执行次数
+    const methods: string[] = ReflectHelper.getMethods(task)
+    if (methods.indexOf('process') < 0) {
+      console.error('process method of ' + task.name + ' is not exist.')
+      process.emit('exit', -1)
+      return
+    }
+    try {
+      const ins = new task()
+      if (isAsyncFunction(ins['process'])) {
+        await ins['process'](this)
+      } else {
+        ins['process'](this)
+      }
+    } catch (e) {
+      console.error(e)
+    }
 
-    return application
+    process.emit('exit', 0)
   }
 
   public route (option: any): Application {
-    option.options = {cors: true}
+    if (this.applicationType !== ApplicationType.web) {
+      return this
+    }
+    const appConfig = this.getAppConfigs()
+    if (appConfig && appConfig.cors) {
+      option.options = {cors: true}
+    }
     this.server.route(option)
-    return this
-  }
-
-  public addProperty (property): Application {
-    Hoek.merge(this.properties, property, false, true);
     return this
   }
 

@@ -109,12 +109,15 @@ const addTemplateDir = function (ctor, ins) {
     }
 };
 jbean_1.BeanFactory.registerStartBean(() => {
+    const app = application_1.default.getIns();
+    if (app.applicationType !== application_1.ApplicationType.web) {
+        return;
+    }
     Object.values(controllerMetas).forEach(({ ctor, methods, path }) => {
         methods.forEach(({ target, method, requestMethod, subPath, requestMapping }) => {
             if (!requestMapping) {
                 return;
             }
-            const app = application_1.default.getIns();
             app.route({
                 method: requestMethod,
                 path: path + subPath,

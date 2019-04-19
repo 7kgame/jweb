@@ -3,7 +3,7 @@ import { EventEmitter } from "events"
 export class Application extends EventEmitter {
   constructor()
 
-  readonly properties: any
+  readonly cmdArgs: any
 
   readonly root: string
   readonly resource: string
@@ -12,15 +12,21 @@ export class Application extends EventEmitter {
   readonly controllerDir: string
   readonly viewDir: string
   readonly tplExt: string
+  readonly taskDir: string
 
-  // static create (option: object): Application
+  readonly applicationType: ApplicationType
+  readonly applicationConfigs: any
+
   static getIns (): Application
-  // options (options: any): Application;
   static start (root: string): Promise<Application>
   route (option: object): Application
-  addProperty (property: object): Application
 }
 
-export class AppErrorEvent {
-  static readonly REQUEST: string
+export enum AppErrorEvent {
+  REQUEST
+}
+
+export enum ApplicationType {
+  web,
+  task
 }

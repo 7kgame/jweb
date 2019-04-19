@@ -13,6 +13,7 @@
     "example/**.ts",
     "example/controller/**/**.ts",
     "example/lib/**/**.ts",
+    "example/task/**/**.ts",
     "lib/**/**.ts",
     "test/**/**.ts"
   ],

@@ -22,12 +22,19 @@ const defaultOptions = {
     configNS: 'node-web',
     controllerDir: 'controller',
     viewDir: 'view',
-    tplExt: 'html'
+    tplExt: 'html',
+    taskDir: 'task'
 };
+const TASK_ARG_NAME = 't';
 var AppErrorEvent;
 (function (AppErrorEvent) {
     AppErrorEvent["REQUEST"] = "error_request";
 })(AppErrorEvent = exports.AppErrorEvent || (exports.AppErrorEvent = {}));
+var ApplicationType;
+(function (ApplicationType) {
+    ApplicationType[ApplicationType["web"] = 0] = "web";
+    ApplicationType[ApplicationType["task"] = 1] = "task";
+})(ApplicationType = exports.ApplicationType || (exports.ApplicationType = {}));
 jbean_1.registerConfigParser('yml', function (content) {
     if (!content) {
         return null;
@@ -39,8 +46,8 @@ class Application extends events_1.EventEmitter {
         super();
         this.isDev = process.env.NODE_ENV === 'development';
         this.appOptions = {};
-        this.properties = {};
         this.applicationConfigs = {};
+        this.cmdArgs = {};
     }
     static create(options) {
         const ins = Application.ins = new Application();
@@ -52,39 +59,94 @@ class Application extends events_1.EventEmitter {
     static getIns() {
         return Application.ins;
     }
-    init() {
-        this.root = Path.dirname(require.main.filename);
-        const appConfigs = this.applicationConfigs[this.configNS].app;
-        this.bindEvent();
-        this.isWebApp = true;
-        if (this.isWebApp) {
-            this.server = new Hapi.Server({
-                port: appConfigs.port || defaultOptions.port,
-                host: appConfigs.host || defaultOptions.host,
-                state: {
-                    strictHeader: false
-                }
-            });
-            if (typeof appConfigs.assets !== 'undefined') {
-                this.assets = appConfigs.assets;
-                if (!Path.isAbsolute(this.assets)) {
-                    this.assets = Path.join(Path.dirname(this.root), this.assets);
-                }
-            }
-            this.controllerDir = appConfigs.controllerDir || defaultOptions.controllerDir;
-            if (process.env.NODE_ENV === 'development') {
-                this.viewDir = Path.join(Path.dirname(Path.dirname(this.root)), 'src', appConfigs.viewDir || defaultOptions.viewDir);
+    getAppConfigs() {
+        if (typeof this.applicationConfigs[this.configNS] === 'undefined'
+            || typeof this.applicationConfigs[this.configNS].app === 'undefined') {
+            return {};
+        }
+        return this.applicationConfigs[this.configNS].app;
+    }
+    parseCmdArgs() {
+        const args = process.argv;
+        if (args.length < 3) {
+            return;
+        }
+        let argName = null;
+        for (let i = 2; i < args.length; i++) {
+            if (args[i].substr(0, 1) === '-') {
+                argName = args[i].replace(/^\-*/g, '');
             }
             else {
-                this.viewDir = appConfigs.viewDir || defaultOptions.viewDir;
+                if (argName) {
+                    this.cmdArgs[argName] = args[i].replace(/^\-*/g, '');
+                }
+                argName = null;
             }
-            this.tplExt = appConfigs.tplExt || defaultOptions.tplExt;
+        }
+    }
+    checkAppType() {
+        if (typeof this.cmdArgs[TASK_ARG_NAME] !== 'undefined') {
+            this.applicationType = ApplicationType.task;
+        }
+        else {
+            this.applicationType = ApplicationType.web;
         }
     }
     bindEvent() {
         this.on(AppErrorEvent.REQUEST, err => {
             console.error("Request error: ", err);
         });
+    }
+    init() {
+        this.root = Path.dirname(require.main.filename);
+        this.parseCmdArgs();
+        this.checkAppType();
+        this.bindEvent();
+        switch (this.applicationType) {
+            case ApplicationType.web:
+                this.initWebServer();
+                break;
+            case ApplicationType.task:
+                this.initTask();
+                break;
+            default:
+                break;
+        }
+    }
+    initWebServer() {
+        const appConfigs = this.getAppConfigs();
+        this.server = new Hapi.Server({
+            port: appConfigs.port || defaultOptions.port,
+            host: appConfigs.host || defaultOptions.host,
+            state: {
+                strictHeader: false
+            }
+        });
+        if (typeof appConfigs.assets !== 'undefined') {
+            this.assets = appConfigs.assets;
+            if (!Path.isAbsolute(this.assets)) {
+                this.assets = Path.join(Path.dirname(this.root), this.assets);
+            }
+        }
+        this.controllerDir = appConfigs.controllerDir || defaultOptions.controllerDir;
+        if (process.env.NODE_ENV === 'development') {
+            this.viewDir = Path.join(Path.dirname(Path.dirname(this.root)), 'src', appConfigs.viewDir || defaultOptions.viewDir);
+        }
+        else {
+            this.viewDir = appConfigs.viewDir || defaultOptions.viewDir;
+        }
+        this.tplExt = appConfigs.tplExt || defaultOptions.tplExt;
+    }
+    initTask() {
+        let taskScript = this.cmdArgs[TASK_ARG_NAME];
+        const appConfigs = this.getAppConfigs();
+        this.taskDir = appConfigs.taskDir || defaultOptions.taskDir;
+        if (taskScript.substr(0, 1) === '/') {
+            this.taskScript = Path.join(this.root, taskScript);
+        }
+        else {
+            this.taskScript = Path.join(this.root, this.taskDir, taskScript);
+        }
     }
     runWebServer() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -106,29 +168,75 @@ class Application extends events_1.EventEmitter {
             console.log(`Server running at: ${this.server.info.uri}`);
         });
     }
+    runTask() {
+        return __awaiter(this, void 0, void 0, function* () {
+            let task = require(this.taskScript);
+            if (task.default) {
+                task = task.default;
+            }
+            if (typeof task !== 'function') {
+                console.error('typeof ' + this.taskScript + ' is not class.');
+                process.emit('exit', -1);
+                return;
+            }
+            if (typeof task[jbean_1.SCHEDULED_KEY] !== 'object') {
+                console.error('schedule of ' + task.name + ' is not exist.');
+                process.emit('exit', -1);
+                return;
+            }
+            const { cron, size } = task[jbean_1.SCHEDULED_KEY];
+            const methods = jbean_1.ReflectHelper.getMethods(task);
+            if (methods.indexOf('process') < 0) {
+                console.error('process method of ' + task.name + ' is not exist.');
+                process.emit('exit', -1);
+                return;
+            }
+            try {
+                const ins = new task();
+                if (jbean_1.isAsyncFunction(ins['process'])) {
+                    console.log('async ....');
+                    yield ins['process'](this);
+                }
+                else {
+                    ins['process'](this);
+                }
+            }
+            catch (e) {
+                console.error(e);
+            }
+            process.emit('exit', 0);
+        });
+    }
     static start() {
         return __awaiter(this, void 0, void 0, function* () {
             jbean_1.BeanFactory.initBean();
             const application = Application.create();
+            application.registerExit();
             application.init();
             jbean_1.BeanFactory.startBean();
             yield starters_1.default(application);
-            if (application.isWebApp) {
-                yield application.runWebServer();
+            switch (application.applicationType) {
+                case ApplicationType.web:
+                    application.runWebServer();
+                    break;
+                case ApplicationType.task:
+                    application.runTask();
+                    break;
+                default:
+                    break;
             }
-            else {
-            }
-            application.registerExit();
             return application;
         });
     }
     route(option) {
-        option.options = { cors: true };
+        if (this.applicationType !== ApplicationType.web) {
+            return this;
+        }
+        const appConfig = this.getAppConfigs();
+        if (appConfig && appConfig.cors) {
+            option.options = { cors: true };
+        }
         this.server.route(option);
-        return this;
-    }
-    addProperty(property) {
-        Hoek.merge(this.properties, property, false, true);
         return this;
     }
     registerExit() {

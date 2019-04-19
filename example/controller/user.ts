@@ -34,6 +34,7 @@ export default class User extends BaseController {
   @ResponseBody('json')
   public async process (request: Request, response: Response, { uid }) {
     console.log('userService is', this.userService)
+    throw new Error('hdhhsh')
     // console.log('uid is ' + uid)
     // return uid
     // throw new Error('test err')
@@ -67,7 +68,7 @@ export default class User extends BaseController {
 
   @Get('/info')
   @ResponseBody('xml')
-  @Auth('ignore')
+  @Auth()
   // @ResponseXML
   public info(request: Request, response: Response) {
     // console.log('user/info exec')
