@@ -38,7 +38,7 @@ class User extends lib_1.BaseController {
         console.log('afterCall');
         return ret;
     }
-    process(req, res, { uid }) {
+    process(req, res, { uid0 }) {
         return __awaiter(this, void 0, void 0, function* () {
             const user = req.entity;
             console.log(user);
@@ -54,7 +54,7 @@ class User extends lib_1.BaseController {
             let data = {
                 a: 1,
                 b: [2, 3, 4],
-                uid: uid,
+                uid: uid0,
                 u: u
             };
             return data;
@@ -90,7 +90,7 @@ __decorate([
     __metadata("design:type", PayService_1.default)
 ], User.prototype, "payService", void 0);
 __decorate([
-    lib_1.Get('/process/{uid}'),
+    lib_1.Get('/process/{uid0}'),
     lib_1.ResponseBody('json'),
     lib_1.Validation(user_1.default),
     __metadata("design:type", Function),

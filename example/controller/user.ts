@@ -31,10 +31,10 @@ export default class User extends BaseController {
     return ret
   }
 
-  @Get('/process/{uid}')
+  @Get('/process/{uid0}')
   @ResponseBody('json')
   @Validation(UserEntity)
-  public async process (req: Request, res: Response, { uid }) {
+  public async process (req: Request, res: Response, { uid0 }) {
     const user: UserEntity = req.entity
     console.log(user)
     // console.log(user['toObject']())
@@ -49,7 +49,7 @@ export default class User extends BaseController {
     let data = {
       a: 1,
       b: [2, 3, 4],
-      uid: uid,
+      uid: uid0,
       u: u
     }
     return data

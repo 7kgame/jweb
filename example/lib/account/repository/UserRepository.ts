@@ -25,7 +25,8 @@ export default class UserRepository {
   }
 
   public async hello (user: UserEntity) {
-    this.mysql.insert(user)
+    const id = await this.mysql.insert(user)
+    console.log('insert id ', id)
     user.name = 'hello'
     this.mysql.update(user, {uid: 13})
     this.mysql.delete(UserEntity, {uid: 14, age: 1})

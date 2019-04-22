@@ -28,7 +28,8 @@ let UserRepository = class UserRepository {
     }
     hello(user) {
         return __awaiter(this, void 0, void 0, function* () {
-            this.mysql.insert(user);
+            const id = yield this.mysql.insert(user);
+            console.log('insert id ', id);
             user.name = 'hello';
             this.mysql.update(user, { uid: 13 });
             this.mysql.delete(user_1.default, { uid: 14, age: 1 });
