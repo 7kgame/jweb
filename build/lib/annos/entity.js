@@ -18,4 +18,18 @@ const callback = function (annoType, ctor, name) {
         });
         return obj;
     };
+    ctor['clone'] = function (data) {
+        if (!data) {
+            return null;
+        }
+        const clz = ctor;
+        const entity = new clz();
+        const fields = Object.getOwnPropertyNames(entity);
+        fields.forEach(field => {
+            if (typeof data[field] !== 'undefined') {
+                entity[field] = data[field];
+            }
+        });
+        return entity;
+    };
 };

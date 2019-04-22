@@ -17,4 +17,18 @@ const callback = function (annoType: AnnotationType, ctor: Function, name?: stri
     })
     return obj
   }
+  ctor['clone'] = function (data: object) {
+    if (!data) {
+      return null
+    }
+    const clz: any = ctor
+    const entity = new clz()
+    const fields = Object.getOwnPropertyNames(entity)
+    fields.forEach(field => {
+      if (typeof data[field] !== 'undefined') {
+        entity[field] = data[field]
+      }
+    })
+    return entity
+  }
 }

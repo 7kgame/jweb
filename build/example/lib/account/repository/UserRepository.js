@@ -33,10 +33,11 @@ let UserRepository = class UserRepository {
             user.name = 'hello';
             this.mysql.update(user, { uid: 13 });
             this.mysql.delete(user_1.default, { uid: 14, age: 1 });
-            const data = yield this.mysql.select(user_1.default, { uid: 15, name: 'hello' });
+            const data = yield this.mysql.select(user_1.default, { name: 'fanyn' });
             console.log(data);
-            const u = yield this.mysql.getEntity(user_1.default, { uid: 15 });
+            const u = yield this.mysql.getEntity(user_1.default, { uid: 2 });
             console.log(u);
+            console.log(JSON.stringify(u));
             return data;
         });
     }
