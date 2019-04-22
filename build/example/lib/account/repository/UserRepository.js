@@ -18,6 +18,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const jbean_1 = require("jbean");
+const user_1 = require("../entity/user");
 let UserRepository = class UserRepository {
     constructor() {
         console.log('new userRepository');
@@ -25,20 +26,15 @@ let UserRepository = class UserRepository {
     postInit() {
         console.log('userRepository.postInit');
     }
-    hello() {
+    hello(user) {
         return __awaiter(this, void 0, void 0, function* () {
-            let client = this.mysql.getClient();
-            // return Util.promisify(client.query)("select * from test.User limit 10")
-            return new Promise((resolve, reject) => {
-                client.query("select * from shoucai.User limit 10", function (err, res) {
-                    if (err) {
-                        reject(err);
-                    }
-                    else {
-                        resolve(res);
-                    }
-                });
-            });
+            this.mysql.insert(user);
+            user.name = 'hello';
+            this.mysql.update(user, { uid: 13 });
+            this.mysql.delete(user_1.default, { uid: 14, age: 1 });
+            const data = yield this.mysql.select(user_1.default, { uid: 15, name: 'hello' });
+            console.log(data);
+            return data;
         });
     }
     helloMongo() {

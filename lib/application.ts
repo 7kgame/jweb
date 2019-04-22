@@ -5,7 +5,7 @@ import * as Hoek from "hoek"
 import * as YAML from 'yaml'
 import { EventEmitter } from "events"
 
-import { BeanFactory, getApplicationConfigs, isAsyncFunction, SCHEDULED_KEY, ReflectHelper, registerConfigParser } from 'jbean'
+import { BeanFactory, getApplicationConfigs, isAsyncFunction, ReflectHelper, registerConfigParser } from 'jbean'
 import starters from './starters'
 
 const defaultOptions = {
@@ -20,7 +20,11 @@ const defaultOptions = {
   taskDir: 'task'
 }
 
-const TASK_ARG_NAME: string = 't'
+const TASK_ARG_KEY = {
+  task: 't',
+  loop: 'l',
+  sleep: 's'
+}
 
 export enum AppErrorEvent {
   REQUEST = 'error_request'
@@ -123,6 +127,11 @@ export default class Application extends EventEmitter {
         argName = args[i].replace(/^\-*/g, '')
       } else {
         if (argName) {
+          Object.keys(TASK_ARG_KEY).forEach(key => {
+            if (key === argName) {
+              argName = TASK_ARG_KEY[key]
+            }
+          })
           this.cmdArgs[argName] = args[i].replace(/^\-*/g, '')
         }
         argName = null
@@ -131,7 +140,7 @@ export default class Application extends EventEmitter {
   }
 
   private checkAppType (): void {
-    if (typeof this.cmdArgs[TASK_ARG_NAME] !== 'undefined') {
+    if (typeof this.cmdArgs[TASK_ARG_KEY.task] !== 'undefined') {
       this.applicationType = ApplicationType.task
     } else {
       this.applicationType = ApplicationType.web
@@ -190,7 +199,7 @@ export default class Application extends EventEmitter {
   }
 
   private initTask () {
-    let taskScript: string = this.cmdArgs[TASK_ARG_NAME]
+    let taskScript: string = this.cmdArgs[TASK_ARG_KEY.task]
     const appConfigs = this.getAppConfigs()
     this.taskDir = appConfigs.taskDir || defaultOptions.taskDir
     if (taskScript.substr(0, 1) === '/') {
@@ -229,13 +238,6 @@ export default class Application extends EventEmitter {
       process.emit('exit', -1)
       return
     }
-    if (typeof task[SCHEDULED_KEY] !== 'object') {
-      console.error('schedule of ' + task.name + ' is not exist.')
-      process.emit('exit', -1)
-      return
-    }
-    const {cron, size} = task[SCHEDULED_KEY]
-    // TODO 重复执行次数，循环执行次数
     const methods: string[] = ReflectHelper.getMethods(task)
     if (methods.indexOf('process') < 0) {
       console.error('process method of ' + task.name + ' is not exist.')
@@ -243,11 +245,15 @@ export default class Application extends EventEmitter {
       return
     }
     try {
+      // TODO 重复执行次数，循环执行次数
       const ins = new task()
+      const args = {}
+      Object.assign(args, this.cmdArgs)
+      delete args[TASK_ARG_KEY.task]
       if (isAsyncFunction(ins['process'])) {
-        await ins['process'](this)
+        await ins['process'](this, args)
       } else {
-        ins['process'](this)
+        ins['process'](this, args)
       }
     } catch (e) {
       console.error(e)

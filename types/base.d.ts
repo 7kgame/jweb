@@ -7,6 +7,7 @@ export interface Request {
   paramsArray: any
   headers: any
   cookies: any
+  entity: any
 
   append (data: any): void
   setData (data: any): void

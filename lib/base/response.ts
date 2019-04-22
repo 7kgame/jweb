@@ -14,8 +14,6 @@ export default class Response extends ReqRes {
     super()
     this.request = request
     this.response = response
-    console.log(this.request.raw.req.rawHeaders, '----')
-    console.log(this.request.raw.req.headers, '-0=0-==')
   }
 
   public write (data: any): void {

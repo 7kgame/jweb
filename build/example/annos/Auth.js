@@ -14,7 +14,7 @@ const callback = function (annoType, ctor) {
     }
 };
 Auth.preCall = function (param, req, res) {
-    console.log(arguments);
+    // console.log(arguments)
     if (param === 'ignore') {
         console.log('return login data');
         return null;

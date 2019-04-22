@@ -119,6 +119,7 @@ BeanFactory.registerStartBean(() => {
       if (!requestMapping) {
         return
       }
+      const app = Application.getIns()
       app.route({
         method: requestMethod,
         path: path + subPath,
@@ -145,12 +146,14 @@ BeanFactory.registerStartBean(() => {
               if (getObjectType(ret) === 'promise') {
                 ret.then(data => {
                   res.writeAndFlush(data)
+                  // resolve()
                 }).catch(e => {
                   app.emit(AppErrorEvent.REQUEST, e)
                   res.error('Internal Server Error')
                 })
               } else {
                 res.writeAndFlush(ret)
+                // resolve()
               }
             } catch (e) {
               app.emit(AppErrorEvent.REQUEST, e)

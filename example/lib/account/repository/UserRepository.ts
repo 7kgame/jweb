@@ -2,6 +2,7 @@ import MongoDao from 'jweb-mongo'
 import MysqlDao from 'jweb-mysql'
 import RedisDao from 'jweb-redis'
 import { Autowired, Repository } from 'jbean'
+import UserEntity from '../entity/user'
 
 @Repository('userRepository0')
 export default class UserRepository {
@@ -23,18 +24,14 @@ export default class UserRepository {
     console.log('userRepository.postInit')
   }
 
-  public async hello () {
-    let client = this.mysql.getClient()
-    // return Util.promisify(client.query)("select * from test.User limit 10")
-    return new Promise((resolve, reject) => {
-      client.query("select * from shoucai.User limit 10", function(err, res) {
-        if (err) {
-          reject(err)
-        } else {
-          resolve(res)
-        }
-      })
-    })
+  public async hello (user: UserEntity) {
+    this.mysql.insert(user)
+    user.name = 'hello'
+    this.mysql.update(user, {uid: 13})
+    this.mysql.delete(UserEntity, {uid: 14, age: 1})
+    const data = await this.mysql.select(UserEntity, {uid: 15, name: 'hello'})
+    console.log(data)
+    return data
   }
 
   public async helloMongo ()  {

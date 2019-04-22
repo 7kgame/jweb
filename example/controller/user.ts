@@ -1,8 +1,9 @@
 import { Autowired } from 'jbean'
-import { BaseController, Controller, Get, Post, ResponseBody, Request, Response } from '../../lib'
+import { BaseController, Controller, Get, Post, ResponseBody, Request, Response, Validation } from '../../lib'
 import UserService from '../lib/account/UserService'
 import PayService from '../lib/account/PayService'
 import Auth from '../annos/Auth'
+import UserEntity from '../lib/account/entity/user'
 
 @Controller('/user')
 @Auth
@@ -21,26 +22,30 @@ export default class User extends BaseController {
     console.log('init user')
   }
 
-  private async beforeCall () {
+  private beforeCall () {
     console.log('beforeCall')
   }
 
-  public async afterCall (ret) {
+  public afterCall (ret) {
     console.log('afterCall')
     return ret
   }
 
   @Get('/process/{uid}')
   @ResponseBody('json')
-  public async process (request: Request, response: Response, { uid }) {
-    console.log('userService is', this.userService)
-    throw new Error('hdhhsh')
+  @Validation(UserEntity)
+  public async process (req: Request, res: Response, { uid }) {
+    const user: UserEntity = req.entity
+    console.log(user)
+    // console.log(user['toObject']())
+    // console.log('userService is', this.userService)
+    // throw new Error('hdhhsh')
     // console.log('uid is ' + uid)
     // return uid
     // throw new Error('test err')
     // let data = await this.userService.hello()
     // return '<div style="color: red">' + 'this is user process ' + uid + ', ' + JSON.stringify(data) + ', ' + this.payService.hello() + '</div>'
-    let u = await this.userService.hello()
+    let u = await this.userService.hello(user)
     let data = {
       a: 1,
       b: [2, 3, 4],

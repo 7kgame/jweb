@@ -25,7 +25,11 @@ const defaultOptions = {
     tplExt: 'html',
     taskDir: 'task'
 };
-const TASK_ARG_NAME = 't';
+const TASK_ARG_KEY = {
+    task: 't',
+    loop: 'l',
+    sleep: 's'
+};
 var AppErrorEvent;
 (function (AppErrorEvent) {
     AppErrorEvent["REQUEST"] = "error_request";
@@ -59,6 +63,27 @@ class Application extends events_1.EventEmitter {
     static getIns() {
         return Application.ins;
     }
+    static start() {
+        return __awaiter(this, void 0, void 0, function* () {
+            jbean_1.BeanFactory.initBean();
+            const application = Application.create();
+            application.registerExit();
+            application.init();
+            jbean_1.BeanFactory.startBean();
+            yield starters_1.default(application);
+            switch (application.applicationType) {
+                case ApplicationType.web:
+                    application.runWebServer();
+                    break;
+                case ApplicationType.task:
+                    application.runTask();
+                    break;
+                default:
+                    break;
+            }
+            return application;
+        });
+    }
     getAppConfigs() {
         if (typeof this.applicationConfigs[this.configNS] === 'undefined'
             || typeof this.applicationConfigs[this.configNS].app === 'undefined') {
@@ -78,6 +103,11 @@ class Application extends events_1.EventEmitter {
             }
             else {
                 if (argName) {
+                    Object.keys(TASK_ARG_KEY).forEach(key => {
+                        if (key === argName) {
+                            argName = TASK_ARG_KEY[key];
+                        }
+                    });
                     this.cmdArgs[argName] = args[i].replace(/^\-*/g, '');
                 }
                 argName = null;
@@ -85,7 +115,7 @@ class Application extends events_1.EventEmitter {
         }
     }
     checkAppType() {
-        if (typeof this.cmdArgs[TASK_ARG_NAME] !== 'undefined') {
+        if (typeof this.cmdArgs[TASK_ARG_KEY.task] !== 'undefined') {
             this.applicationType = ApplicationType.task;
         }
         else {
@@ -138,7 +168,7 @@ class Application extends events_1.EventEmitter {
         this.tplExt = appConfigs.tplExt || defaultOptions.tplExt;
     }
     initTask() {
-        let taskScript = this.cmdArgs[TASK_ARG_NAME];
+        let taskScript = this.cmdArgs[TASK_ARG_KEY.task];
         const appConfigs = this.getAppConfigs();
         this.taskDir = appConfigs.taskDir || defaultOptions.taskDir;
         if (taskScript.substr(0, 1) === '/') {
@@ -179,12 +209,6 @@ class Application extends events_1.EventEmitter {
                 process.emit('exit', -1);
                 return;
             }
-            if (typeof task[jbean_1.SCHEDULED_KEY] !== 'object') {
-                console.error('schedule of ' + task.name + ' is not exist.');
-                process.emit('exit', -1);
-                return;
-            }
-            const { cron, size } = task[jbean_1.SCHEDULED_KEY];
             const methods = jbean_1.ReflectHelper.getMethods(task);
             if (methods.indexOf('process') < 0) {
                 console.error('process method of ' + task.name + ' is not exist.');
@@ -192,40 +216,22 @@ class Application extends events_1.EventEmitter {
                 return;
             }
             try {
+                // TODO 重复执行次数，循环执行次数
                 const ins = new task();
+                const args = {};
+                Object.assign(args, this.cmdArgs);
+                delete args[TASK_ARG_KEY.task];
                 if (jbean_1.isAsyncFunction(ins['process'])) {
-                    console.log('async ....');
-                    yield ins['process'](this);
+                    yield ins['process'](this, args);
                 }
                 else {
-                    ins['process'](this);
+                    ins['process'](this, args);
                 }
             }
             catch (e) {
                 console.error(e);
             }
             process.emit('exit', 0);
-        });
-    }
-    static start() {
-        return __awaiter(this, void 0, void 0, function* () {
-            jbean_1.BeanFactory.initBean();
-            const application = Application.create();
-            application.registerExit();
-            application.init();
-            jbean_1.BeanFactory.startBean();
-            yield starters_1.default(application);
-            switch (application.applicationType) {
-                case ApplicationType.web:
-                    application.runWebServer();
-                    break;
-                case ApplicationType.task:
-                    application.runTask();
-                    break;
-                default:
-                    break;
-            }
-            return application;
         });
     }
     route(option) {

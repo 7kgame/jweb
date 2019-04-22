@@ -12,6 +12,7 @@ export default class Request extends ReqRes {
   public paramsArray
   public headers
   public cookies
+  public entity: any
 
   private request: Hapi.Request
   private response: Hapi.ResponseToolkit

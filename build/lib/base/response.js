@@ -7,8 +7,6 @@ class Response extends reqres_1.default {
         super();
         this.request = request;
         this.response = response;
-        console.log(this.request.raw.req.rawHeaders, '----');
-        console.log(this.request.raw.req.headers, '-0=0-==');
     }
     write(data) {
         if (data === null || data === undefined) {

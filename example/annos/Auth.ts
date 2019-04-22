@@ -14,7 +14,7 @@ const callback = function (annoType: AnnotationType, ctor: object | Function) {
 }
 
 Auth.preCall = function (param: string, req: Request, res: Response) {
-  console.log(arguments)
+  // console.log(arguments)
   if (param === 'ignore') {
     console.log('return login data')
     return null

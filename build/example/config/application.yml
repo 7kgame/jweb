@@ -28,6 +28,7 @@ node-web:
         port: 3306
         user: root
         password: ''
+        database: test
         connectionLimit: 10
     redis:
       -

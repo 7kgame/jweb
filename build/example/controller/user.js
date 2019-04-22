@@ -22,6 +22,7 @@ const lib_1 = require("../../lib");
 const UserService_1 = require("../lib/account/UserService");
 const PayService_1 = require("../lib/account/PayService");
 const Auth_1 = require("../annos/Auth");
+const user_1 = require("../lib/account/entity/user");
 let User = 
 // @Auth
 // @ResponseXML
@@ -31,26 +32,25 @@ class User extends lib_1.BaseController {
         console.log('init user');
     }
     beforeCall() {
-        return __awaiter(this, void 0, void 0, function* () {
-            console.log('beforeCall');
-        });
+        console.log('beforeCall');
     }
     afterCall(ret) {
-        return __awaiter(this, void 0, void 0, function* () {
-            console.log('afterCall');
-            return ret;
-        });
+        console.log('afterCall');
+        return ret;
     }
-    process(request, response, { uid }) {
+    process(req, res, { uid }) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log('userService is', this.userService);
-            throw new Error('hdhhsh');
+            const user = req.entity;
+            console.log(user);
+            // console.log(user['toObject']())
+            // console.log('userService is', this.userService)
+            // throw new Error('hdhhsh')
             // console.log('uid is ' + uid)
             // return uid
             // throw new Error('test err')
             // let data = await this.userService.hello()
             // return '<div style="color: red">' + 'this is user process ' + uid + ', ' + JSON.stringify(data) + ', ' + this.payService.hello() + '</div>'
-            let u = yield this.userService.hello();
+            let u = yield this.userService.hello(user);
             let data = {
                 a: 1,
                 b: [2, 3, 4],
@@ -92,6 +92,7 @@ __decorate([
 __decorate([
     lib_1.Get('/process/{uid}'),
     lib_1.ResponseBody('json'),
+    lib_1.Validation(user_1.default),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [lib_1.Request, lib_1.Response, Object]),
     __metadata("design:returntype", Promise)

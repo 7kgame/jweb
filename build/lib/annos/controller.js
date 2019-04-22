@@ -118,6 +118,7 @@ jbean_1.BeanFactory.registerStartBean(() => {
             if (!requestMapping) {
                 return;
             }
+            const app = application_1.default.getIns();
             app.route({
                 method: requestMethod,
                 path: path + subPath,
@@ -144,6 +145,7 @@ jbean_1.BeanFactory.registerStartBean(() => {
                             if (jbean_1.getObjectType(ret) === 'promise') {
                                 ret.then(data => {
                                     res.writeAndFlush(data);
+                                    // resolve()
                                 }).catch(e => {
                                     app.emit(application_1.AppErrorEvent.REQUEST, e);
                                     res.error('Internal Server Error');
@@ -151,6 +153,7 @@ jbean_1.BeanFactory.registerStartBean(() => {
                             }
                             else {
                                 res.writeAndFlush(ret);
+                                // resolve()
                             }
                         }
                         catch (e) {
