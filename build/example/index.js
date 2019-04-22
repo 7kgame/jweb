@@ -10,12 +10,12 @@ const lib_1 = require("../lib");
 const jbean_1 = require("jbean");
 let App = class App {
     static main(configs) {
-        lib_1.Application.start()
-            .then(application => {
-            application.on(lib_1.AppErrorEvent.REQUEST, err => {
-                // console.error('app error: ', err)
-            });
-        });
+        lib_1.Application.start();
+        // .then(application => { // test event
+        //   application.on(AppErrorEvent.REQUEST, err => {
+        //     // console.error('app error: ', err)
+        //   })
+        // })
     }
 };
 App = __decorate([

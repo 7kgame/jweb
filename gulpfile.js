@@ -65,7 +65,7 @@ gulp.task('configs', (cb) => {
  */
 gulp.task('assets', (cb) => {
   return gulp.src('example/assets/**/*.*')
-    .pipe(gulp.dest('./build/example/assets'));
+    .pipe(gulp.dest('./build/assets'));
 });
 
 /**
