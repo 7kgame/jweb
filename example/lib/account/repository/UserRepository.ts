@@ -31,6 +31,8 @@ export default class UserRepository {
     this.mysql.delete(UserEntity, {uid: 14, age: 1})
     const data = await this.mysql.select(UserEntity, {uid: 15, name: 'hello'})
     console.log(data)
+    const u = await this.mysql.getEntity(UserEntity, {uid: 15})
+    console.log(u)
     return data
   }
 

@@ -34,6 +34,8 @@ let UserRepository = class UserRepository {
             this.mysql.delete(user_1.default, { uid: 14, age: 1 });
             const data = yield this.mysql.select(user_1.default, { uid: 15, name: 'hello' });
             console.log(data);
+            const u = yield this.mysql.getEntity(user_1.default, { uid: 15 });
+            console.log(u);
             return data;
         });
     }
