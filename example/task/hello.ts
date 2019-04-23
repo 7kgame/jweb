@@ -1,5 +1,6 @@
-import { Application } from '../../lib'
+import { Application, Task } from '../../lib'
 
+@Task
 export default class HelloTask {
 
   constructor () {

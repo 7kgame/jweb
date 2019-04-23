@@ -1,5 +1,5 @@
 import { Autowired } from 'jbean'
-import { BaseController, Controller, Get, Post, ResponseBody, Request, Response, Validation } from '../../lib'
+import { BaseController, Controller, Get, Post, ResponseBody, Request, Response, Transactional, Validation } from '../../lib'
 import UserService from '../lib/account/UserService'
 import PayService from '../lib/account/PayService'
 import Auth from '../annos/Auth'
@@ -7,6 +7,7 @@ import UserEntity from '../lib/account/entity/user'
 
 @Controller('/user')
 @Auth
+@Transactional
 // @Auth
 // @ResponseXML
 export default class User extends BaseController {
@@ -34,6 +35,7 @@ export default class User extends BaseController {
   @Get('/process/{uid0}')
   @ResponseBody('json')
   @Validation(UserEntity)
+  @Transactional
   public async process (req: Request, res: Response, { uid0 }) {
     const user: UserEntity = req.entity
     console.log(user)
