@@ -10,7 +10,7 @@ const callback = function (annoType: AnnotationType, target: object, method: str
 }
 
 Validation.preCall = function (entityClz: any, mode: number, req: Request, res: Response) {
-  const params = Object.assign({}, req.params, req.query)
+  const params = Object.assign({}, req.params, req.query, req.payload)
   if (!params || Object.keys(params).length < 1) {
     return
   }
