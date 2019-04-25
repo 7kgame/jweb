@@ -93,6 +93,7 @@ __decorate([
     lib_1.Get('/process/{uid0}'),
     lib_1.ResponseBody('json'),
     lib_1.Validation(user_1.default),
+    lib_1.Transactional,
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [lib_1.Request, lib_1.Response, Object]),
     __metadata("design:returntype", Promise)
@@ -119,7 +120,8 @@ __decorate([
 ], User.prototype, "info", null);
 User = __decorate([
     lib_1.Controller('/user'),
-    Auth_1.default
+    Auth_1.default,
+    lib_1.Transactional
     // @Auth
     // @ResponseXML
     ,
