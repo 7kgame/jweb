@@ -3,9 +3,9 @@ import { AnnotationType, annotationHelper, BeanFactory } from 'jbean'
 export default function Entity (name?: Function | string) {
   return annotationHelper(arguments, callback)
 }
+Entity.underline = 0
 
-const callback = function (annoType: AnnotationType, ctor: Function, name?: string) {
-  // console.log(name)
+const callback = function (annoType: AnnotationType, ctor: Function, name?: string|number) {
   // TODO
   ctor.prototype.toObject = function () {
     const fields = Object.getOwnPropertyNames(this)
@@ -30,5 +30,21 @@ const callback = function (annoType: AnnotationType, ctor: Function, name?: stri
       }
     })
     return entity
+  }
+
+  if (name && typeof name === 'string') {
+    ctor['$tableName'] = name
+  } else if (!name || (name && typeof name === 'number' && name === Entity.underline)) {
+    let reg = /([A-Z][0-9a-z]*[^A-Z])/g
+    let ret = ''
+    ctor.name.replace(reg, function (match): string {
+      ret += match.toLowerCase() + '_'
+      return ctor.name
+    })
+    ret = ret.slice(0, -1)
+    // console.log('entity.js line 45 ' + ret)
+    ctor['$tableName'] =  ret
+  } else {
+    throw new Error('wrong arguments of @entity')
   }
 }

@@ -9,7 +9,7 @@ const callback = function (annoType, target, method, descriptor, entityClz, mode
     jbean_1.BeanFactory.addBeanMeta(jbean_1.AnnotationType.method, target, method, Validation, [entityClz, mode]);
 };
 Validation.preCall = function (entityClz, mode, req, res) {
-    const params = Object.assign({}, req.params, req.query);
+    const params = Object.assign({}, req.params, req.query, req.payload);
     if (!params || Object.keys(params).length < 1) {
         return;
     }
