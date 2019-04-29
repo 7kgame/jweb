@@ -5,7 +5,10 @@ function Entity(name) {
     return jbean_1.annotationHelper(arguments, callback);
 }
 exports.default = Entity;
-Entity.underline = 0;
+var TableNameSeperatorType;
+(function (TableNameSeperatorType) {
+    TableNameSeperatorType[TableNameSeperatorType["underline"] = 0] = "underline";
+})(TableNameSeperatorType = exports.TableNameSeperatorType || (exports.TableNameSeperatorType = {}));
 const callback = function (annoType, ctor, name) {
     // TODO
     ctor.prototype.toObject = function () {
@@ -35,15 +38,9 @@ const callback = function (annoType, ctor, name) {
     if (name && typeof name === 'string') {
         ctor['$tableName'] = name;
     }
-    else if (!name || (name && typeof name === 'number' && name === Entity.underline)) {
-        let reg = /([A-Z][0-9a-z]*[^A-Z])/g;
-        let ret = '';
-        ctor.name.replace(reg, function (match) {
-            ret += match.toLowerCase() + '_';
-            return ctor.name;
-        });
-        ret = ret.slice(0, -1);
-        console.log('entity.js line 45 ' + ret);
+    else if (!name || (name && typeof name === 'number' && name === TableNameSeperatorType.underline)) {
+        let ret = (ctor.name.charAt(0) + ctor.name.substr(1).replace(/([A-Z])/g, '_$1')).toLowerCase();
+        console.log('entity.js line 39 ' + ret);
         ctor['$tableName'] = ret;
     }
     else {

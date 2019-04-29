@@ -1,11 +1,13 @@
 import { AnnotationType, annotationHelper, BeanFactory } from 'jbean'
 
-export default function Entity (name?: Function | string) {
+export default function Entity (name?: Function | string | TableNameSeperatorType) {
   return annotationHelper(arguments, callback)
 }
-Entity.underline = 0
+export enum TableNameSeperatorType {
+  underline
+}
 
-const callback = function (annoType: AnnotationType, ctor: Function, name?: string|number) {
+const callback = function (annoType: AnnotationType, ctor: Function, name?: string|TableNameSeperatorType) {
   // TODO
   ctor.prototype.toObject = function () {
     const fields = Object.getOwnPropertyNames(this)
@@ -34,15 +36,9 @@ const callback = function (annoType: AnnotationType, ctor: Function, name?: stri
 
   if (name && typeof name === 'string') {
     ctor['$tableName'] = name
-  } else if (!name || (name && typeof name === 'number' && name === Entity.underline)) {
-    let reg = /([A-Z][0-9a-z]*[^A-Z])/g
-    let ret = ''
-    ctor.name.replace(reg, function (match): string {
-      ret += match.toLowerCase() + '_'
-      return ctor.name
-    })
-    ret = ret.slice(0, -1)
-    // console.log('entity.js line 45 ' + ret)
+  } else if (!name || (name && typeof name === 'number' && name === TableNameSeperatorType.underline)) {
+    let ret = (ctor.name.charAt(0) + ctor.name.substr(1).replace(/([A-Z])/g, '_$1')).toLowerCase()
+    // console.log('entity.js line 39 ' + ret)
     ctor['$tableName'] =  ret
   } else {
     throw new Error('wrong arguments of @entity')

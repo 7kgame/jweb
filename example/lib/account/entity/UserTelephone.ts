@@ -1,6 +1,6 @@
-import {Entity} from '../../../../lib'
+import {Entity, TableNameSeperatorType} from '../../../../lib'
 
-@Entity
+@Entity(TableNameSeperatorType.underline)
 export default class UserTelephone {
   uid: string = undefined
   phonenumber: number = undefined

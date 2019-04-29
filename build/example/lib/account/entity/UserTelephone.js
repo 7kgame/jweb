@@ -14,6 +14,6 @@ let UserTelephone = class UserTelephone {
     }
 };
 UserTelephone = __decorate([
-    lib_1.Entity
+    lib_1.Entity(lib_1.TableNameSeperatorType.underline)
 ], UserTelephone);
 exports.default = UserTelephone;

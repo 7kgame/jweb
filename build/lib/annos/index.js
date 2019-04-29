@@ -9,6 +9,7 @@ exports.Patch = controller_1.Patch;
 exports.Options = controller_1.Options;
 const entity_1 = require("./entity");
 exports.Entity = entity_1.default;
+exports.TableNameSeperatorType = entity_1.TableNameSeperatorType;
 const response_body_1 = require("./response_body");
 exports.ResponseBody = response_body_1.default;
 const task_1 = require("./task");
