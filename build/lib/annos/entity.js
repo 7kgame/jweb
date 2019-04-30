@@ -39,9 +39,7 @@ const callback = function (annoType, ctor, name) {
         ctor['$tableName'] = name;
     }
     else if (!name || (name && typeof name === 'number' && name === TableNameSeperatorType.underline)) {
-        let ret = (ctor.name.charAt(0) + ctor.name.substr(1).replace(/([A-Z])/g, '_$1')).toLowerCase();
-        console.log('entity.js line 39 ' + ret);
-        ctor['$tableName'] = ret;
+        ctor['$tableName'] = (ctor.name.charAt(0) + ctor.name.substr(1).replace(/([A-Z])/g, '_$1')).toLowerCase();
     }
     else {
         throw new Error('wrong arguments of @entity');
