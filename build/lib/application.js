@@ -73,10 +73,10 @@ class Application extends events_1.EventEmitter {
             yield starters_1.default(application);
             switch (application.applicationType) {
                 case ApplicationType.web:
-                    application.runWebServer();
+                    yield application.runWebServer();
                     break;
                 case ApplicationType.task:
-                    application.runTask();
+                    yield application.runTask();
                     break;
                 default:
                     break;

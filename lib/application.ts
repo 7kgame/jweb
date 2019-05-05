@@ -96,10 +96,10 @@ export default class Application extends EventEmitter {
 
     switch (application.applicationType) {
       case ApplicationType.web:
-        application.runWebServer()
+        await application.runWebServer()
         break
       case ApplicationType.task:
-        application.runTask()
+        await application.runTask()
         break
       default:
         break
