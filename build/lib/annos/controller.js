@@ -120,13 +120,13 @@ jbean_1.BeanFactory.registerStartBean(() => {
                 return;
             }
             const app = application_1.default.getIns();
-            path = path + subPath;
-            if (path.length > 1) {
-                path = path.replace(URL_END_PATH_TRIM, '');
+            let fullPath = path + subPath;
+            if (fullPath.length > 1) {
+                fullPath = fullPath.replace(URL_END_PATH_TRIM, '');
             }
             app.route({
                 method: requestMethod,
-                path: path,
+                path: fullPath,
                 handler: (request, h) => __awaiter(this, void 0, void 0, function* () {
                     return new Promise((resolve, reject) => {
                         const req = new base_1.Request(request, h);
