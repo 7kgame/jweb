@@ -11,7 +11,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const dao_1 = require("./dao");
 function applicationStarter(application) {
     return __awaiter(this, void 0, void 0, function* () {
-        dao_1.default(application);
+        return dao_1.default(application);
     });
 }
 exports.default = applicationStarter;

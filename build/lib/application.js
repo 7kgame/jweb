@@ -70,6 +70,9 @@ class Application extends events_1.EventEmitter {
             application.registerExit();
             application.init();
             jbean_1.BeanFactory.startBean();
+            if (application.isDev) {
+                console.log('Starting at dev enviroment');
+            }
             try {
                 yield starters_1.default(application);
                 switch (application.applicationType) {
@@ -84,7 +87,7 @@ class Application extends events_1.EventEmitter {
                 }
             }
             catch (e) {
-                console.log(e);
+                console.error(e);
             }
             return application;
         });
@@ -258,7 +261,7 @@ class Application extends events_1.EventEmitter {
                 process.exit();
             }
             else {
-                console.log('exception', code);
+                console.error('exception', code);
             }
         };
         process.on('exit', exitHandler.bind(this, { exit: true }));

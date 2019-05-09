@@ -45,6 +45,7 @@ const methodCallback = function (annoType, target, method, descriptor, requestMe
     addAnno(target, path, method, requestMethod, true);
 };
 const URL_PATH_TRIM = /^\/*|\/*$/g;
+const URL_END_PATH_TRIM = /\/*$/g;
 const CONTROLLER_FILE_KEY = '__file';
 const controllerMetas = {};
 const controllers = [];
@@ -121,7 +122,7 @@ jbean_1.BeanFactory.registerStartBean(() => {
             const app = application_1.default.getIns();
             app.route({
                 method: requestMethod,
-                path: path + subPath,
+                path: (path + subPath).replace(URL_END_PATH_TRIM, ''),
                 handler: (request, h) => __awaiter(this, void 0, void 0, function* () {
                     return new Promise((resolve, reject) => {
                         const req = new base_1.Request(request, h);
