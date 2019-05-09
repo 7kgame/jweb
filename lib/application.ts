@@ -92,17 +92,24 @@ export default class Application extends EventEmitter {
     application.init()
 
     BeanFactory.startBean()
-    await starters(application)
+    if (application.isDev) {
+      console.log('Starting at dev enviroment')
+    }
+    try {
+      await starters(application)
 
-    switch (application.applicationType) {
-      case ApplicationType.web:
-        await application.runWebServer()
-        break
-      case ApplicationType.task:
-        await application.runTask()
-        break
-      default:
-        break
+      switch (application.applicationType) {
+        case ApplicationType.web:
+          await application.runWebServer()
+          break
+        case ApplicationType.task:
+          await application.runTask()
+          break
+        default:
+          break
+      }
+    } catch (e) {
+      console.error(e)
     }
 
     return application
@@ -281,7 +288,7 @@ export default class Application extends EventEmitter {
         BeanFactory.destroyBean()
         process.exit()
       } else {
-        console.log('exception', code)
+        console.error('exception', code)
       }
     }
 

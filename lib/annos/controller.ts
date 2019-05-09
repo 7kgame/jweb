@@ -40,6 +40,7 @@ const methodCallback = function (annoType: AnnotationType, target: object, metho
 }
 
 const URL_PATH_TRIM = /^\/*|\/*$/g
+const URL_END_PATH_TRIM = /\/*$/g
 const CONTROLLER_FILE_KEY: string = '__file'
 
 const controllerMetas = {}
@@ -122,7 +123,7 @@ BeanFactory.registerStartBean(() => {
       const app = Application.getIns()
       app.route({
         method: requestMethod,
-        path: path + subPath,
+        path: (path + subPath).replace(URL_END_PATH_TRIM, ''),
         handler: async (request: Hapi.Request, h: Hapi.ResponseToolkit) => {
           return new Promise((resolve, reject) => {
             const req = new Request(request, h)

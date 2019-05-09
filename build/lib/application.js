@@ -70,16 +70,21 @@ class Application extends events_1.EventEmitter {
             application.registerExit();
             application.init();
             jbean_1.BeanFactory.startBean();
-            yield starters_1.default(application);
-            switch (application.applicationType) {
-                case ApplicationType.web:
-                    yield application.runWebServer();
-                    break;
-                case ApplicationType.task:
-                    yield application.runTask();
-                    break;
-                default:
-                    break;
+            try {
+                yield starters_1.default(application);
+                switch (application.applicationType) {
+                    case ApplicationType.web:
+                        yield application.runWebServer();
+                        break;
+                    case ApplicationType.task:
+                        yield application.runTask();
+                        break;
+                    default:
+                        break;
+                }
+            }
+            catch (e) {
+                console.log(e);
             }
             return application;
         });
