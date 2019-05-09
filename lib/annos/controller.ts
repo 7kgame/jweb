@@ -121,9 +121,13 @@ BeanFactory.registerStartBean(() => {
         return
       }
       const app = Application.getIns()
+      path = path + subPath
+      if (path.length > 1) {
+        path = path.replace(URL_END_PATH_TRIM, '')
+      }
       app.route({
         method: requestMethod,
-        path: (path + subPath).replace(URL_END_PATH_TRIM, ''),
+        path: path,
         handler: async (request: Hapi.Request, h: Hapi.ResponseToolkit) => {
           return new Promise((resolve, reject) => {
             const req = new Request(request, h)
