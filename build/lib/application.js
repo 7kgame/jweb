@@ -246,10 +246,17 @@ class Application extends events_1.EventEmitter {
         if (this.applicationType !== ApplicationType.web) {
             return this;
         }
-        // const appConfig = this.getAppConfigs()
-        // if (appConfig && appConfig.cors) {
-        //   option.options = {cors: true}
-        // }
+        const appConfig = this.getAppConfigs();
+        if (appConfig && appConfig.cors) {
+            option.options = {
+                // cors: true
+                cors: {
+                    origin: ['*'],
+                    maxAge: 86400,
+                    credentials: true
+                }
+            };
+        }
         this.server.route(option);
         return this;
     }
