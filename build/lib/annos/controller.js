@@ -130,7 +130,7 @@ jbean_1.BeanFactory.registerStartBean(() => {
                         const res = new base_1.Response(request, h);
                         if (supportCors) {
                             res.setHeader('Access-Control-Allow-Credentials', true);
-                            res.setHeader('Access-Control-Allow-Origin', request.headers.origin);
+                            res.setHeader('Access-Control-Allow-Origin', request.headers.origin || '*');
                             res.setHeader('Access-Control-Allow-Headers', '*, X-Requested-With, Content-Type');
                             res.setHeader('Access-Control-Allow-Methods', request.method);
                             res.setHeader('Access-Control-Max-Age', 86400);
