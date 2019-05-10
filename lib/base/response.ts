@@ -49,7 +49,7 @@ export default class Response extends ReqRes {
     this.request.raw.res.writeHead(code, reason)
   }
 
-  public setHeader (name: string, value: string): void {
+  public setHeader (name: string, value: any): void {
     this.request.raw.res.setHeader(name, value)
   }
 

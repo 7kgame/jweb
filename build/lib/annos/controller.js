@@ -120,6 +120,8 @@ jbean_1.BeanFactory.registerStartBean(() => {
                 return;
             }
             const app = application_1.default.getIns();
+            const supportCors = app.getAppConfigs().cors;
+            console.log(supportCors, '====');
             app.route({
                 method: requestMethod,
                 path: (path + subPath).replace(URL_END_PATH_TRIM, '') || '/',
@@ -127,6 +129,7 @@ jbean_1.BeanFactory.registerStartBean(() => {
                     return new Promise((resolve, reject) => {
                         const req = new base_1.Request(request, h);
                         const res = new base_1.Response(request, h);
+                        console.log(request, request.url);
                         let ins = target;
                         if (typeof target !== 'function') {
                             if (typeof controllerIns[ctor[jbean_1.CTOR_ID]] === 'undefined') {

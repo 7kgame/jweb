@@ -20,6 +20,7 @@ export class Application extends EventEmitter {
   static getIns (): Application
   static start (): Promise<Application>
   route (option: object): Application
+  getAppConfigs (): any
 }
 
 export enum AppErrorEvent {

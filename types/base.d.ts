@@ -23,7 +23,7 @@ export interface Response {
   writeAndFlush (data: any): void
   redirect (url: string, code?: number): void
   writeHeader (code: number, reason?: string)
-  setHeader (name: string, value: string): void
+  setHeader (name: string, value: any): void
   type (mimeType: string): void
   setCookie (name: string, value: object | string, options?: any): void
   delCookie (name: string, options?: any): void
