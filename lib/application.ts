@@ -115,7 +115,7 @@ export default class Application extends EventEmitter {
     return application
   }
 
-  private getAppConfigs (): any {
+  public getAppConfigs (): any {
     if (typeof this.applicationConfigs[this.configNS] === 'undefined'
         || typeof this.applicationConfigs[this.configNS].app === 'undefined') {
       return {}
@@ -275,7 +275,14 @@ export default class Application extends EventEmitter {
     }
     const appConfig = this.getAppConfigs()
     if (appConfig && appConfig.cors) {
-      option.options = {cors: true}
+      option.options = {
+        // cors: true
+        cors: {
+          origin: ['*'],
+          maxAge: 86400,
+          credentials: true
+        }
+      }
     }
     this.server.route(option)
     return this

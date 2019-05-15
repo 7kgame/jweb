@@ -120,6 +120,7 @@ jbean_1.BeanFactory.registerStartBean(() => {
                 return;
             }
             const app = application_1.default.getIns();
+            const supportCors = app.getAppConfigs().cors;
             app.route({
                 method: requestMethod,
                 path: (path + subPath).replace(URL_END_PATH_TRIM, '') || '/',
@@ -127,6 +128,14 @@ jbean_1.BeanFactory.registerStartBean(() => {
                     return new Promise((resolve, reject) => {
                         const req = new base_1.Request(request, h);
                         const res = new base_1.Response(request, h);
+                        if (supportCors) {
+                            res.setHeader('Access-Control-Allow-Credentials', true);
+                            res.setHeader('Access-Control-Allow-Origin', request.headers.origin || '*');
+                            res.setHeader('Access-Control-Allow-Headers', '*, X-Requested-With, Content-Type');
+                            res.setHeader('Access-Control-Allow-Methods', request.method);
+                            res.setHeader('Access-Control-Max-Age', 86400);
+                            res.setHeader('Access-Control-Expose-Headers', 'WWW-Authenticate,Server-Authorization');
+                        }
                         let ins = target;
                         if (typeof target !== 'function') {
                             if (typeof controllerIns[ctor[jbean_1.CTOR_ID]] === 'undefined') {
