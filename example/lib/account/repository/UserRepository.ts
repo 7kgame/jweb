@@ -17,24 +17,25 @@ export default class UserRepository {
   private redis: RedisDao
 
   constructor () {
-    console.log('new userRepository')
+    //console.log('new userRepository')
   }
 
   private postInit (): void {
-    console.log('userRepository.postInit')
+    //console.log('userRepository.postInit')
   }
 
   public async hello (user: UserEntity) {
+    await this.mysql.delete(UserEntity, {uid: user.uid})
     const id = await this.mysql.insert(user)
-    console.log('insert id ', id)
+   // console.log('insert id ', id)
     user.name = 'hello'
-    this.mysql.update(user, {uid: 13})
-    this.mysql.delete(UserEntity, {uid: 14, age: 1})
-    const data: UserEntity[] = await this.mysql.select(UserEntity, {name: 'fanyn'})
-    console.log(data)
-    const u:UserEntity = await this.mysql.getEntity(UserEntity, {uid: 2})
-    console.log(u)
-    console.log(JSON.stringify(u))
+    await this.mysql.update(user, {uid: 13})
+    await this.mysql.delete(UserEntity, {uid: 14, age: 1})
+    const data: UserEntity[] = await this.mysql.select(UserEntity, {name: 'wumingliang'})
+   // console.log(data)
+    const u:UserEntity = await this.mysql.getEntity(UserEntity, {uid: 123})
+   // console.log(u)
+    //console.log(JSON.stringify(u))
     return data
   }
 

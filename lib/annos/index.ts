@@ -1,9 +1,10 @@
 import { Controller, Get, Post, Put, Patch, Options } from './controller'
 import Entity, {TableNameSeperatorType} from './entity'
-import ResponseBody from './response_body'
 import Task from './task'
 import Transactional from './transactional'
 import Validation from './validation'
+
+export * from './validator'
 
 export {
   Controller,
@@ -14,7 +15,6 @@ export {
   Patch,
   Options,
   Entity,
-  ResponseBody,
   Task,
   Transactional,
   Validation

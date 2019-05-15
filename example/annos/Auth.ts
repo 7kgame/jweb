@@ -13,14 +13,18 @@ const callback = function (annoType: AnnotationType, ctor: object | Function) {
   }
 }
 
-Auth.preCall = function (param: string, req: Request, res: Response) {
-  // console.log(arguments)
+Auth.preCall = function authPreCall(ret: any, param: string, req: Request, res: Response) {
   if (param === 'ignore') {
-    console.log('return login data')
-    return null
+    return {
+      err: "ignore",
+      data: null
+    }
   }
+  console.log('Auth preCall', ret)
+  return ret
 }
 
-Auth.postCall = function (ret: any) {
+Auth.postCall = function authPostCall(ret: any) {
+  console.log('Auth postCall', ret)
   return ret
 }

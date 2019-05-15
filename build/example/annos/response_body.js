@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const jbean_1 = require("jbean");
-const utils_1 = require("../utils");
+const utils_1 = require("../../lib/utils");
 function ResponseBody(component, type) {
     return jbean_1.annotationHelper(arguments, callback);
 }
@@ -25,11 +25,9 @@ ResponseBody.preCall = function rbdPreCall(ret, type, req, res) {
         default:
             break;
     }
-    console.log("response body precall", ret);
     return ret;
 };
 ResponseBody.postCall = function rbdPostCall(ret, type, req, res) {
-    console.log("jsonbody line 31", ret);
     switch (type) {
         case 'json':
             if (typeof ret === 'object') {

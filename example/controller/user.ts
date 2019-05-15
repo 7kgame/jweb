@@ -1,12 +1,12 @@
-import { Autowired } from 'jbean'
-import { BaseController, Controller, Get, Post, ResponseBody, Request, Response, Transactional, Validation } from '../../lib'
+import { Autowired, BusinessException } from 'jbean'
+import { BaseController, Controller, Get, Post, Request, Response, Transactional, Validation } from '../../lib'
 import UserService from '../lib/account/UserService'
 import PayService from '../lib/account/PayService'
 import Auth from '../annos/Auth'
+import ResponseBody from '../annos/response_body'
 import UserEntity from '../lib/account/entity/user'
 
 @Controller('/user')
-@Auth
 @Transactional
 // @Auth
 // @ResponseXML
@@ -20,25 +20,41 @@ export default class User extends BaseController {
 
   constructor () {
     super()
-    console.log('init user')
+    //console.log('init user')
   }
 
-  private beforeCall () {
-    console.log('beforeCall')
+  private preAround (ret) {
+    console.log('preAround', ret)
   }
 
-  public afterCall (ret) {
-    console.log('afterCall')
+  private postAround (ret) {
+    console.log('postAround', ret)
+  }
+  private beforeCall (ret) {
+    console.log('beforeCall' , ret)
     return ret
   }
 
+  public afterCall (ret) {
+    console.log('afterCall', ret)
+    if (ret.err) {
+      return {
+        status: -1,
+        errmessage: ret.err
+      }
+    } else {
+      return ret.data
+    }
+  }
+
   @Get('/process/{uid0}')
+  @Auth
   @ResponseBody('json')
   @Validation(UserEntity)
   @Transactional
   public async process (req: Request, res: Response, { uid0 }) {
     const user: UserEntity = req.entity
-    console.log(user)
+    console.log('inside call', user)
     // console.log(user['toObject']())
     // console.log('userService is', this.userService)
     // throw new Error('hdhhsh')
@@ -48,6 +64,8 @@ export default class User extends BaseController {
     // let data = await this.userService.hello()
     // return '<div style="color: red">' + 'this is user process ' + uid + ', ' + JSON.stringify(data) + ', ' + this.payService.hello() + '</div>'
     let u = await this.userService.hello(user)
+
+    throw new BusinessException('test Exception')
     let data = {
       a: 1,
       b: [2, 3, 4],

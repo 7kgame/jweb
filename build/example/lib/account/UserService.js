@@ -21,7 +21,7 @@ const jbean_1 = require("jbean");
 const UserRepository_1 = require("./repository/UserRepository");
 let UserService = class UserService {
     constructor() {
-        console.log('new UserService');
+        //console.log('new UserService')
     }
     hello(user) {
         return __awaiter(this, void 0, void 0, function* () {

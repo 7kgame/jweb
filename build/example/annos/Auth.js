@@ -13,13 +13,17 @@ const callback = function (annoType, ctor) {
         jbean_1.BeanFactory.addBeanMeta(jbean_1.AnnotationType.method, ctor, arguments[2], Auth, [arguments[4]]);
     }
 };
-Auth.preCall = function (param, req, res) {
-    // console.log(arguments)
+Auth.preCall = function authPreCall(ret, param, req, res) {
     if (param === 'ignore') {
-        console.log('return login data');
-        return null;
+        return {
+            err: "ignore",
+            data: null
+        };
     }
+    console.log('Auth preCall', ret);
+    return ret;
 };
-Auth.postCall = function (ret) {
+Auth.postCall = function authPostCall(ret) {
+    console.log('Auth postCall', ret);
     return ret;
 };

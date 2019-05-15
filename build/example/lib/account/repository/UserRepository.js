@@ -21,23 +21,24 @@ const jbean_1 = require("jbean");
 const user_1 = require("../entity/user");
 let UserRepository = class UserRepository {
     constructor() {
-        console.log('new userRepository');
+        //console.log('new userRepository')
     }
     postInit() {
-        console.log('userRepository.postInit');
+        //console.log('userRepository.postInit')
     }
     hello(user) {
         return __awaiter(this, void 0, void 0, function* () {
+            yield this.mysql.delete(user_1.default, { uid: user.uid });
             const id = yield this.mysql.insert(user);
-            console.log('insert id ', id);
+            // console.log('insert id ', id)
             user.name = 'hello';
-            this.mysql.update(user, { uid: 13 });
-            this.mysql.delete(user_1.default, { uid: 14, age: 1 });
-            const data = yield this.mysql.select(user_1.default, { name: 'fanyn' });
-            console.log(data);
-            const u = yield this.mysql.getEntity(user_1.default, { uid: 2 });
-            console.log(u);
-            console.log(JSON.stringify(u));
+            yield this.mysql.update(user, { uid: 13 });
+            yield this.mysql.delete(user_1.default, { uid: 14, age: 1 });
+            const data = yield this.mysql.select(user_1.default, { name: 'wumingliang' });
+            // console.log(data)
+            const u = yield this.mysql.getEntity(user_1.default, { uid: 123 });
+            // console.log(u)
+            //console.log(JSON.stringify(u))
             return data;
         });
     }

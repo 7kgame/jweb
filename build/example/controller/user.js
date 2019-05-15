@@ -22,6 +22,7 @@ const lib_1 = require("../../lib");
 const UserService_1 = require("../lib/account/UserService");
 const PayService_1 = require("../lib/account/PayService");
 const Auth_1 = require("../annos/Auth");
+const response_body_1 = require("../annos/response_body");
 const user_1 = require("../lib/account/entity/user");
 let User = 
 // @Auth
@@ -29,19 +30,34 @@ let User =
 class User extends lib_1.BaseController {
     constructor() {
         super();
-        console.log('init user');
+        //console.log('init user')
     }
-    beforeCall() {
-        console.log('beforeCall');
+    preAround(ret) {
+        console.log('preAround', ret);
+    }
+    postAround(ret) {
+        console.log('postAround', ret);
+    }
+    beforeCall(ret) {
+        console.log('beforeCall', ret);
+        return ret;
     }
     afterCall(ret) {
-        console.log('afterCall');
-        return ret;
+        console.log('afterCall', ret);
+        if (ret.err) {
+            return {
+                status: -1,
+                errmessage: ret.err
+            };
+        }
+        else {
+            return ret.data;
+        }
     }
     process(req, res, { uid0 }) {
         return __awaiter(this, void 0, void 0, function* () {
             const user = req.entity;
-            console.log(user);
+            console.log('inside call', user);
             // console.log(user['toObject']())
             // console.log('userService is', this.userService)
             // throw new Error('hdhhsh')
@@ -51,6 +67,7 @@ class User extends lib_1.BaseController {
             // let data = await this.userService.hello()
             // return '<div style="color: red">' + 'this is user process ' + uid + ', ' + JSON.stringify(data) + ', ' + this.payService.hello() + '</div>'
             let u = yield this.userService.hello(user);
+            throw new jbean_1.BusinessException('test Exception');
             let data = {
                 a: 1,
                 b: [2, 3, 4],
@@ -91,7 +108,8 @@ __decorate([
 ], User.prototype, "payService", void 0);
 __decorate([
     lib_1.Get('/process/{uid0}'),
-    lib_1.ResponseBody('json'),
+    Auth_1.default,
+    response_body_1.default('json'),
     lib_1.Validation(user_1.default),
     lib_1.Transactional,
     __metadata("design:type", Function),
@@ -112,7 +130,7 @@ __decorate([
 ], User.prototype, "list2", null);
 __decorate([
     lib_1.Get('/info'),
-    lib_1.ResponseBody('xml'),
+    response_body_1.default('xml'),
     Auth_1.default(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [lib_1.Request, lib_1.Response]),
@@ -120,7 +138,6 @@ __decorate([
 ], User.prototype, "info", null);
 User = __decorate([
     lib_1.Controller('/user'),
-    Auth_1.default,
     lib_1.Transactional
     // @Auth
     // @ResponseXML

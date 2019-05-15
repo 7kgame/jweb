@@ -1,6 +1,6 @@
 import { AnnotationType, annotationHelper, BeanFactory, CTOR_ID, getObjectType, isAsyncFunction } from 'jbean'
-import { Request, Response } from '../base'
-import { jsonEncode, xmlEncode } from '../utils'
+import { Request, Response } from '../../lib/base'
+import { jsonEncode, xmlEncode } from '../../lib/utils'
 
 export default function ResponseBody (component?: any, type?: any) {
   return annotationHelper(arguments, callback)
@@ -14,7 +14,7 @@ const callback = function (annoType: AnnotationType, ctor: object | Function) {
   }
 }
 
-ResponseBody.preCall = function (type: string, req: Request, res: Response) {
+ResponseBody.preCall = function rbdPreCall(ret: any, type: string, req: Request, res: Response) {
   switch (type) {
     case 'json':
       res.type('application/json')
@@ -25,17 +25,18 @@ ResponseBody.preCall = function (type: string, req: Request, res: Response) {
     default:
       break
   }
+  return ret
 }
 
-ResponseBody.postCall = function (ret: any, type: string, req: Request, res: Response) {
+ResponseBody.postCall = function rbdPostCall(ret: any, type: string, req: Request, res: Response) {
   switch (type) {
     case 'json':
       if (typeof ret === 'object') {
-        ret = jsonEncode(ret)
+        ret.data = jsonEncode(ret.data)
       }
       break
     case 'xml':
-      ret = xmlEncode(ret)
+      ret.data = xmlEncode(ret.data)
       break
     default:
       break

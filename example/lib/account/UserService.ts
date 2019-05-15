@@ -9,7 +9,7 @@ export default class UserService {
   private userRepository: UserRepository
 
   constructor () {
-    console.log('new UserService')
+    //console.log('new UserService')
   }
 
   public async hello (user: UserEntity) {
