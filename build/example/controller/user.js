@@ -67,7 +67,7 @@ class User extends lib_1.BaseController {
             // let data = await this.userService.hello()
             // return '<div style="color: red">' + 'this is user process ' + uid + ', ' + JSON.stringify(data) + ', ' + this.payService.hello() + '</div>'
             let u = yield this.userService.hello(user);
-            throw new jbean_1.BusinessException('test Exception');
+            // throw new BusinessException('test Exception')
             let data = {
                 a: 1,
                 b: [2, 3, 4],
