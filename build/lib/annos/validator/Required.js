@@ -6,15 +6,23 @@ function Required(component, options) {
 }
 exports.default = Required;
 Required.validate = function (field, val, params, fieldType) {
-    let [message] = params;
+    let err = null;
+    if (val === null || val === undefined) {
+        err = getMessage(field, val, params);
+    }
     return {
-        err: null,
+        err,
         val: val
     };
 };
 const getMessage = function (field, val, params) {
     let [message] = params;
-    return message;
+    if (message) {
+        return message;
+    }
+    else {
+        return `key '${field}' is required`;
+    }
 };
 // function validate(val: any): {valid: boolean, val: any} {
 //   if (val === null || val === undefined) {

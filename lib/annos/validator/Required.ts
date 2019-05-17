@@ -5,16 +5,23 @@ export default function Required(component?: any, options?: any) {
 }
 
 Required.validate = function (field: string, val: any, params: any[], fieldType: string): {err: string, val: any} {
-  let [message] = params
+  let err = null
+  if (val === null || val === undefined) {
+    err = getMessage(field, val, params)
+  }
   return {
-    err: null,
+    err,
     val: val
   }
 }
 
 const getMessage = function (field: string, val: any, params: any[]) {
   let [message] = params
-  return message
+  if (message) {
+    return message
+  } else {
+    return `key '${field}' is required`
+  }
 }
 
 // function validate(val: any): {valid: boolean, val: any} {

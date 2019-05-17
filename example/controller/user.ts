@@ -1,5 +1,5 @@
 import { Autowired, BusinessException } from 'jbean'
-import { BaseController, Controller, Get, Post, Request, Response, Transactional, Validation } from '../../lib'
+import { BaseController, Controller, Get, Post, Request, Response, Transactional, Validation, ValidationMode } from '../../lib'
 import UserService from '../lib/account/UserService'
 import PayService from '../lib/account/PayService'
 import Auth from '../annos/Auth'
@@ -28,16 +28,17 @@ export default class User extends BaseController {
   }
 
   private postAround (ret) {
-    let result = {
-      status: 0,
-      data: ret.data,
-      message: null
-    }
-    if (ret.err) {
-      result.status = ret.err.code || -1
-      result.message = ret.err.err || '系统异常'
-    }
-    return result
+    // let result = {
+    //   status: 0,
+    //   data: ret.data,
+    //   message: null
+    // }
+    // if (ret.err) {
+    //   result.status = ret.err.code || -1
+    //   result.message = ret.err.err || '系统异常'
+    // }
+    // return result
+    console.log('postAround', ret)
   }
 
   private beforeCall (ret) {
@@ -46,13 +47,21 @@ export default class User extends BaseController {
   }
 
   public afterCall (ret) {
-    console.log('aftercall', ret)
+    if (ret.err) {
+      return {
+        status: ret.err.code || -1,
+        message: ret.err,
+        data: ret.data
+      }
+    } else {
+      return ret
+    }
   }
 
   @Get('/process/{uid}')
   @Auth
   @ResponseBody('json')
-  @Validation(UserEntity)
+  @Validation(UserEntity, ValidationMode.entity)
   @Transactional
   public async process (req: Request, res: Response, { uid }) {
     const user: UserEntity = req.entity

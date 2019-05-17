@@ -2,7 +2,7 @@ import { Controller, Get, Post, Put, Patch, Options } from './controller'
 import Entity, {TableNameSeperatorType} from './entity'
 import Task from './task'
 import Transactional from './transactional'
-import Validation from './validation'
+import Validation, { ValidationMode } from './validation'
 
 export * from './validator'
 
@@ -17,5 +17,6 @@ export {
   Entity,
   Task,
   Transactional,
-  Validation
+  Validation,
+  ValidationMode
 }

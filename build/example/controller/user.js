@@ -36,23 +36,33 @@ class User extends lib_1.BaseController {
         console.log('preAround', ret);
     }
     postAround(ret) {
-        let result = {
-            status: 0,
-            data: ret.data,
-            message: null
-        };
-        if (ret.err) {
-            result.status = ret.err.code || -1;
-            result.message = ret.err.err || '系统异常';
-        }
-        return result;
+        // let result = {
+        //   status: 0,
+        //   data: ret.data,
+        //   message: null
+        // }
+        // if (ret.err) {
+        //   result.status = ret.err.code || -1
+        //   result.message = ret.err.err || '系统异常'
+        // }
+        // return result
+        console.log('postAround', ret);
     }
     beforeCall(ret) {
         console.log('beforeCall', ret);
         return ret;
     }
     afterCall(ret) {
-        console.log('aftercall', ret);
+        if (ret.err) {
+            return {
+                status: ret.err.code || -1,
+                message: ret.err,
+                data: ret.data
+            };
+        }
+        else {
+            return ret;
+        }
     }
     process(req, res, { uid }) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -110,7 +120,7 @@ __decorate([
     lib_1.Get('/process/{uid}'),
     Auth_1.default,
     response_body_1.default('json'),
-    lib_1.Validation(user_1.default),
+    lib_1.Validation(user_1.default, lib_1.ValidationMode.entity),
     lib_1.Transactional,
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [lib_1.Request, lib_1.Response, Object]),

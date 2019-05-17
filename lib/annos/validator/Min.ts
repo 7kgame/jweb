@@ -6,15 +6,23 @@ export default function Min(min: number, message?: string) {
 
 Min.validate = function (field: string, val: any, params: any[], fieldType: string): {err: string, val: any} {
   let [min, message] = params
+  let err = null
+  if (val < min) {
+    err = getMessage(field, val, params)
+  }
   return {
-    err: null,
+    err,
     val: val
   }
 }
 
 const getMessage = function (field: string, val: any, params: any[]) {
-  let [min, message] = params
-  return message
+  let [max, message] = params
+  if (message) {
+    return message
+  } else {
+    return `the value of ${field} must smaller than ${max}`
+  }
 }
 
 // function validate(minVal: number) {
