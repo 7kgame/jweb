@@ -1,4 +1,4 @@
-import { AnnotationType, annotationHelper, BeanFactory, BeanMeta } from 'jbean'
+import { AnnotationType, annotationHelper, BeanFactory, BeanMeta, getObjectType } from 'jbean'
 import { Request, Response } from '../../lib'
 
 export default function Validation (entity: Function, mode?: number) {
@@ -10,59 +10,48 @@ const callback = function (annoType: AnnotationType, target: object, method: str
 }
 
 Validation.preCall = function vldPreCall(ret: any, entityClz: any, mode: number, req: Request, res: Response) {
-  if (ret.err) {
+  if (ret && ret.err) {
     return ret
   }
   const params = Object.assign({}, req.params, req.query, req.payload)
-  if (!params || Object.keys(params).length < 1) {
+  const entity = new entityClz()
+  const fields = Object.getOwnPropertyNames(entity)
+  if (!fields) {
     return
   }
-  const entity = new entityClz()
-  // get BeanMeta and validate
+
   let beanMeta: BeanMeta = BeanFactory.getBeanMeta(entity.constructor)
-  let metaFields = beanMeta.fieldAnnos
+  let fieldAnnos = beanMeta.fieldAnnos
+  let fieldType = beanMeta.fieldType
 
-  const fields = Object.getOwnPropertyNames(entity)
-
-  let err = null
-  if (fields && fields.length > 0) {
-    fields.forEach(field => {
-      let validators = metaFields[field]
-      if (!validators) { // no validator, copy
-        if (typeof params[field] !== 'undefined') {
-          entity[field] = params[field]
-        }
+  let err0 = null
+  fields.forEach(field => {
+    if (typeof fieldAnnos[field] === 'undefined') {
+      entity[field] = params[field]
+      return
+    }
+    let val0 = params[field]
+    let validators = fieldAnnos[field]
+    let hasError = false
+    validators.forEach(([validator, validatorParams]) => {
+      if (hasError || !validator.validate) {
         return
       }
-      let validVal = params[field]
-      for (let i = 0; i < validators.length; i++) {
-        let validate: Function = validators[i][0].validate[field].validate
-        let message: Function = validators[i][0].validate[field].message
-        if (typeof validate !== 'function') {
-          console.log('\x1B[33m%s\x1b[0m', `the typeof validate of ${validators[i][0].name} is not Function`)
-          continue
-        }
-        if (typeof message !== 'function') {
-          console.log('\x1B[33m%s\x1b[0m', `the typeof message of ${validators[i][0].name} is not Function`)
-          continue
-        }
-        let validation = validate(validVal)
-        if (!validation.valid) {
-          let mes = message(validVal)
-          if (err === null) {
-            err = {}
-          }
-          err[field] = mes
-          break
-        }
-        validVal = validation.val
+      let {err, val} = validator.validate(field, val0, validatorParams, fieldType[field])
+      if (err) {
+        err0 = err0 || {}
+        err0[field] = err
+        hasError = true
+      } else {
+        entity[field] = val
       }
-      entity[field] = validVal
     })
+  })
+  if (!err0) {
     req.entity = entity
   }
   return {
-    err,
-    data: entity,
+    err: err0,
+    data: entity
   }
 }

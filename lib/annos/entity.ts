@@ -3,6 +3,7 @@ import { AnnotationType, annotationHelper, BeanFactory, BeanMeta } from 'jbean'
 export default function Entity (name?: Function | string | TableNameSeperatorType) {
   return annotationHelper(arguments, callback)
 }
+
 export enum TableNameSeperatorType {
   underline
 }

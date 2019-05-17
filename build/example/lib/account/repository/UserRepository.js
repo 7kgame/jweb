@@ -32,8 +32,8 @@ let UserRepository = class UserRepository {
             const id = yield this.mysql.insert(user);
             // console.log('insert id ', id)
             user.name = 'hello';
-            yield this.mysql.update(user, { uid: 13 });
-            yield this.mysql.delete(user_1.default, { uid: 14, age: 1 });
+            yield this.mysql.update(user, { uid: user.uid });
+            // await this.mysql.delete(UserEntity, {uid: 14, age: 1})
             const data = yield this.mysql.select(user_1.default, { name: 'wumingliang' });
             // console.log(data)
             const u = yield this.mysql.getEntity(user_1.default, { uid: 123 });

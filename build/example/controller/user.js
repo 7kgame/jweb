@@ -30,34 +30,34 @@ let User =
 class User extends lib_1.BaseController {
     constructor() {
         super();
-        //console.log('init user')
+        console.log('init user');
     }
     preAround(ret) {
         console.log('preAround', ret);
     }
     postAround(ret) {
-        console.log('postAround', ret);
+        let result = {
+            status: 0,
+            data: ret.data,
+            message: null
+        };
+        if (ret.err) {
+            result.status = ret.err.code || -1;
+            result.message = ret.err.err || '系统异常';
+        }
+        return result;
     }
     beforeCall(ret) {
         console.log('beforeCall', ret);
         return ret;
     }
     afterCall(ret) {
-        console.log('afterCall', ret);
-        if (ret.err) {
-            return {
-                status: -1,
-                errmessage: ret.err
-            };
-        }
-        else {
-            return ret.data;
-        }
+        console.log('aftercall', ret);
     }
-    process(req, res, { uid0 }) {
+    process(req, res, { uid }) {
         return __awaiter(this, void 0, void 0, function* () {
             const user = req.entity;
-            console.log('inside call', user);
+            console.log('inside call', user, uid);
             // console.log(user['toObject']())
             // console.log('userService is', this.userService)
             // throw new Error('hdhhsh')
@@ -71,7 +71,7 @@ class User extends lib_1.BaseController {
             let data = {
                 a: 1,
                 b: [2, 3, 4],
-                uid: uid0,
+                uid: uid,
                 u: u
             };
             return data;
@@ -107,7 +107,7 @@ __decorate([
     __metadata("design:type", PayService_1.default)
 ], User.prototype, "payService", void 0);
 __decorate([
-    lib_1.Get('/process/{uid0}'),
+    lib_1.Get('/process/{uid}'),
     Auth_1.default,
     response_body_1.default('json'),
     lib_1.Validation(user_1.default),

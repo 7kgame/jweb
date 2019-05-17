@@ -29,8 +29,8 @@ export default class UserRepository {
     const id = await this.mysql.insert(user)
    // console.log('insert id ', id)
     user.name = 'hello'
-    await this.mysql.update(user, {uid: 13})
-    await this.mysql.delete(UserEntity, {uid: 14, age: 1})
+    await this.mysql.update(user, {uid: user.uid})
+    // await this.mysql.delete(UserEntity, {uid: 14, age: 1})
     const data: UserEntity[] = await this.mysql.select(UserEntity, {name: 'wumingliang'})
    // console.log(data)
     const u:UserEntity = await this.mysql.getEntity(UserEntity, {uid: 123})

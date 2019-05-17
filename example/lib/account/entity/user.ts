@@ -1,4 +1,5 @@
-import { Entity, Type } from '../../../../lib'
+import { Type } from 'jbean'
+import { Entity } from '../../../../lib'
 import {Required, Min, Max, Size} from '../../../../lib'
 
 @Entity
@@ -9,10 +10,10 @@ export default class User {
   public uid = undefined
 
   @Required
-  @Size(20, 30, 'name的长度应该位于20-30之间')
+  @Size(20, 30, 'name的长度应该位于20-31之间')
   public name = undefined
 
-  @Type('number', true)
+  @Type('number')
   @Required("age is required")
   @Min(18)
   @Max(100)
