@@ -1,30 +1,40 @@
 import { AnnotationType, annotationHelper, BeanFactory } from 'jbean'
 
-export default function Max(maxVal: number, mes?: string) {
-  return annotationHelper([maxVal, mes], callback)
+export default function Max(max: number, message?: string) {
+  return annotationHelper(arguments, callback)
 }
-function validate(maxVal: number) {
-  return (val):{valid: boolean, val: any} => {
-    if (val <= maxVal) {
-      return {valid: true, val: val}
-    } else {
-      return { valid: false, val: null}
-    }
+
+Max.validate = function (field: string, val: any, params: any[], fieldType: string): {err: string, val: any} {
+  let [max, message] = params
+  return {
+    err: null,
+    val: val
   }
 }
-function message(field: string, maxVal:number, mes?: string) {
-  if (mes) {
-    return () => mes
-  } else {
-    return () => `the value of ${field} must smaller than ${maxVal}`
-  }
+
+const getMessage = function (field: string, val: any, params: any[]) {
+  let [max, message] = params
+  return message
 }
-Max['validate'] = {}
-const callback = function(annoType: AnnotationType, ctor: Function, field: string, maxVal:number, mes?: string) {
-  // add descriptor info into BeanFactory, using it in Validation
-  Max['validate'][field] = {
-    validate: validate(maxVal),
-    message: message(field, maxVal, mes)
-  }
-  BeanFactory.addBeanMeta(annoType, ctor, field, Max)
+
+// function validate(maxVal: number) {
+//   return (val):{valid: boolean, val: any} => {
+//     if (val <= maxVal) {
+//       return {valid: true, val: val}
+//     } else {
+//       return { valid: false, val: null}
+//     }
+//   }
+// }
+
+// function message(field: string, maxVal:number, mes?: string) {
+//   if (mes) {
+//     return () => mes
+//   } else {
+//     return () => `the value of ${field} must smaller than ${maxVal}`
+//   }
+// }
+
+const callback = function(annoType: AnnotationType, ctor: Function, field: string, max:number, message?: string) {
+  BeanFactory.addBeanMeta(annoType, ctor, field, Max, [max, message])
 }

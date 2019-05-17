@@ -20,7 +20,7 @@ export default class User extends BaseController {
 
   constructor () {
     super()
-    //console.log('init user')
+    console.log('init user')
   }
 
   private preAround (ret) {
@@ -28,33 +28,35 @@ export default class User extends BaseController {
   }
 
   private postAround (ret) {
-    console.log('postAround', ret)
+    let result = {
+      status: 0,
+      data: ret.data,
+      message: null
+    }
+    if (ret.err) {
+      result.status = ret.err.code || -1
+      result.message = ret.err.err || '系统异常'
+    }
+    return result
   }
+
   private beforeCall (ret) {
     console.log('beforeCall' , ret)
     return ret
   }
 
   public afterCall (ret) {
-    console.log('afterCall', ret)
-    if (ret.err) {
-      return {
-        status: -1,
-        errmessage: ret.err
-      }
-    } else {
-      return ret.data
-    }
+    console.log('aftercall', ret)
   }
 
-  @Get('/process/{uid0}')
+  @Get('/process/{uid}')
   @Auth
   @ResponseBody('json')
   @Validation(UserEntity)
   @Transactional
-  public async process (req: Request, res: Response, { uid0 }) {
+  public async process (req: Request, res: Response, { uid }) {
     const user: UserEntity = req.entity
-    console.log('inside call', user)
+    console.log('inside call', user, uid)
     // console.log(user['toObject']())
     // console.log('userService is', this.userService)
     // throw new Error('hdhhsh')
@@ -69,7 +71,7 @@ export default class User extends BaseController {
     let data = {
       a: 1,
       b: [2, 3, 4],
-      uid: uid0,
+      uid: uid,
       u: u
     }
     return data

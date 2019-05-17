@@ -8,5 +8,3 @@ const Required_1 = require("./Required");
 exports.Required = Required_1.default;
 const Size_1 = require("./Size");
 exports.Size = Size_1.default;
-const Type_1 = require("./Type");
-exports.Type = Type_1.default;

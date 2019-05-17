@@ -13,12 +13,5 @@ export enum TableNameSeperatorType {
 
 export function Task (target?: any)
 export function Transactional (component?: any, type?: any)
-export function Validation (entityClz: Function, mode?: number)
-
-export function Max(maxVal: number, mes?: string)
-export function Min(minVal: number, mes?: string)
-export function Size(min: number, max:number, mes?: string)
-export function Required(mes?: string)
-export function Type(type: string, autoTrans?: boolean)
 
 
