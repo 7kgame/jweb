@@ -47,9 +47,11 @@ Validation.preCall = function vldPreCall(ret, entityClz, mode, req, res) {
     });
     if (!err0) {
         req.entity = entity;
+        return;
     }
-    return {
-        err: err0,
-        data: entity
-    };
+    else {
+        return {
+            err: new jbean_1.BusinessException('', -1, err0)
+        };
+    }
 };

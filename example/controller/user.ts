@@ -34,10 +34,19 @@ export default class User extends BaseController {
       message: null
     }
     if (ret.err) {
-      result.status = ret.err.code || -1
-      result.message = ret.err.err || '系统异常'
+      if (ret.err instanceof BusinessException) {
+        result.status = ret.err.code || -1
+        result.data = ret.err.data
+        result.message = ret.err.err || '系统异常'
+      } else {
+        result.status = -1
+        result.message = ret.err
+      }
     }
-    return result
+    return {
+      err: null,
+      data: result
+    }
   }
 
   private beforeCall (ret) {

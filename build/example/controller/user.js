@@ -42,10 +42,20 @@ class User extends lib_1.BaseController {
             message: null
         };
         if (ret.err) {
-            result.status = ret.err.code || -1;
-            result.message = ret.err.err || '系统异常';
+            if (ret.err instanceof jbean_1.BusinessException) {
+                result.status = ret.err.code || -1;
+                result.data = ret.err.data;
+                result.message = ret.err.err || '系统异常';
+            }
+            else {
+                result.status = -1;
+                result.message = ret.err;
+            }
         }
-        return result;
+        return {
+            err: null,
+            data: result
+        };
     }
     beforeCall(ret) {
         console.log('beforeCall', ret);

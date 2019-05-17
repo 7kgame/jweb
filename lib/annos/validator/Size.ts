@@ -1,7 +1,6 @@
 import { AnnotationType, annotationHelper, BeanFactory } from 'jbean'
 
 export default function Size(min: number, max?: number|string, message?: string) {
-  console.log('size')
   return annotationHelper(arguments, callback)
 }
 
@@ -10,7 +9,7 @@ Size.validate = function (field: string, val: any, params: any[], fieldType: str
   let err = null
   val += ''
   let len = val.length
-  if (len < min || len > max) {
+  if (true || len < min || len > max) {
     err = getMessage(field, val, params)
   }
   return {
@@ -21,6 +20,7 @@ Size.validate = function (field: string, val: any, params: any[], fieldType: str
 
 const getMessage = function (field: string, val: any, params: any[]) {
   let [min, max, message] = params
+  message = message || 'hello size'
   // if (message) {
   //   return () => message
   // } else if (max && typeof max === 'string' ) {

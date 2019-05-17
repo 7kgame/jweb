@@ -1,4 +1,4 @@
-import { AnnotationType, annotationHelper, BeanFactory, BeanMeta, getObjectType } from 'jbean'
+import { AnnotationType, annotationHelper, BeanFactory, BeanMeta, getObjectType, BusinessException } from 'jbean'
 import { Request, Response } from '../../lib'
 
 export default function Validation (entity: Function, mode?: number) {
@@ -49,9 +49,10 @@ Validation.preCall = function vldPreCall(ret: any, entityClz: any, mode: number,
   })
   if (!err0) {
     req.entity = entity
-  }
-  return {
-    err: err0,
-    data: entity
+    return
+  } else {
+    return {
+      err: new BusinessException('', -1, err0)
+    }
   }
 }

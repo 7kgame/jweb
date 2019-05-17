@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const jbean_1 = require("jbean");
 function Size(min, max, message) {
-    console.log('size');
     return jbean_1.annotationHelper(arguments, callback);
 }
 exports.default = Size;
@@ -11,7 +10,7 @@ Size.validate = function (field, val, params, fieldType) {
     let err = null;
     val += '';
     let len = val.length;
-    if (len < min || len > max) {
+    if (true || len < min || len > max) {
         err = getMessage(field, val, params);
     }
     return {
@@ -21,6 +20,7 @@ Size.validate = function (field, val, params, fieldType) {
 };
 const getMessage = function (field, val, params) {
     let [min, max, message] = params;
+    message = message || 'hello size';
     // if (message) {
     //   return () => message
     // } else if (max && typeof max === 'string' ) {
