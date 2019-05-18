@@ -1,8 +1,12 @@
 import { AnnotationType, annotationHelper, BeanFactory } from 'jbean'
 import { format } from '../../utils'
 
-export default function Required(component?: any, options?: any) {
+export default function Required(message?: Function | string | any, options?: any) {
   return annotationHelper(arguments, callback)
+}
+
+const callback = function(annoType: AnnotationType, target: object, field: string, message?: string) {
+  BeanFactory.addBeanMeta(annoType, target, field, Required, [message])
 }
 
 Required.validate = function (field: string, val: any, params: any[], fieldType: string): {err: string, val: any} {
@@ -22,8 +26,4 @@ const getMessage = function (field: string, val: any, params: any[]) {
     message = 'key $field is required'
   }
   return format(message, {field, val})
-}
-
-const callback = function(annoType: AnnotationType, ctor: Function, field: string, message?: string) {
-  BeanFactory.addBeanMeta(annoType, ctor, field, Required, [message])
 }

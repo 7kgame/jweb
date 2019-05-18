@@ -129,7 +129,7 @@ __decorate([
     lib_1.Get('/process/{uid}'),
     Auth_1.default,
     response_body_1.default('json'),
-    lib_1.Validation(user_1.default, lib_1.ValidationMode.entity),
+    lib_1.Validation(user_1.default),
     lib_1.Transactional,
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [lib_1.Request, lib_1.Response, Object]),

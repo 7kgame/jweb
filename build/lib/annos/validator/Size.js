@@ -6,6 +6,13 @@ function Size(min, max, message) {
     return jbean_1.annotationHelper(arguments, callback);
 }
 exports.default = Size;
+const callback = function (annoType, target, field, min, max, message) {
+    if (typeof max !== 'number') {
+        message = max;
+        max = Number.MAX_VALUE;
+    }
+    jbean_1.BeanFactory.addBeanMeta(annoType, target, field, Size, [min, max, message]);
+};
 Size.validate = function (field, val, params, fieldType) {
     let [min, max, message] = params;
     let err = null;
@@ -30,11 +37,4 @@ const getMessage = function (field, val, params) {
         }
     }
     return utils_1.format(message, { min, max, val });
-};
-const callback = function (annoType, ctor, field, min, max, message) {
-    if (typeof max === 'string') {
-        message = max;
-        max = Number.MAX_VALUE;
-    }
-    jbean_1.BeanFactory.addBeanMeta(annoType, ctor, field, Size, [min, max, message]);
 };

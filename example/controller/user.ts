@@ -69,7 +69,7 @@ export default class User extends BaseController {
   @Get('/process/{uid}')
   @Auth
   @ResponseBody('json')
-  @Validation(UserEntity, ValidationMode.entity)
+  @Validation(UserEntity)
   @Transactional
   public async process (req: Request, res: Response, { uid }) {
     const user: UserEntity = req.entity

@@ -5,6 +5,14 @@ export default function Size(min: number, max?: number | string, message?: strin
   return annotationHelper(arguments, callback)
 }
 
+const callback = function (annoType: AnnotationType, target: object, field: string, min: number, max?: number | string, message?: string) {
+  if (typeof max !== 'number') {
+    message = max
+    max = Number.MAX_VALUE
+  }
+  BeanFactory.addBeanMeta(annoType, target, field, Size, [min, max, message])
+}
+
 Size.validate = function (field: string, val: any, params: any[], fieldType: string): { err: string, val: any } {
   let [min, max, message] = params
   let err = null
@@ -29,12 +37,4 @@ const getMessage = function (field: string, val: any, params: any[]) {
     }
   }
   return format(message, {min, max, val})
-}
-
-const callback = function (annoType: AnnotationType, ctor: Function, field: string, min: number, max?: number | string, message?: string) {
-  if (typeof max === 'string') {
-    message = max
-    max = Number.MAX_VALUE
-  }
-  BeanFactory.addBeanMeta(annoType, ctor, field, Size, [min, max, message])
 }

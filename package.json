@@ -1,6 +1,6 @@
 {
   "name": "jweb",
-  "version": "1.1.0",
+  "version": "1.1.2",
   "description": "A typeScript httpServer support annotation",
   "main": "build/lib/index.js",
   "typings": "types/index.d.ts",
