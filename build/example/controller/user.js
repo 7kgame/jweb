@@ -62,7 +62,16 @@ class User extends lib_1.BaseController {
         return ret;
     }
     afterCall(ret) {
-        console.log('aftercall', ret);
+        if (ret.err) {
+            return {
+                status: ret.err.code || -1,
+                message: ret.err,
+                data: ret.data
+            };
+        }
+        else {
+            return ret;
+        }
     }
     process(req, res, { uid }) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -77,7 +86,7 @@ class User extends lib_1.BaseController {
             // let data = await this.userService.hello()
             // return '<div style="color: red">' + 'this is user process ' + uid + ', ' + JSON.stringify(data) + ', ' + this.payService.hello() + '</div>'
             let u = yield this.userService.hello(user);
-            throw new jbean_1.BusinessException('test Exception');
+            // throw new BusinessException('test Exception')
             let data = {
                 a: 1,
                 b: [2, 3, 4],
@@ -120,7 +129,7 @@ __decorate([
     lib_1.Get('/process/{uid}'),
     Auth_1.default,
     response_body_1.default('json'),
-    lib_1.Validation(user_1.default),
+    lib_1.Validation(user_1.default, lib_1.ValidationMode.entity),
     lib_1.Transactional,
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [lib_1.Request, lib_1.Response, Object]),

@@ -29,8 +29,3 @@ export interface Response {
   delCookie (name: string, options?: any): void
   error(message?: string): void
 }
-
-export interface IMiddleware {
-  pre (req: Request, res: Response, next: any): void
-  post (req: Request, res: Response, next: any): void
-}

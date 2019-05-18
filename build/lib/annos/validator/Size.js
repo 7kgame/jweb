@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const jbean_1 = require("jbean");
+const utils_1 = require("../../utils");
 function Size(min, max, message) {
     return jbean_1.annotationHelper(arguments, callback);
 }
@@ -20,21 +21,15 @@ Size.validate = function (field, val, params, fieldType) {
 };
 const getMessage = function (field, val, params) {
     let [min, max, message] = params;
-    message = message || 'hello size';
-    // if (message) {
-    //   return () => message
-    // } else if (max && typeof max === 'string' ) {
-    //   return () => max
-    // } else {
-    //   return () => {
-    //     if (max) {
-    //       return `the length of '${field}' must between ${min} and ${max}`
-    //     } else {
-    //       return `the length of '${field}' must larger than ${min}"`
-    //     }
-    //   }
-    // }
-    return message;
+    if (!message) {
+        if (max) {
+            message = 'the length of $field must between $min and $max';
+        }
+        else {
+            message = 'the length of $field must larger than $min';
+        }
+    }
+    return utils_1.format(message, { min, max, val });
 };
 const callback = function (annoType, ctor, field, min, max, message) {
     if (typeof max === 'string') {

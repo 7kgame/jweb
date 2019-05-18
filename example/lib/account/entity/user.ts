@@ -10,7 +10,7 @@ export default class User {
   public uid = undefined
 
   @Required
-  @Size(20, 30, 'name的长度应该位于20-31之间')
+  @Size(20, 30, 'name的长度应该位于$min-$max之间')
   public name = undefined
 
   @Type('number')

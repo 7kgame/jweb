@@ -1,7 +1,39 @@
+<!-- vscode-markdown-toc -->
+* 1. [Usage](#Usage)
+* 2. [Javascript和TypeScript基础学习](#JavascriptTypeScript)
+* 3. [1. Controller方法注解](#Controller)
+	* 3.1. [1.1 注解的调用顺序](#)
+	* 3.2. [1.2 注解中的错误处理](#-1)
+		* 3.2.1. [如何抛出错误？](#-1)
+		* 3.2.2. [如何处理错误？](#-1)
+	* 3.3. [1.3 如何编写自定义函数注解？](#-1)
+		* 3.3.1. [注解示例](#-1)
+		* 3.3.2. [示例的依赖说明](#-1)
+		* 3.3.3. [注解的编写步骤](#-1)
+	* 3.4. [1.4 使用注解实现完整业务功能的示例](#-1)
+* 4. [2. Entity校验注解](#Entity)
+	* 4.1. [2.1 使用示例](#-1)
+	* 4.2. [2.2 注解的调用顺序](#-1)
+	* 4.3. [2.4 jweb内置注解和说明](#jweb)
+		* 4.3.1. [Min](#Min)
+		* 4.3.2. [Max](#Max)
+		* 4.3.3. [Size](#Size)
+		* 4.3.4. [Required](#Required)
+		* 4.3.5. [Type](#Type)
+	* 4.4. [2.5 编写自己的验证器](#-1)
+		* 4.4.1. [自定义验证器示例](#-1)
+		* 4.4.2. [示例关键代码说明](#-1)
+		* 4.4.3. [自定义验证器必须遵循的规则](#-1)
+
+<!-- vscode-markdown-toc-config
+	numbering=true
+	autoSave=true
+	/vscode-markdown-toc-config -->
+<!-- /vscode-markdown-toc -->
 # jweb
 A typeScript httpServer support annotation
 
-## Usage
+##  1. <a name='Usage'></a>Usage
 
 ```
 npm install
@@ -9,7 +41,7 @@ npm run build
 npm run start
 ```
 
-## Javascript和TypeScript基础学习
+##  2. <a name='JavascriptTypeScript'></a>Javascript和TypeScript基础学习
 JavaScript基础学习（ES6标准）：http://es6.ruanyifeng.com/#README
 
 TypeScript基础学习：https://www.tslang.cn/docs/home.html
@@ -18,13 +50,10 @@ ejs模版引擎学习：https://ejs.co  |  https://ejs.bootcss.com/
 
 # JWeb Controller方法注解和Entity中校验注解
 
-文档结构：
 
-[TOC]
+##  3. <a name='Controller'></a>1. Controller方法注解
 
-## 1. Controller方法注解
-
-### 1.1 注解的调用顺序
+###  3.1. <a name=''></a>1.1 注解的调用顺序
 
 先看一个样例（下面的方法都是某一个Controller类中的方法），process方法会在请求到来时被调用：
 
@@ -110,7 +139,7 @@ beforeCall => Auth.preCall => ResponseBody.preCall => ... => preAround=> process
 
 
 
-### 1.2 注解中的错误处理
+###  3.2. <a name='-1'></a>1.2 注解中的错误处理
 
 ​	每一个注解的统一返回格式是：
 
@@ -139,7 +168,7 @@ Auth.preCall = function authPreCall(ret: any, param: string, req: Request, res: 
 
 
 
-#### 如何抛出错误？
+####  3.2.1. <a name='-1'></a>如何抛出错误？
 
 如果注解调用中发生了错误，有两种错误抛出方式：
 
@@ -171,7 +200,7 @@ Auth.preCall = function authPreCall(ret: any, param: string, req: Request, res: 
 
 
 
-#### 如何处理错误？
+####  3.2.2. <a name='-1'></a>如何处理错误？
 
 ​	如果是设置err的错误抛出方式，自定义的注解需要自行定义错误处理方式。通过参数中的上一个函数的返回值中的err属性，可以监听到前面的调用链中是否发生了错误。发生与未发生错误时如何处理完全由注解自行决定。**如果调用链上的错误始终未被处理，则服务器会返回500错误**
 
@@ -185,9 +214,9 @@ Auth.preCall = function authPreCall(ret: any, param: string, req: Request, res: 
 
 
 
-### 1.3 如何编写自定义函数注解？
+###  3.3. <a name='-1'></a>1.3 如何编写自定义函数注解？
 
-#### 注解示例
+####  3.3.1. <a name='-1'></a>注解示例
 
 先看一个自定义注解的例子：
 
@@ -244,7 +273,7 @@ ResponseBody.postCall = function rbdPostCall(ret: any, type: string, req: Reques
 
 ​	上述代码定义了一个名为ResponseBody的注解，该注解的主要功能是，根据@ResponseBody('{type}')来决定返回的数据格式类型，type可选值是json或者xml。接下来我们讨论该注解的详细定义过程。
 
-#### 示例的依赖说明
+####  3.3.2. <a name='-1'></a>示例的依赖说明
 
 * 首先，注解相关的处理都在jbean包中，这里我们从JBean中引入了AnnotationType、annotationHelper、BeanFactory。其中：
 
@@ -256,7 +285,7 @@ ResponseBody.postCall = function rbdPostCall(ret: any, type: string, req: Reques
 
   * BeanFactory：管理Bean、BeanMeta等信息的工厂类。**如果我们希望我们定义的注解的preCall和postCall在请求到来时调用，需要将对应的BeanMeta注册到BeanFactory中**
 
-#### 注解的编写步骤
+####  3.3.3. <a name='-1'></a>注解的编写步骤
 
 ##### 1. 导入依赖：
 
@@ -322,7 +351,7 @@ BeanFactory.addBeanMeta(AnnotationType.method, ctor, arguments[2], ResponseBody,
 
 
 
-### 1.4 使用注解实现完整业务功能的示例
+###  3.4. <a name='-1'></a>1.4 使用注解实现完整业务功能的示例
 
 一个完整的Controller示例代码如下：
 
@@ -412,9 +441,9 @@ public afterCall (ret) {
 
 如果成功，将成功码和获取到的数据返回。
 
-## 2. Entity校验注解
+##  4. <a name='Entity'></a>2. Entity校验注解
 
-### 2.1 使用示例
+###  4.1. <a name='-1'></a>2.1 使用示例
 
 user.ts
 
@@ -463,7 +492,7 @@ export default class User {
 * @Min(18)最小值18
 * @Max(100)最大值100
 
-### 2.2 注解的调用顺序
+###  4.2. <a name='-1'></a>2.2 注解的调用顺序
 
 注解会按照使用顺序，从上到下调用，如果一个字段有多个验证规则，中间有一个规则不通过时，不会继续验证后面的规则，直接使用该注解的错误信息。
 
@@ -471,41 +500,41 @@ export default class User {
 
 所有注解的最后一个参数都是验证出错时提供的消息，如果没有提供该参数，将会使用默认值。
 
-### 2.4 jweb内置注解和说明
+###  4.3. <a name='jweb'></a>2.4 jweb内置注解和说明
 
-#### Min
+####  4.3.1. <a name='Min'></a>Min
 
 使用：@Min(minval:number，mes?: string)
 
 规则：对应字段的值是否比@Min指定的值大
 
-#### Max
+####  4.3.2. <a name='Max'></a>Max
 
 使用：@Max(minval:number，mes?: string)
 
 规则：对应字段的值是否比@Max指定的值小
 
-#### Size
+####  4.3.3. <a name='Size'></a>Size
 
 使用：@Size(minval:number，maxval?:number, mes?: string)
 
 规则：对应字段的值是否在指定的区间中
 
-#### Required
+####  4.3.4. <a name='Required'></a>Required
 
 使用：@Requred(mes?: string)
 
 规则：必须的字段
 
-#### Type
+####  4.3.5. <a name='Type'></a>Type
 
 使用：@Type(type?: string)
 
 规则：字段的数据类型，可选值string、number、integer
 
-### 2.5 编写自己的验证器
+###  4.4. <a name='-1'></a>2.5 编写自己的验证器
 
-#### 自定义验证器示例
+####  4.4.1. <a name='-1'></a>自定义验证器示例
 
 ```typescript
 import { AnnotationType, annotationHelper, BeanFactory } from 'jbean'
@@ -540,7 +569,7 @@ const callback = function(annoType: AnnotationType, ctor: Function, field: strin
 }
 ```
 
-#### 示例关键代码说明
+####  4.4.2. <a name='-1'></a>示例关键代码说明
 
 每一个验证器需要两个方法，一个是validate，用于验证是否满足规则，另一个是message，用于返回验证失败时的消息。**请确保传给Max\['validate'\]\[field\]的validate和message属性的值均是函数。validate和message返回的函数都会被传入一个参数——被验证的字段的值**
 
@@ -557,7 +586,7 @@ Max['validate'][field] = {
 
 最后需要把注解注册到BeanFactory中，采用让其validate和message函数在验证时被调用。
 
-#### 自定义验证器必须遵循的规则
+####  4.4.3. <a name='-1'></a>自定义验证器必须遵循的规则
 
 1. 确保验证器函数有如下属性，且validate和message必须是函数。
 

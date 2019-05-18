@@ -1,5 +1,5 @@
 import { Autowired, BusinessException } from 'jbean'
-import { BaseController, Controller, Get, Post, Request, Response, Transactional, Validation } from '../../lib'
+import { BaseController, Controller, Get, Post, Request, Response, Transactional, Validation, ValidationMode } from '../../lib'
 import UserService from '../lib/account/UserService'
 import PayService from '../lib/account/PayService'
 import Auth from '../annos/Auth'
@@ -55,13 +55,21 @@ export default class User extends BaseController {
   }
 
   public afterCall (ret) {
-    console.log('aftercall', ret)
+    if (ret.err) {
+      return {
+        status: ret.err.code || -1,
+        message: ret.err,
+        data: ret.data
+      }
+    } else {
+      return ret
+    }
   }
 
   @Get('/process/{uid}')
   @Auth
   @ResponseBody('json')
-  @Validation(UserEntity)
+  @Validation(UserEntity, ValidationMode.entity)
   @Transactional
   public async process (req: Request, res: Response, { uid }) {
     const user: UserEntity = req.entity
@@ -76,7 +84,7 @@ export default class User extends BaseController {
     // return '<div style="color: red">' + 'this is user process ' + uid + ', ' + JSON.stringify(data) + ', ' + this.payService.hello() + '</div>'
     let u = await this.userService.hello(user)
 
-    throw new BusinessException('test Exception')
+    // throw new BusinessException('test Exception')
     let data = {
       a: 1,
       b: [2, 3, 4],
