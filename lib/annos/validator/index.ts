@@ -1,7 +1,7 @@
-import Max from "./Max"
-import Min from "./Min"
-import Required from './Required'
-import Size from './Size'
+import Max from "./max"
+import Min from "./min"
+import Required from './required'
+import Size from './size'
 
 export {
   Max,
