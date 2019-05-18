@@ -4,7 +4,7 @@ import Task from './task'
 import Transactional from './transactional'
 import Validation, { ValidationMode } from './validation'
 
-// export * from './validator'
+export * from './validator'
 
 export {
   Controller,
