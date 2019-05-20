@@ -49,21 +49,26 @@ export default class User extends BaseController {
     }
   }
 
-  private beforeCall (ret) {
+  private beforeCall (ret, req: Request, res: Response) {
+    // res.setHeader('Content-Type', 'application/json')
+    // console.log(arguments)
     console.log('beforeCall' , ret)
     return ret
   }
 
   public afterCall (ret) {
-    if (ret.err) {
-      return {
-        status: ret.err.code || -1,
-        message: ret.err,
-        data: ret.data
-      }
-    } else {
-      return ret
-    }
+    // console.log('aftercall', ret)
+    // ret.data = xmlEncode(ret.data)
+    // return ret
+    // if (ret.err) {
+    //   return {
+    //     status: ret.err.code || -1,
+    //     message: ret.err,
+    //     data: ret.data
+    //   }
+    // } else {
+    //   return ret
+    // }
   }
 
   @Get('/process/{uid}')
@@ -73,6 +78,7 @@ export default class User extends BaseController {
   @Transactional
   public async process (req: Request, res: Response, { uid }) {
     const user: UserEntity = req.entity
+    // throw new BusinessException('inner err', -100, null)
     console.log('inside call', user, uid)
     // console.log(user['toObject']())
     // console.log('userService is', this.userService)

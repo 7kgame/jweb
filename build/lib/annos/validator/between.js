@@ -25,5 +25,5 @@ const getMessage = function (field, val, params) {
     if (!message) {
         message = 'the value of $field must between $min and $max';
     }
-    return utils_1.format(message, { min, max, val });
+    return utils_1.format(message, { field, min, max, val });
 };
