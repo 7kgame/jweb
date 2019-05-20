@@ -40,11 +40,39 @@ function setCache(url: string, val: string, expire?: number) {
 function getCache(url: string):string {
   return LRUCache.getIns().get(url)
 }
-const callback = function (annoType: AnnotationType, ctor: Function | object, field: string, expire?:number) {
-  if (typeof ctor === 'object') {
-    ctor = ctor.constructor
+
+function retHook(ret: any, ctor: object, field: string, expire: number): void {
+  if (ret.err) {
+    return
   }
-  ctor['__' + field] = {}
-  ctor['__' + field][SET_CACHE] = setCache
-  ctor['__' + field][GET_CACHE] = getCache
+  let pathMeta = ctor[field]['__pathMeta']
+  let lruCache = LRUCache.getIns()
+  let cache = lruCache.get(pathMeta.path)
+
+  if (cache) {
+    return
+  } else {
+    if (pathMeta.method === 'GET' && !(/\{.*\}/.test(pathMeta.path))) {
+      console.log('setCache')
+      lruCache.set(pathMeta.path, ret.data, expire)
+    }
+  }
+}
+
+Cache.preCall = function (ret: any, ctor: object, field: string, expire: number) {
+  if (ret.err) {
+    return ret
+  }
+  let pathMeta = ctor[field]['__pathMeta']
+
+  let cache = LRUCache.getIns().get(pathMeta.path)
+  if (cache) {
+    console.log('cache hit')
+    ret.err = '__cache_hitted'
+    ret.data = cache
+  }
+  return ret
+}
+const callback = function (annoType: AnnotationType, ctor: object, field: string, descriptor: PropertyDescriptor, expire?:number) {
+  BeanFactory.addBeanMeta(annoType, ctor, field, Cache, [ctor, field, expire], null, retHook)
 }

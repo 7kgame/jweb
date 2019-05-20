@@ -65,7 +65,7 @@ class LRUCache {
         }
         else {
             let entry = this.cacheMap[key];
-            // move the entry to the tail of the queue, which means this is the latest
+            // move the entry to the tail of the queue, which means the latest
             if (entry.node !== this.cacheQueue.tail()) {
                 this.cacheQueue.erase(entry.node);
                 entry.node = this.cacheQueue.push(key);

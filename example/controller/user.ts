@@ -67,7 +67,6 @@ export default class User extends BaseController {
   }
 
   @Get('/process/{uid}')
-  @Cache(1000 * 600)
   @Auth
   @ResponseBody('json')
   @Validation(UserEntity)
@@ -112,8 +111,9 @@ export default class User extends BaseController {
   }
 
   @Get('/info')
-  @ResponseBody('xml')
-  @Auth()
+  @ResponseBody('json')
+  @Auth
+  @Cache(1000 * 60)
   // @ResponseXML
   public info(request: Request, response: Response) {
     // console.log('user/info exec')

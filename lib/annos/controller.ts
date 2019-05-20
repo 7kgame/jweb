@@ -6,7 +6,7 @@ import Application, { AppErrorEvent, ApplicationType } from '../application'
 import { Request, Response } from '../base'
 import { GET_CACHE, SET_CACHE } from './cache'
 
-export function Controller (component?: any, path?: any) {
+export function Controller(component?: any, path?: any) {
   return annotationHelper(arguments, controllerCallback)
 }
 
@@ -99,8 +99,8 @@ const addTemplateDir = function (ctor: Function, ins: object | Function) {
     }
 
     ctor[TPL_DIR_KEY] = viewDir + Path.sep
-                      + TEMPLATE_DIR_NAME + Path.sep
-                      + controllerPath.pop().replace(URL_PATH_TRIM, '').slice(0, -3).toLowerCase() + Path.sep
+      + TEMPLATE_DIR_NAME + Path.sep
+      + controllerPath.pop().replace(URL_PATH_TRIM, '').slice(0, -3).toLowerCase() + Path.sep
     ctor[LAYOUT_DIR_KEY] = viewDir + Path.sep + LAYOUT_DIR_NAME + Path.sep
     ctor[EXT_KEY] = application.tplExt
   }
@@ -116,8 +116,8 @@ BeanFactory.registerStartBean(() => {
   if (app.applicationType !== ApplicationType.web) {
     return
   }
-  Object.values(controllerMetas).forEach(({ctor, methods, path}) => {
-    methods.forEach(({target, method, requestMethod, subPath, requestMapping}) => {
+  Object.values(controllerMetas).forEach(({ ctor, methods, path }) => {
+    methods.forEach(({ target, method, requestMethod, subPath, requestMapping }) => {
       if (!requestMapping) {
         return
       }
@@ -128,67 +128,56 @@ BeanFactory.registerStartBean(() => {
         method: requestMethod,
         path: routePath,
         handler: async (request: Hapi.Request, h: Hapi.ResponseToolkit) => {
-          let cache = null
-          if (ctor['__' + method][GET_CACHE]) {
-            cache = ctor['__' + method][GET_CACHE](routePath)
-          }
-          if (cache) {
-            console.log('cache hit')
-            return cache
-          } else {
-            return new Promise((resolve, reject) => {
-              const req = new Request(request, h)
-              const res = new Response(request, h)
-              if (supportCors) {
-                res.setHeader('Access-Control-Allow-Credentials', true)
-                res.setHeader('Access-Control-Allow-Origin', request.headers.origin || '*')
-                res.setHeader('Access-Control-Allow-Headers', '*, X-Requested-With, Content-Type')
-                res.setHeader('Access-Control-Allow-Methods', request.method)
-                res.setHeader('Access-Control-Max-Age', 86400)
-                res.setHeader('Access-Control-Expose-Headers', 'WWW-Authenticate,Server-Authorization')
+          return new Promise((resolve, reject) => {
+            const req = new Request(request, h)
+            const res = new Response(request, h)
+            if (supportCors) {
+              res.setHeader('Access-Control-Allow-Credentials', true)
+              res.setHeader('Access-Control-Allow-Origin', request.headers.origin || '*')
+              res.setHeader('Access-Control-Allow-Headers', '*, X-Requested-With, Content-Type')
+              res.setHeader('Access-Control-Allow-Methods', request.method)
+              res.setHeader('Access-Control-Max-Age', 86400)
+              res.setHeader('Access-Control-Expose-Headers', 'WWW-Authenticate,Server-Authorization')
+            }
+            let ins = target
+            if (typeof target !== 'function') {
+              if (typeof controllerIns[ctor[CTOR_ID]] === 'undefined') {
+                controllerIns[ctor[CTOR_ID]] = new ctor()
               }
-              let ins = target
-              if (typeof target !== 'function') {
-                if (typeof controllerIns[ctor[CTOR_ID]] === 'undefined') {
-                  controllerIns[ctor[CTOR_ID]] = new ctor()
+              ins = controllerIns[ctor[CTOR_ID]]
+              addTemplateDir(ctor, ins)
+            }
+            ins[METHOD_KEY] = method.toLowerCase()
+            let params: any[] = [req, res]
+            if (request.params && Object.keys(request.params).length > 0) {
+              params.push(request.params)
+            }
+            try {
+              res.type('text/html')
+              if (typeof ins[method]['__pathMeta'] === 'undefined') {
+                ins[method]['__pathMeta'] = {
+                  path: routePath,
+                  method: requestMethod
                 }
-                ins = controllerIns[ctor[CTOR_ID]]
-                addTemplateDir(ctor, ins)
               }
-              ins[METHOD_KEY] = method.toLowerCase()
-              let params: any[] = [req, res]
-              if (request.params && Object.keys(request.params).length > 0) {
-                params.push(request.params)
-              }
-              try {
-                res.type('text/html')
-                const ret = ins[method](...params)
-                if (getObjectType(ret) === 'promise') {
-                  ret.then(data => {
-                    if (ctor['__' + method][SET_CACHE]) {
-                      console.log('set cache')
-                      ctor['__' + method][SET_CACHE](routePath, data)
-                    }
-                    res.writeAndFlush(data)
-                    // resolve()
-                  }).catch(e => {
-                    app.emit(AppErrorEvent.REQUEST, e)
-                    res.error('Internal Server Error')
-                  })
-                } else {
-                  if (ctor['__' + method][SET_CACHE]) {
-                    console.log('set cache')
-                    ctor['__' + method][SET_CACHE](routePath, ret)
-                  }
-                  res.writeAndFlush(ret)
+              const ret = ins[method](...params)
+              if (getObjectType(ret) === 'promise') {
+                ret.then(data => {
+                  res.writeAndFlush(data)
                   // resolve()
-                }
-              } catch (e) {
-                app.emit(AppErrorEvent.REQUEST, e)
-                res.error('Internal Server Error')
+                }).catch(e => {
+                  app.emit(AppErrorEvent.REQUEST, e)
+                  res.error('Internal Server Error')
+                })
+              } else {
+                res.writeAndFlush(ret)
+                // resolve()
               }
-            })
-          }
+            } catch (e) {
+              app.emit(AppErrorEvent.REQUEST, e)
+              res.error('Internal Server Error')
+            }
+          })
         }
       })
     })

@@ -27,14 +27,9 @@ __decorate([
     __metadata("design:type", Object)
 ], User.prototype, "uid", void 0);
 __decorate([
-<<<<<<< HEAD
-    lib_2.Required,
-    lib_2.Size(20, 30, 'name的长度应该位于20-31之间'),
-=======
     lib_1.Required,
     lib_1.Email,
     lib_1.Size(2, 30, 'name的长度应该位于$min-$max之间'),
->>>>>>> 070758e9ade8a69caf8c383f6888b004676e8d47
     __metadata("design:type", Object)
 ], User.prototype, "name", void 0);
 __decorate([

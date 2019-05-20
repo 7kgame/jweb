@@ -28,10 +28,12 @@ class DoubleLinkedQueue {
     pop() {
         let temp = this.$head.next;
         this.$head.next = temp.next;
-        temp.next.pre = this.$head;
         this.$length--;
         if (temp === this.$tail) {
             this.$tail = this.$head;
+        }
+        else {
+            temp.next.pre = this.$head;
         }
         return temp;
     }

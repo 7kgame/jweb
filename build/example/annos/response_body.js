@@ -31,7 +31,7 @@ ResponseBody.postCall = function rbdPostCall(ret, type, req, res) {
     switch (type) {
         case 'json':
             if (typeof ret === 'object') {
-                ret.data = utils_1.jsonEncode(ret.data);
+                ret.data = utils_1.jsonEncode(ret.data.data);
             }
             break;
         case 'xml':

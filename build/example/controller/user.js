@@ -127,7 +127,6 @@ __decorate([
 ], User.prototype, "payService", void 0);
 __decorate([
     lib_1.Get('/process/{uid}'),
-    lib_1.Cache(1000 * 600),
     Auth_1.default,
     response_body_1.default('json'),
     lib_1.Validation(user_1.default),
@@ -150,8 +149,9 @@ __decorate([
 ], User.prototype, "list2", null);
 __decorate([
     lib_1.Get('/info'),
-    response_body_1.default('xml'),
-    Auth_1.default(),
+    response_body_1.default('json'),
+    Auth_1.default,
+    lib_1.Cache(1000 * 60),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [lib_1.Request, lib_1.Response]),
     __metadata("design:returntype", void 0)

@@ -39,11 +39,36 @@ function setCache(url, val, expire) {
 function getCache(url) {
     return LRUCache_1.default.getIns().get(url);
 }
-const callback = function (annoType, ctor, field, expire) {
-    if (typeof ctor === 'object') {
-        ctor = ctor.constructor;
+function retHook(ret, ctor, field, expire) {
+    if (ret.err) {
+        return;
     }
-    ctor['__' + field] = {};
-    ctor['__' + field][exports.SET_CACHE] = setCache;
-    ctor['__' + field][exports.GET_CACHE] = getCache;
+    let pathMeta = ctor[field]['__pathMeta'];
+    let lruCache = LRUCache_1.default.getIns();
+    let cache = lruCache.get(pathMeta.path);
+    if (cache) {
+        return;
+    }
+    else {
+        if (pathMeta.method === 'GET' && !(/\{.*\}/.test(pathMeta.path))) {
+            console.log('setCache');
+            lruCache.set(pathMeta.path, ret.data, expire);
+        }
+    }
+}
+Cache.preCall = function (ret, ctor, field, expire) {
+    if (ret.err) {
+        return ret;
+    }
+    let pathMeta = ctor[field]['__pathMeta'];
+    let cache = LRUCache_1.default.getIns().get(pathMeta.path);
+    if (cache) {
+        console.log('cache hit');
+        ret.err = '__cache_hitted';
+        ret.data = cache;
+    }
+    return ret;
+};
+const callback = function (annoType, ctor, field, descriptor, expire) {
+    jbean_1.BeanFactory.addBeanMeta(annoType, ctor, field, Cache, [ctor, field, expire], null, retHook);
 };
