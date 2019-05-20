@@ -9,7 +9,7 @@ const callback = function(annoType: AnnotationType, target: object, field: strin
   BeanFactory.addBeanMeta(annoType, target, field, Max, [max, message])
 }
 
-Max.validate = function (field: string, val: any, params: any[], fieldType: string): {err: string, val: any} {
+Max.validate = function (field: string, val: any, params: any[], val0: any, fieldType: string): {err: string, val: any} {
   let [max, message] = params
   let err = null
   if (val > max) {

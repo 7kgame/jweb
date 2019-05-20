@@ -9,7 +9,7 @@ const callback = function(annoType: AnnotationType, target: object, field: strin
   BeanFactory.addBeanMeta(annoType, target, field, Min, [min, message])
 }
 
-Min.validate = function (field: string, val: any, params: any[], fieldType: string): {err: string, val: any} {
+Min.validate = function (field: string, val: any, params: any[], val0: any, fieldType: string): {err: string, val: any} {
   let [min, message] = params
   let err = null
   if (val < min) {

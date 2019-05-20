@@ -9,7 +9,7 @@ exports.default = Min;
 const callback = function (annoType, target, field, min, message) {
     jbean_1.BeanFactory.addBeanMeta(annoType, target, field, Min, [min, message]);
 };
-Min.validate = function (field, val, params, fieldType) {
+Min.validate = function (field, val, params, val0, fieldType) {
     let [min, message] = params;
     let err = null;
     if (val < min) {

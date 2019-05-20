@@ -2,23 +2,17 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const jbean_1 = require("jbean");
 const utils_1 = require("../../utils");
-function Size(min, max, message) {
+function Between(min, max, message) {
     return jbean_1.annotationHelper(arguments, callback);
 }
-exports.default = Size;
+exports.default = Between;
 const callback = function (annoType, target, field, min, max, message) {
-    if (typeof max !== 'number') {
-        message = max;
-        max = Number.MAX_VALUE;
-    }
-    jbean_1.BeanFactory.addBeanMeta(annoType, target, field, Size, [min, max, message]);
+    jbean_1.BeanFactory.addBeanMeta(annoType, target, field, Between, [min, max, message]);
 };
-Size.validate = function (field, val, params, val0, fieldType) {
+Between.validate = function (field, val, params, val0, fieldType) {
     let [min, max, message] = params;
     let err = null;
-    val += '';
-    let len = val.length;
-    if (len < min || len > max) {
+    if (val < min || val > max) {
         err = getMessage(field, val, params);
     }
     return {
@@ -29,12 +23,7 @@ Size.validate = function (field, val, params, val0, fieldType) {
 const getMessage = function (field, val, params) {
     let [min, max, message] = params;
     if (!message) {
-        if (max) {
-            message = 'the length of $field must between $min and $max';
-        }
-        else {
-            message = 'the length of $field must larger than $min';
-        }
+        message = 'the value of $field must between $min and $max';
     }
     return utils_1.format(message, { min, max, val });
 };

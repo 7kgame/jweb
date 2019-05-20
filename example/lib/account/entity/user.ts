@@ -1,5 +1,5 @@
 import { Type } from 'jbean'
-import { Entity, Required, Min, Max, Size, ValidationScene } from '../../../../lib'
+import { Entity, Between, Regex, Required, Min, Max, Size, ValidationScene, Email } from '../../../../lib'
 
 const REGISTER_SCENE1: string = 'register1'
 const REGISTER_SCENE2: string = 'register2'
@@ -13,14 +13,14 @@ export default class User {
   public uid = undefined
 
   @Required
-  @Size(20, 30, 'name的长度应该位于$min-$max之间')
+  @Email
+  @Size(2, 30, 'name的长度应该位于$min-$max之间')
   public name = undefined
 
   @Type('number')
   @ValidationScene(REGISTER_SCENE2)
   @Required("age is required")
-  @Min(18)
-  @Max(100)
+  @Between(18, 20)
   public age = undefined
 
 }

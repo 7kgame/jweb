@@ -9,7 +9,7 @@ exports.default = Max;
 const callback = function (annoType, target, field, max, message) {
     jbean_1.BeanFactory.addBeanMeta(annoType, target, field, Max, [max, message]);
 };
-Max.validate = function (field, val, params, fieldType) {
+Max.validate = function (field, val, params, val0, fieldType) {
     let [max, message] = params;
     let err = null;
     if (val > max) {

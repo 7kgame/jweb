@@ -9,9 +9,9 @@ exports.default = Required;
 const callback = function (annoType, target, field, message) {
     jbean_1.BeanFactory.addBeanMeta(annoType, target, field, Required, [message]);
 };
-Required.validate = function (field, val, params, fieldType) {
+Required.validate = function (field, val, params, val0, fieldType) {
     let err = null;
-    if (val === null || val === undefined) {
+    if (val === null || val === undefined || val === '') {
         err = getMessage(field, val, params);
     }
     return {

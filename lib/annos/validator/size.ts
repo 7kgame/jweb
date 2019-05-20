@@ -13,12 +13,12 @@ const callback = function (annoType: AnnotationType, target: object, field: stri
   BeanFactory.addBeanMeta(annoType, target, field, Size, [min, max, message])
 }
 
-Size.validate = function (field: string, val: any, params: any[], fieldType: string): { err: string, val: any } {
+Size.validate = function (field: string, val: any, params: any[], val0: any, fieldType: string): { err: string, val: any } {
   let [min, max, message] = params
   let err = null
   val += ''
   let len = val.length
-  if (true || len < min || len > max) {
+  if (len < min || len > max) {
     err = getMessage(field, val, params)
   }
   return {

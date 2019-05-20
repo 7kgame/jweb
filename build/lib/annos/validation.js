@@ -34,7 +34,7 @@ exports.default = Validation;
 const callback = function (annoType, target, method, descriptor, entityClz, mode) {
     jbean_1.BeanFactory.addBeanMeta(jbean_1.AnnotationType.method, target, method, Validation, [entityClz, mode]);
 };
-Validation.preCall = function vldPreCall(ret, entityClz, mode, req, res) {
+Validation.preCall = function (ret, entityClz, mode, req, res) {
     if (ret && ret.err) {
         return ret;
     }
@@ -44,60 +44,60 @@ Validation.preCall = function vldPreCall(ret, entityClz, mode, req, res) {
     if (!fields || fields.length < 1) {
         return;
     }
-    let assignedFields = null;
+    let sceneFields = null;
     if (mode === undefined || mode === ValidationMode.params) {
-        assignedFields = Object.keys(params);
+        sceneFields = Object.keys(params);
     }
     else if (mode === ValidationMode.entity) {
-        assignedFields = fields;
+        sceneFields = fields;
     }
     else if (typeof mode === 'string') {
         const ctorId = entityClz[jbean_1.CTOR_ID];
         const scene = 's_' + mode;
         if (validationMode4Entities[ctorId] && validationMode4Entities[ctorId][scene]) {
-            assignedFields = validationMode4Entities[ctorId][scene];
+            sceneFields = validationMode4Entities[ctorId][scene];
         }
     }
-    if (!assignedFields || assignedFields.length < 1) {
+    if (!sceneFields || sceneFields.length < 1) {
         return {
             err: new jbean_1.BusinessException('validate field is empty', -1)
         };
     }
     if (mode !== ValidationMode.entity) {
         fields = fields.filter(field => {
-            return assignedFields.indexOf(field) >= 0;
+            return sceneFields.indexOf(field) >= 0;
         });
     }
     let beanMeta = jbean_1.BeanFactory.getBeanMeta(entity.constructor);
     let fieldAnnos = beanMeta.fieldAnnos;
     let fieldType = beanMeta.fieldType;
     let err0 = null;
-    fields.forEach(field => {
+    let fieldLen = fields.length;
+    for (let i = 0; i < fieldLen; i++) {
+        const field = fields[i];
         if (typeof fieldAnnos[field] === 'undefined') {
-            entity[field] = params[field];
-            return;
+            entity[field] = jbean_1.strTo(fieldType[field], params[field]);
+            continue;
         }
-        let val0 = params[field];
+        let val0 = jbean_1.strTo(fieldType[field], params[field]);
         let validators = fieldAnnos[field];
-        let hasError = false;
-        validators.forEach(([validator, validatorParams]) => {
-            if (hasError || !validator.validate) {
-                return;
+        let validatorLen = validators.length;
+        for (let j = 0; j < validatorLen; j++) {
+            let [validator, validatorParams] = validators[j];
+            if (!validator.validate) {
+                continue;
             }
-            let { err, val } = validator.validate(field, val0, validatorParams, fieldType[field]);
+            let { err, val } = validator.validate(field, val0, validatorParams, params[field], fieldType[field]);
+            entity[field] = val;
             if (err) {
                 err0 = err0 || {};
                 err0[field] = err;
-                hasError = true;
+                break;
             }
-            else {
-                entity[field] = val;
-            }
-        });
-    });
+        }
+    }
     if (!err0) {
         req.entity = entity;
-        return;
     }
     else {
         return {

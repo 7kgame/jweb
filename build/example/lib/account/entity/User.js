@@ -28,15 +28,15 @@ __decorate([
 ], User.prototype, "uid", void 0);
 __decorate([
     lib_1.Required,
-    lib_1.Size(20, 30, 'name的长度应该位于$min-$max之间'),
+    lib_1.Email,
+    lib_1.Size(2, 30, 'name的长度应该位于$min-$max之间'),
     __metadata("design:type", Object)
 ], User.prototype, "name", void 0);
 __decorate([
     jbean_1.Type('number'),
     lib_1.ValidationScene(REGISTER_SCENE2),
     lib_1.Required("age is required"),
-    lib_1.Min(18),
-    lib_1.Max(100),
+    lib_1.Between(18, 20),
     __metadata("design:type", Object)
 ], User.prototype, "age", void 0);
 User = __decorate([

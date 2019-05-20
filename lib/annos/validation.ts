@@ -1,4 +1,4 @@
-import { AnnotationType, annotationHelper, BeanFactory, BeanMeta, BusinessException, CTOR_ID } from 'jbean'
+import { AnnotationType, annotationHelper, BeanFactory, BeanMeta, BusinessException, CTOR_ID, strTo } from 'jbean'
 import { Request, Response } from '../../lib'
 
 export enum ValidationMode {
@@ -37,7 +37,7 @@ const callback = function (annoType: AnnotationType, target: Function | object, 
   BeanFactory.addBeanMeta(AnnotationType.method, target, method, Validation, [entityClz, mode])
 }
 
-Validation.preCall = function vldPreCall(ret: any, entityClz: any, mode: ValidationMode | string, req: Request, res: Response) {
+Validation.preCall = function (ret: any, entityClz: any, mode: ValidationMode | string, req: Request, res: Response) {
   if (ret && ret.err) {
     return ret
   }
@@ -48,19 +48,19 @@ Validation.preCall = function vldPreCall(ret: any, entityClz: any, mode: Validat
     return
   }
 
-  let assignedFields: string[] = null
+  let sceneFields: string[] = null
   if (mode === undefined || mode === ValidationMode.params) {
-    assignedFields = Object.keys(params)
+    sceneFields = Object.keys(params)
   } else if (mode === ValidationMode.entity) {
-    assignedFields = fields
+    sceneFields = fields
   } else if (typeof mode === 'string') {
     const ctorId = entityClz[CTOR_ID]
     const scene = 's_' + mode
     if (validationMode4Entities[ctorId] && validationMode4Entities[ctorId][scene]) {
-      assignedFields = validationMode4Entities[ctorId][scene]
+      sceneFields = validationMode4Entities[ctorId][scene]
     }
   }
-  if (!assignedFields || assignedFields.length < 1) {
+  if (!sceneFields || sceneFields.length < 1) {
     return {
       err: new BusinessException('validate field is empty', -1)
     }
@@ -68,7 +68,7 @@ Validation.preCall = function vldPreCall(ret: any, entityClz: any, mode: Validat
 
   if (mode !== ValidationMode.entity) {
     fields = fields.filter( field => {
-      return assignedFields.indexOf(field) >= 0
+      return sceneFields.indexOf(field) >= 0
     })
   }
 
@@ -77,31 +77,32 @@ Validation.preCall = function vldPreCall(ret: any, entityClz: any, mode: Validat
   let fieldType = beanMeta.fieldType
 
   let err0 = null
-  fields.forEach(field => {
+  let fieldLen = fields.length
+  for (let i = 0; i < fieldLen; i++) {
+    const field = fields[i]
     if (typeof fieldAnnos[field] === 'undefined') {
-      entity[field] = params[field]
-      return
+      entity[field] = strTo(fieldType[field], params[field])
+      continue
     }
-    let val0 = params[field]
+    let val0 = strTo(fieldType[field], params[field])
     let validators = fieldAnnos[field]
-    let hasError = false
-    validators.forEach(([validator, validatorParams]) => {
-      if (hasError || !validator.validate) {
-        return
+    let validatorLen = validators.length
+    for (let j = 0; j < validatorLen; j++) {
+      let [validator, validatorParams] = validators[j]
+      if (!validator.validate) {
+        continue
       }
-      let {err, val} = validator.validate(field, val0, validatorParams, fieldType[field])
+      let {err, val} = validator.validate(field, val0, validatorParams, params[field], fieldType[field])
+      entity[field] = val
       if (err) {
         err0 = err0 || {}
         err0[field] = err
-        hasError = true
-      } else {
-        entity[field] = val
+        break
       }
-    })
-  })
+    }
+  }
   if (!err0) {
     req.entity = entity
-    return
   } else {
     return {
       err: new BusinessException('validate failed', -2, err0)

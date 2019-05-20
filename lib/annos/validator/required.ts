@@ -9,9 +9,9 @@ const callback = function(annoType: AnnotationType, target: object, field: strin
   BeanFactory.addBeanMeta(annoType, target, field, Required, [message])
 }
 
-Required.validate = function (field: string, val: any, params: any[], fieldType: string): {err: string, val: any} {
+Required.validate = function (field: string, val: any, params: any[], val0: any, fieldType: string): {err: string, val: any} {
   let err = null
-  if (val === null || val === undefined) {
+  if (val === null || val === undefined || val === '') {
     err = getMessage(field, val, params)
   }
   return {
