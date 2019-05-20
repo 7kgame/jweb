@@ -6,6 +6,9 @@ node-web:
     host: localhost
     viewDir: view
     controllerDir: controller
+  cache:
+    maxCacheSize: 104857600
+    expire: 60000
   data:
     #mongo: // one connection
       # url: mongodb://localhost:27017
@@ -27,7 +30,7 @@ node-web:
         host: 127.0.0.1
         port: 3306
         user: root
-        password: ''
+        password: 'root'
         database: test
         connectionLimit: 10
     redis:

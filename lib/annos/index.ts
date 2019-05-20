@@ -3,6 +3,7 @@ import Entity, {TableNameSeperatorType} from './entity'
 import Task from './task'
 import Transactional from './transactional'
 import Validation, { ValidationMode } from './validation'
+import Cache from './cache'
 
 export * from './validator'
 
@@ -16,6 +17,7 @@ export {
   Options,
   Entity,
   Task,
+  Cache,
   Transactional,
   Validation,
   ValidationMode

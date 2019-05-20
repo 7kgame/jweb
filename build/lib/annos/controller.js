@@ -12,6 +12,7 @@ const Path = require("path");
 const jbean_1 = require("jbean");
 const application_1 = require("../application");
 const base_1 = require("../base");
+const cache_1 = require("./cache");
 function Controller(component, path) {
     return jbean_1.annotationHelper(arguments, controllerCallback);
 }
@@ -121,56 +122,75 @@ jbean_1.BeanFactory.registerStartBean(() => {
             }
             const app = application_1.default.getIns();
             const supportCors = app.getAppConfigs().cors;
+            const routePath = (path + subPath).replace(URL_END_PATH_TRIM, '') || '/';
             app.route({
                 method: requestMethod,
-                path: (path + subPath).replace(URL_END_PATH_TRIM, '') || '/',
+                path: routePath,
                 handler: (request, h) => __awaiter(this, void 0, void 0, function* () {
-                    return new Promise((resolve, reject) => {
-                        const req = new base_1.Request(request, h);
-                        const res = new base_1.Response(request, h);
-                        if (supportCors) {
-                            res.setHeader('Access-Control-Allow-Credentials', true);
-                            res.setHeader('Access-Control-Allow-Origin', request.headers.origin || '*');
-                            res.setHeader('Access-Control-Allow-Headers', '*, X-Requested-With, Content-Type');
-                            res.setHeader('Access-Control-Allow-Methods', request.method);
-                            res.setHeader('Access-Control-Max-Age', 86400);
-                            res.setHeader('Access-Control-Expose-Headers', 'WWW-Authenticate,Server-Authorization');
-                        }
-                        let ins = target;
-                        if (typeof target !== 'function') {
-                            if (typeof controllerIns[ctor[jbean_1.CTOR_ID]] === 'undefined') {
-                                controllerIns[ctor[jbean_1.CTOR_ID]] = new ctor();
+                    let cache = null;
+                    if (ctor['__' + method][cache_1.GET_CACHE]) {
+                        cache = ctor['__' + method][cache_1.GET_CACHE](routePath);
+                    }
+                    if (cache) {
+                        console.log('cache hit');
+                        return cache;
+                    }
+                    else {
+                        return new Promise((resolve, reject) => {
+                            const req = new base_1.Request(request, h);
+                            const res = new base_1.Response(request, h);
+                            if (supportCors) {
+                                res.setHeader('Access-Control-Allow-Credentials', true);
+                                res.setHeader('Access-Control-Allow-Origin', request.headers.origin || '*');
+                                res.setHeader('Access-Control-Allow-Headers', '*, X-Requested-With, Content-Type');
+                                res.setHeader('Access-Control-Allow-Methods', request.method);
+                                res.setHeader('Access-Control-Max-Age', 86400);
+                                res.setHeader('Access-Control-Expose-Headers', 'WWW-Authenticate,Server-Authorization');
                             }
-                            ins = controllerIns[ctor[jbean_1.CTOR_ID]];
-                            addTemplateDir(ctor, ins);
-                        }
-                        ins[exports.METHOD_KEY] = method.toLowerCase();
-                        let params = [req, res];
-                        if (request.params && Object.keys(request.params).length > 0) {
-                            params.push(request.params);
-                        }
-                        try {
-                            res.type('text/html');
-                            const ret = ins[method](...params);
-                            if (jbean_1.getObjectType(ret) === 'promise') {
-                                ret.then(data => {
-                                    res.writeAndFlush(data);
+                            let ins = target;
+                            if (typeof target !== 'function') {
+                                if (typeof controllerIns[ctor[jbean_1.CTOR_ID]] === 'undefined') {
+                                    controllerIns[ctor[jbean_1.CTOR_ID]] = new ctor();
+                                }
+                                ins = controllerIns[ctor[jbean_1.CTOR_ID]];
+                                addTemplateDir(ctor, ins);
+                            }
+                            ins[exports.METHOD_KEY] = method.toLowerCase();
+                            let params = [req, res];
+                            if (request.params && Object.keys(request.params).length > 0) {
+                                params.push(request.params);
+                            }
+                            try {
+                                res.type('text/html');
+                                const ret = ins[method](...params);
+                                if (jbean_1.getObjectType(ret) === 'promise') {
+                                    ret.then(data => {
+                                        if (ctor['__' + method][cache_1.SET_CACHE]) {
+                                            console.log('set cache');
+                                            ctor['__' + method][cache_1.SET_CACHE](routePath, data);
+                                        }
+                                        res.writeAndFlush(data);
+                                        // resolve()
+                                    }).catch(e => {
+                                        app.emit(application_1.AppErrorEvent.REQUEST, e);
+                                        res.error('Internal Server Error');
+                                    });
+                                }
+                                else {
+                                    if (ctor['__' + method][cache_1.SET_CACHE]) {
+                                        console.log('set cache');
+                                        ctor['__' + method][cache_1.SET_CACHE](routePath, ret);
+                                    }
+                                    res.writeAndFlush(ret);
                                     // resolve()
-                                }).catch(e => {
-                                    app.emit(application_1.AppErrorEvent.REQUEST, e);
-                                    res.error('Internal Server Error');
-                                });
+                                }
                             }
-                            else {
-                                res.writeAndFlush(ret);
-                                // resolve()
+                            catch (e) {
+                                app.emit(application_1.AppErrorEvent.REQUEST, e);
+                                res.error('Internal Server Error');
                             }
-                        }
-                        catch (e) {
-                            app.emit(application_1.AppErrorEvent.REQUEST, e);
-                            res.error('Internal Server Error');
-                        }
-                    });
+                        });
+                    }
                 })
             });
         });

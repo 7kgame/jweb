@@ -20,4 +20,6 @@ exports.Transactional = transactional_1.default;
 const validation_1 = require("./validation");
 exports.Validation = validation_1.default;
 exports.ValidationMode = validation_1.ValidationMode;
+const cache_1 = require("./cache");
+exports.Cache = cache_1.default;
 __export(require("./validator"));

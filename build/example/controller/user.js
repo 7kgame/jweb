@@ -118,6 +118,7 @@ __decorate([
 ], User.prototype, "payService", void 0);
 __decorate([
     lib_1.Get('/process/{uid}'),
+    lib_1.Cache(1000 * 600),
     Auth_1.default,
     response_body_1.default('json'),
     lib_1.Validation(user_1.default, lib_1.ValidationMode.entity),

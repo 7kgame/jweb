@@ -1,5 +1,5 @@
 import { Autowired, BusinessException } from 'jbean'
-import { BaseController, Controller, Get, Post, Request, Response, Transactional, Validation, ValidationMode } from '../../lib'
+import { BaseController, Controller, Get, Post, Request, Response, Transactional, Validation, ValidationMode, Cache } from '../../lib'
 import UserService from '../lib/account/UserService'
 import PayService from '../lib/account/PayService'
 import Auth from '../annos/Auth'
@@ -59,6 +59,7 @@ export default class User extends BaseController {
   }
 
   @Get('/process/{uid}')
+  @Cache(1000 * 600)
   @Auth
   @ResponseBody('json')
   @Validation(UserEntity, ValidationMode.entity)

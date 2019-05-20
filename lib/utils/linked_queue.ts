@@ -1,29 +1,34 @@
 const QUEUE_START = Symbol.for('QUEUE_START')
-export class LinkedNode {
+export class DoubleLinkedNode {
   public val: any
-  public next: LinkedNode
-  constructor(val: any, next: LinkedNode = null) {
+  public next: DoubleLinkedNode
+  public pre: DoubleLinkedNode
+  constructor(val: any, pre: DoubleLinkedNode = null, next: DoubleLinkedNode = null) {
     this.val = val
     this.next = next
+    this.pre = pre
   }
 }
 
-export class LinkedQueue {
+export class DoubleLinkedQueue {
   // aim to reduce judgement when push and pop
-  private $head:LinkedNode = new LinkedNode(QUEUE_START, null)
-  private $tail:LinkedNode = this.$head
+  private $head:DoubleLinkedNode = new DoubleLinkedNode(QUEUE_START, null)
+  private $tail:DoubleLinkedNode = this.$head
   private $length: number = 0
 
   // push a node to the tail
-  public push(node: LinkedNode) {
+  public push(n: any):DoubleLinkedNode {
+    let node = new DoubleLinkedNode(n, this.$tail)
     this.$tail.next = node
     this.$tail = node
     this.$length++
+    return node
   }
   // pop a node from the head
-  public pop(): LinkedNode {
+  public pop(): DoubleLinkedNode {
     let temp = this.$head.next
     this.$head.next = temp.next
+    temp.next.pre = this.$head
     this.$length--
     if (temp === this.$tail) {
       this.$tail = this.$head
@@ -40,6 +45,12 @@ export class LinkedQueue {
     return this.$length
   }
 
+  public erase(node: DoubleLinkedNode) {
+    let preNode = node.pre
+    preNode.next = node.next
+    node.next.pre = preNode
+    this.$length--
+  }
   public empty(): boolean {
     return (this.$tail.val === Symbol.for('QUEUE_START'))
   }

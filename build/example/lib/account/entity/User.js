@@ -26,7 +26,7 @@ __decorate([
 ], User.prototype, "uid", void 0);
 __decorate([
     lib_2.Required,
-    lib_2.Size(20, 30, 'name的长度应该位于20-30之间'),
+    lib_2.Size(20, 30, 'name的长度应该位于20-31之间'),
     __metadata("design:type", Object)
 ], User.prototype, "name", void 0);
 __decorate([

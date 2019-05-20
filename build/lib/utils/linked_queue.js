@@ -1,30 +1,34 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const QUEUE_START = Symbol.for('QUEUE_START');
-class LinkedNode {
-    constructor(val, next = null) {
+class DoubleLinkedNode {
+    constructor(val, pre = null, next = null) {
         this.val = val;
         this.next = next;
+        this.pre = pre;
     }
 }
-exports.LinkedNode = LinkedNode;
-class LinkedQueue {
+exports.DoubleLinkedNode = DoubleLinkedNode;
+class DoubleLinkedQueue {
     constructor() {
         // aim to reduce judgement when push and pop
-        this.$head = new LinkedNode(QUEUE_START, null);
+        this.$head = new DoubleLinkedNode(QUEUE_START, null);
         this.$tail = this.$head;
         this.$length = 0;
     }
     // push a node to the tail
-    push(node) {
+    push(n) {
+        let node = new DoubleLinkedNode(n, this.$tail);
         this.$tail.next = node;
         this.$tail = node;
         this.$length++;
+        return node;
     }
     // pop a node from the head
     pop() {
         let temp = this.$head.next;
         this.$head.next = temp.next;
+        temp.next.pre = this.$head;
         this.$length--;
         if (temp === this.$tail) {
             this.$tail = this.$head;
@@ -40,6 +44,12 @@ class LinkedQueue {
     length() {
         return this.$length;
     }
+    erase(node) {
+        let preNode = node.pre;
+        preNode.next = node.next;
+        node.next.pre = preNode;
+        this.$length--;
+    }
     empty() {
         return (this.$tail.val === Symbol.for('QUEUE_START'));
     }
@@ -51,4 +61,4 @@ class LinkedQueue {
         }
     }
 }
-exports.LinkedQueue = LinkedQueue;
+exports.DoubleLinkedQueue = DoubleLinkedQueue;
