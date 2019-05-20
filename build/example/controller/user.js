@@ -24,10 +24,11 @@ const PayService_1 = require("../lib/account/PayService");
 const Auth_1 = require("../annos/Auth");
 const response_body_1 = require("../annos/response_body");
 const user_1 = require("../lib/account/entity/user");
+const base_1 = require("./base");
 let User = 
 // @Auth
 // @ResponseXML
-class User extends lib_1.BaseController {
+class User extends base_1.default {
     constructor() {
         super();
         console.log('init user');
@@ -57,25 +58,30 @@ class User extends lib_1.BaseController {
             data: result
         };
     }
-    beforeCall(ret) {
+    beforeCall(ret, req, res) {
+        // res.setHeader('Content-Type', 'application/json')
+        // console.log(arguments)
         console.log('beforeCall', ret);
         return ret;
     }
     afterCall(ret) {
-        if (ret.err) {
-            return {
-                status: ret.err.code || -1,
-                message: ret.err,
-                data: ret.data
-            };
-        }
-        else {
-            return ret;
-        }
+        // console.log('aftercall', ret)
+        // ret.data = xmlEncode(ret.data)
+        // return ret
+        // if (ret.err) {
+        //   return {
+        //     status: ret.err.code || -1,
+        //     message: ret.err,
+        //     data: ret.data
+        //   }
+        // } else {
+        //   return ret
+        // }
     }
     process(req, res, { uid }) {
         return __awaiter(this, void 0, void 0, function* () {
             const user = req.entity;
+            // throw new BusinessException('inner err', -100, null)
             console.log('inside call', user, uid);
             // console.log(user['toObject']())
             // console.log('userService is', this.userService)

@@ -15,7 +15,6 @@ const callback = function (annoType: AnnotationType, target: object, field: stri
 Regex.validate = function (field: string, val: any, params: any[], val0: any, fieldType: string): { err: string, val: any } {
   let [tester, message] = params
   let err = null
-  console.log(tester, new RegExp(tester))
   if (!val || typeof val !== 'string' || !val.match(new RegExp(tester))) {
     err = getMessage(field, val, params)
   }

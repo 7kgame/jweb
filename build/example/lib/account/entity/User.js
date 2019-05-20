@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const jbean_1 = require("jbean");
 const lib_1 = require("../../../../lib");
 const REGISTER_SCENE1 = 'register1';
-const REGISTER_SCENE2 = 'register2';
+const MODIFY_SCENE2 = 'modify';
 let User = class User {
     constructor() {
         this.uid = undefined;
@@ -21,22 +21,22 @@ let User = class User {
     }
 };
 __decorate([
-    jbean_1.Type('string'),
-    lib_1.ValidationScene(REGISTER_SCENE1, REGISTER_SCENE2),
+    lib_1.ValidationScene(REGISTER_SCENE1, MODIFY_SCENE2),
     lib_1.Required("uid是必填的参数"),
     __metadata("design:type", Object)
 ], User.prototype, "uid", void 0);
 __decorate([
     lib_1.Required,
+    lib_1.ValidationScene(REGISTER_SCENE1),
     lib_1.Email,
     lib_1.Size(2, 30, 'name的长度应该位于$min-$max之间'),
     __metadata("design:type", Object)
 ], User.prototype, "name", void 0);
 __decorate([
     jbean_1.Type('number'),
-    lib_1.ValidationScene(REGISTER_SCENE2),
+    lib_1.ValidationScene(MODIFY_SCENE2),
     lib_1.Required("age is required"),
-    lib_1.Between(18, 20),
+    lib_1.Between(18, 20, 'error exist $field : $min $val'),
     __metadata("design:type", Object)
 ], User.prototype, "age", void 0);
 User = __decorate([

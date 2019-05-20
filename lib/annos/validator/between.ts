@@ -26,5 +26,5 @@ const getMessage = function (field: string, val: any, params: any[]) {
   if (!message) {
     message = 'the value of $field must between $min and $max'
   }
-  return format(message, {min, max, val})
+  return format(message, {field, min, max, val})
 }

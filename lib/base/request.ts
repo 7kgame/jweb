@@ -13,6 +13,7 @@ export default class Request extends ReqRes {
   public headers
   public cookies
   public entity: any
+  public innerParams: {}
 
   private request: Hapi.Request
   private response: Hapi.ResponseToolkit

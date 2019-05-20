@@ -36,5 +36,5 @@ const getMessage = function (field, val, params) {
             message = 'the length of $field must larger than $min';
         }
     }
-    return utils_1.format(message, { min, max, val });
+    return utils_1.format(message, { field, min, max, val });
 };

@@ -36,5 +36,5 @@ const getMessage = function (field: string, val: any, params: any[]) {
       message = 'the length of $field must larger than $min'
     }
   }
-  return format(message, {min, max, val})
+  return format(message, {field, min, max, val})
 }
