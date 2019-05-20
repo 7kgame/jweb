@@ -1,10 +1,12 @@
 import { Autowired, BusinessException } from 'jbean'
-import { BaseController, Controller, Get, Post, Request, Response, Transactional, Validation, ValidationMode } from '../../lib'
+import { Controller, Get, Post, Request, Response, Transactional, Validation, ValidationMode } from '../../lib'
 import UserService from '../lib/account/UserService'
 import PayService from '../lib/account/PayService'
 import Auth from '../annos/Auth'
 import ResponseBody from '../annos/response_body'
 import UserEntity from '../lib/account/entity/user'
+
+import BaseController from './base'
 
 @Controller('/user')
 @Transactional

@@ -10,8 +10,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const lib_1 = require("../../lib");
-let Pay = class Pay {
+const base_1 = require("./base");
+let Pay = class Pay extends base_1.default {
     constructor() {
+        super();
         console.log('init pay');
     }
     process() {
@@ -22,6 +24,10 @@ let Pay = class Pay {
     }
     edit() {
         console.log('this is pay edit');
+    }
+    list() {
+        console.log('this is pay list');
+        return 1;
     }
 };
 __decorate([
@@ -36,6 +42,12 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], Pay.prototype, "edit", null);
+__decorate([
+    lib_1.Get('/list'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], Pay.prototype, "list", null);
 Pay = __decorate([
     lib_1.Controller('/pay'),
     __metadata("design:paramtypes", [])

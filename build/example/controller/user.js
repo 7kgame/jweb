@@ -24,10 +24,11 @@ const PayService_1 = require("../lib/account/PayService");
 const Auth_1 = require("../annos/Auth");
 const response_body_1 = require("../annos/response_body");
 const user_1 = require("../lib/account/entity/user");
+const base_1 = require("./base");
 let User = 
 // @Auth
 // @ResponseXML
-class User extends lib_1.BaseController {
+class User extends base_1.default {
     constructor() {
         super();
         console.log('init user');
