@@ -28,17 +28,25 @@ export default class User extends BaseController {
   }
 
   private postAround (ret) {
-    // let result = {
-    //   status: 0,
-    //   data: ret.data,
-    //   message: null
-    // }
-    // if (ret.err) {
-    //   result.status = ret.err.code || -1
-    //   result.message = ret.err.err || '系统异常'
-    // }
-    // return result
-    console.log('postAround', ret)
+    let result = {
+      status: 0,
+      data: ret.data,
+      message: null
+    }
+    if (ret.err) {
+      if (ret.err instanceof BusinessException) {
+        result.status = ret.err.code || -1
+        result.data = ret.err.data
+        result.message = ret.err.err || '系统异常'
+      } else {
+        result.status = -1
+        result.message = ret.err
+      }
+    }
+    return {
+      err: null,
+      data: result
+    }
   }
 
   private beforeCall (ret) {
@@ -62,7 +70,7 @@ export default class User extends BaseController {
   @Cache(1000 * 600)
   @Auth
   @ResponseBody('json')
-  @Validation(UserEntity, ValidationMode.entity)
+  @Validation(UserEntity)
   @Transactional
   public async process (req: Request, res: Response, { uid }) {
     const user: UserEntity = req.entity

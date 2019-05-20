@@ -1,13 +1,17 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const jbean_1 = require("jbean");
-function Required(component, options) {
+const utils_1 = require("../../utils");
+function Required(message, options) {
     return jbean_1.annotationHelper(arguments, callback);
 }
 exports.default = Required;
-Required.validate = function (field, val, params, fieldType) {
+const callback = function (annoType, target, field, message) {
+    jbean_1.BeanFactory.addBeanMeta(annoType, target, field, Required, [message]);
+};
+Required.validate = function (field, val, params, val0, fieldType) {
     let err = null;
-    if (val === null || val === undefined) {
+    if (val === null || val === undefined || val === '') {
         err = getMessage(field, val, params);
     }
     return {
@@ -17,26 +21,8 @@ Required.validate = function (field, val, params, fieldType) {
 };
 const getMessage = function (field, val, params) {
     let [message] = params;
-    if (message) {
-        return message;
+    if (!message) {
+        message = 'key $field is required';
     }
-    else {
-        return `key '${field}' is required`;
-    }
-};
-// function validate(val: any): {valid: boolean, val: any} {
-//   if (val === null || val === undefined) {
-//     return {valid: false, val: val}
-//   }
-//   return {valid: true, val: val}
-// }
-// function message(field: string, mes?: string) {
-//   if (mes) {
-//     return () => mes
-//   } else {
-//     return () => `"key '${field}' is required"`
-//   }
-// }
-const callback = function (annoType, ctor, field, message) {
-    jbean_1.BeanFactory.addBeanMeta(annoType, ctor, field, Required, [message]);
+    return utils_1.format(message, { field, val });
 };

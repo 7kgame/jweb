@@ -22,4 +22,5 @@ exports.Validation = validation_1.default;
 exports.ValidationMode = validation_1.ValidationMode;
 const cache_1 = require("./cache");
 exports.Cache = cache_1.default;
+exports.ValidationScene = validation_1.ValidationScene;
 __export(require("./validator"));

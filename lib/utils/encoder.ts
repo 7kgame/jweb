@@ -1,6 +1,6 @@
 import { getObjectType } from 'jbean'
 
-export function xmlEncode(ret: any) {
+export function xmlEncode(ret: any): string {
   let xmlContent = []
 
   switch (getObjectType(ret)) {
@@ -32,7 +32,7 @@ export function xmlEncode(ret: any) {
   return xmlContent.join('')
 }
 
-export function jsonEncode(ret: any) {
+export function jsonEncode(ret: any): string {
   let type = getObjectType(ret)
 
   if (type === 'string') {

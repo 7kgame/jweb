@@ -1,117 +1,107 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const jbean_1 = require("jbean");
-function Validation(entity, mode = ValidationMode.entity) {
-    return jbean_1.annotationHelper([entity, mode], callback);
-}
-exports.default = Validation;
 var ValidationMode;
 (function (ValidationMode) {
     ValidationMode[ValidationMode["params"] = 0] = "params";
-    ValidationMode[ValidationMode["entity"] = 1] = "entity";
-    ValidationMode[ValidationMode["intersect"] = 2] = "intersect"; // validation based on the intersection of params and entity
+    ValidationMode[ValidationMode["entity"] = 1] = "entity"; // validation based on entity property
 })(ValidationMode = exports.ValidationMode || (exports.ValidationMode = {}));
+const validationMode4Entities = {};
+function ValidationScene(...scenes) {
+    return jbean_1.annotationHelper(arguments, sceneCallback);
+}
+exports.ValidationScene = ValidationScene;
+const sceneCallback = function (annoType, target, field, ...scenes) {
+    if (!scenes || scenes.length < 1) {
+        return;
+    }
+    const ctorId = target.constructor[jbean_1.CTOR_ID];
+    if (typeof validationMode4Entities[ctorId] === 'undefined') {
+        validationMode4Entities[ctorId] = {};
+    }
+    scenes.forEach(scene => {
+        scene = 's_' + scene;
+        if (typeof validationMode4Entities[ctorId][scene] === 'undefined') {
+            validationMode4Entities[ctorId][scene] = [];
+        }
+        validationMode4Entities[ctorId][scene].push(field);
+    });
+};
+function Validation(entityClz, mode) {
+    return jbean_1.annotationHelper(arguments, callback, true);
+}
+exports.default = Validation;
 const callback = function (annoType, target, method, descriptor, entityClz, mode) {
     jbean_1.BeanFactory.addBeanMeta(jbean_1.AnnotationType.method, target, method, Validation, [entityClz, mode]);
 };
-Validation.preCall = function vldPreCall(ret, entityClz, mode, req, res) {
+Validation.preCall = function (ret, entityClz, mode, req, res) {
     if (ret && ret.err) {
         return ret;
     }
     const params = Object.assign({}, req.params, req.query, req.payload);
     const entity = new entityClz();
-    const fields = Object.getOwnPropertyNames(entity);
-    if (!fields) {
+    let fields = Object.getOwnPropertyNames(entity);
+    if (!fields || fields.length < 1) {
         return;
+    }
+    let sceneFields = null;
+    if (mode === undefined || mode === ValidationMode.params) {
+        sceneFields = Object.keys(params);
+    }
+    else if (mode === ValidationMode.entity) {
+        sceneFields = fields;
+    }
+    else if (typeof mode === 'string') {
+        const ctorId = entityClz[jbean_1.CTOR_ID];
+        const scene = 's_' + mode;
+        if (validationMode4Entities[ctorId] && validationMode4Entities[ctorId][scene]) {
+            sceneFields = validationMode4Entities[ctorId][scene];
+        }
+    }
+    if (!sceneFields || sceneFields.length < 1) {
+        return {
+            err: new jbean_1.BusinessException('validate field is empty', -1)
+        };
+    }
+    if (mode !== ValidationMode.entity) {
+        fields = fields.filter(field => {
+            return sceneFields.indexOf(field) >= 0;
+        });
     }
     let beanMeta = jbean_1.BeanFactory.getBeanMeta(entity.constructor);
     let fieldAnnos = beanMeta.fieldAnnos;
     let fieldType = beanMeta.fieldType;
-    return _validateByMode(entity, fields, params, fieldAnnos, fieldType, mode, req);
-    // let err0 = null
-    // fields.forEach(field => {
-    //   if (typeof fieldAnnos[field] === 'undefined') {
-    //     entity[field] = params[field]
-    //     return
-    //   }
-    //   let val0 = params[field]
-    //   let validators = fieldAnnos[field]
-    //   let hasError = false
-    //   validators.forEach(([validator, validatorParams]) => {
-    //     if (hasError || !validator.validate) {
-    //       return
-    //     }
-    //     let {err, val} = validator.validate(field, val0, validatorParams, fieldType[field])
-    //     if (err) {
-    //       err0 = err0 || {}
-    //       err0[field] = err
-    //       hasError = true
-    //     } else {
-    //       entity[field] = val
-    //     }
-    //   })
-    // })
-    // if (!err0) {
-    //   req.entity = entity
-    // }
-    // return {
-    //   err: err0,
-    //   data: entity
-    // }
-};
-function _validateByMode(entity, fields, params, fieldAnnos, fieldType, mode, req) {
-    let ret;
-    switch (mode) {
-        case ValidationMode.entity:
-            ret = _validateData(entity, fields, params, fieldAnnos, fieldType);
-            break;
-        case ValidationMode.params:
-            ret = _validateData(entity, Object.keys(params), params, fieldAnnos, fieldType);
-            break;
-        case ValidationMode.intersect:
-            let newFields = fields.filter((val) => {
-                return params[val] !== undefined;
-            });
-            ret = _validateData(entity, newFields, params, fieldAnnos, fieldType);
-            break;
-        default:
-            ret = _validateData(entity, fields, params, fieldAnnos, fieldType);
-    }
-    if (!ret.err0) {
-        req.entity = ret.data;
-    }
-    return {
-        err: ret.err0,
-        data: ret.data
-    };
-}
-function _validateData(entity, data, params, fieldAnnos, fieldType) {
     let err0 = null;
-    data.forEach(field => {
+    let fieldLen = fields.length;
+    for (let i = 0; i < fieldLen; i++) {
+        const field = fields[i];
         if (typeof fieldAnnos[field] === 'undefined') {
-            entity[field] = params[field];
-            return;
+            entity[field] = jbean_1.strTo(fieldType[field], params[field]);
+            continue;
         }
-        let val0 = params[field];
+        let val0 = jbean_1.strTo(fieldType[field], params[field]);
         let validators = fieldAnnos[field];
-        let hasError = false;
-        validators.forEach(([validator, validatorParams]) => {
-            if (hasError || !validator.validate) {
-                return;
+        let validatorLen = validators.length;
+        for (let j = 0; j < validatorLen; j++) {
+            let [validator, validatorParams] = validators[j];
+            if (!validator.validate) {
+                continue;
             }
-            let { err, val } = validator.validate(field, val0, validatorParams, fieldType[field]);
+            let { err, val } = validator.validate(field, val0, validatorParams, params[field], fieldType[field]);
+            entity[field] = val;
             if (err) {
                 err0 = err0 || {};
                 err0[field] = err;
-                hasError = true;
+                break;
             }
-            else {
-                entity[field] = val;
-            }
-        });
-    });
-    return {
-        err0,
-        data: entity
-    };
-}
+        }
+    }
+    if (!err0) {
+        req.entity = entity;
+    }
+    else {
+        return {
+            err: new jbean_1.BusinessException('validate failed', -2, err0)
+        };
+    }
+};
