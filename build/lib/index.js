@@ -11,3 +11,4 @@ const controller_1 = require("./mvc/controller");
 exports.BaseController = controller_1.default;
 __export(require("./annos"));
 __export(require("./base"));
+__export(require("./utils"));

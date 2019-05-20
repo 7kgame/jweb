@@ -39,7 +39,6 @@ exports.Options = Options;
 const controllerCallback = function (annoType, ctor, path) {
     controllers.push(ctor);
     ctor[CONTROLLER_FILE_KEY] = jbean_1.BeanFactory.getCurrentSourceFile();
-    console.log(ctor[CONTROLLER_FILE_KEY]);
     addAnno(ctor, path);
 };
 const methodCallback = function (annoType, target, method, descriptor, requestMethod, path) {
