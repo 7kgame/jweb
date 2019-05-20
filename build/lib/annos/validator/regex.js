@@ -15,7 +15,6 @@ const callback = function (annoType, target, field, tester, message) {
 Regex.validate = function (field, val, params, val0, fieldType) {
     let [tester, message] = params;
     let err = null;
-    console.log(tester, new RegExp(tester));
     if (!val || typeof val !== 'string' || !val.match(new RegExp(tester))) {
         err = getMessage(field, val, params);
     }
