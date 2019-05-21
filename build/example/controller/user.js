@@ -156,8 +156,8 @@ __decorate([
 __decorate([
     lib_1.Get('/info'),
     response_body_1.default('json'),
-    Auth_1.default,
-    lib_1.Cache(1000 * 60),
+    Auth_1.default('ignore'),
+    lib_1.Cache(1000 * 6),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [lib_1.Request, lib_1.Response]),
     __metadata("design:returntype", void 0)

@@ -3,8 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const jbean_1 = require("jbean");
 const LRUCache_1 = require("../cache/LRUCache");
 const application_1 = require("../application");
-exports.SET_CACHE = '__set_cache';
-exports.GET_CACHE = '__get_cache';
 function Cache(expire) {
     return jbean_1.annotationHelper(arguments, callback);
 }
@@ -39,36 +37,24 @@ function setCache(url, val, expire) {
 function getCache(url) {
     return LRUCache_1.default.getIns().get(url);
 }
-function retHook(ret, ctor, field, expire) {
+function retHook(ret, expire, request, response) {
     if (ret.err) {
         return;
     }
-    let pathMeta = ctor[field]['__pathMeta'];
     let lruCache = LRUCache_1.default.getIns();
-    let cache = lruCache.get(pathMeta.path);
-    if (cache) {
-        return;
-    }
-    else {
-        if (pathMeta.method === 'GET' && !(/\{.*\}/.test(pathMeta.path))) {
-            console.log('setCache');
-            lruCache.set(pathMeta.path, ret.data, expire);
-        }
-    }
+    lruCache.set(request.url.href, ret.data, expire);
 }
-Cache.preCall = function (ret, ctor, field, expire) {
+Cache.preCall = function (ret, expire, request, response) {
     if (ret.err) {
         return ret;
     }
-    let pathMeta = ctor[field]['__pathMeta'];
-    let cache = LRUCache_1.default.getIns().get(pathMeta.path);
+    let cache = LRUCache_1.default.getIns().get(request.url.href);
     if (cache) {
-        console.log('cache hit');
-        ret.err = '__cache_hitted';
-        ret.data = cache;
+        response.writeAndFlush(cache);
+        return null;
     }
     return ret;
 };
 const callback = function (annoType, ctor, field, descriptor, expire) {
-    jbean_1.BeanFactory.addBeanMeta(annoType, ctor, field, Cache, [ctor, field, expire], null, retHook);
+    jbean_1.BeanFactory.addBeanMeta(annoType, ctor, field, Cache, [expire], null, retHook);
 };

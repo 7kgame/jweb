@@ -1,10 +1,7 @@
 import { AnnotationType, annotationHelper, BeanFactory, CTOR_ID } from 'jbean'
 import LRUCache from '../cache/LRUCache'
 import Application from '../application'
-
-export const SET_CACHE = '__set_cache'
-export const GET_CACHE = '__get_cache'
-
+import { Request, Response } from '../base'
 export default function Cache(expire?: number) {
   return annotationHelper(arguments, callback)
 }
@@ -41,38 +38,25 @@ function getCache(url: string):string {
   return LRUCache.getIns().get(url)
 }
 
-function retHook(ret: any, ctor: object, field: string, expire: number): void {
+function retHook(ret: any, expire: number, request: Request, response: Response): void {
   if (ret.err) {
     return
   }
-  let pathMeta = ctor[field]['__pathMeta']
   let lruCache = LRUCache.getIns()
-  let cache = lruCache.get(pathMeta.path)
-
-  if (cache) {
-    return
-  } else {
-    if (pathMeta.method === 'GET' && !(/\{.*\}/.test(pathMeta.path))) {
-      console.log('setCache')
-      lruCache.set(pathMeta.path, ret.data, expire)
-    }
-  }
+  lruCache.set(request.url.href, ret.data, expire)
 }
 
-Cache.preCall = function (ret: any, ctor: object, field: string, expire: number) {
+Cache.preCall = function (ret: any, expire: number, request: Request, response: Response) {
   if (ret.err) {
     return ret
   }
-  let pathMeta = ctor[field]['__pathMeta']
-
-  let cache = LRUCache.getIns().get(pathMeta.path)
+  let cache = LRUCache.getIns().get(request.url.href)
   if (cache) {
-    console.log('cache hit')
-    ret.err = '__cache_hitted'
-    ret.data = cache
+    response.writeAndFlush(cache)
+    return null
   }
   return ret
 }
 const callback = function (annoType: AnnotationType, ctor: object, field: string, descriptor: PropertyDescriptor, expire?:number) {
-  BeanFactory.addBeanMeta(annoType, ctor, field, Cache, [ctor, field, expire], null, retHook)
+  BeanFactory.addBeanMeta(annoType, ctor, field, Cache, [expire], null, retHook)
 }

@@ -152,14 +152,12 @@ jbean_1.BeanFactory.registerStartBean(() => {
                         }
                         try {
                             res.type('text/html');
-                            if (typeof ins[method]['__pathMeta'] === 'undefined') {
-                                ins[method]['__pathMeta'] = {
-                                    path: routePath,
-                                    method: requestMethod
-                                };
-                            }
                             const ret = ins[method](...params);
-                            if (jbean_1.getObjectType(ret) === 'promise') {
+                            if (ret === null) {
+                                /** done nothing, cause res is solved by annotation which returns null*/
+                                res.flush();
+                            }
+                            else if (jbean_1.getObjectType(ret) === 'promise') {
                                 ret.then(data => {
                                     res.writeAndFlush(data);
                                     // resolve()

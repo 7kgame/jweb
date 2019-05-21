@@ -4,7 +4,6 @@ import { AnnotationType, annotationHelper, BeanFactory, BeanMeta, CTOR_ID, getOb
 
 import Application, { AppErrorEvent, ApplicationType } from '../application'
 import { Request, Response } from '../base'
-import { GET_CACHE, SET_CACHE } from './cache'
 
 export function Controller(component?: any, path?: any) {
   return annotationHelper(arguments, controllerCallback)
@@ -154,14 +153,11 @@ BeanFactory.registerStartBean(() => {
             }
             try {
               res.type('text/html')
-              if (typeof ins[method]['__pathMeta'] === 'undefined') {
-                ins[method]['__pathMeta'] = {
-                  path: routePath,
-                  method: requestMethod
-                }
-              }
               const ret = ins[method](...params)
-              if (getObjectType(ret) === 'promise') {
+              if (ret === null) {
+                /** done nothing, cause res is solved by annotation which returns null*/
+                res.flush()
+              } else if (getObjectType(ret) === 'promise') {
                 ret.then(data => {
                   res.writeAndFlush(data)
                   // resolve()
