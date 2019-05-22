@@ -1,10 +1,13 @@
 import { DoubleLinkedQueue, DoubleLinkedNode } from "../utils/linked_queue"
+
 class Entry {
+
   public node: DoubleLinkedNode
   public value: Buffer
   public length: number
   public now: number
   public maxAge: number
+
   constructor(node: DoubleLinkedNode, value: Buffer, length: number, now: number, maxAge: number) {
     this.node = node
     this.value = value
@@ -13,13 +16,16 @@ class Entry {
     this.maxAge = maxAge
   }
 }
+
 export default class LRUCache {
+
   private cacheQueue = new DoubleLinkedQueue()
   private cacheMap = {}
   private MAX_CACHE_SIZE = 1024 * 1024 * 300
   private tempCacheSize = 0
   private static ins: LRUCache = null
   private EXPIRE_TIME: number
+
   private constructor(options) {
     this.MAX_CACHE_SIZE = options.max_cache_size || 1024 * 1024 * 300
     this.EXPIRE_TIME = options.expire || 1000 * 60
@@ -32,9 +38,11 @@ export default class LRUCache {
     }
     return LRUCache.ins
   }
+
   public static getIns(): LRUCache {
     return LRUCache.ins
   }
+
   public set(key: string, val: string, expire?: number) {
     // console.log('insert %s => %s', key, val)
     let expire_time = expire || this.EXPIRE_TIME
@@ -65,6 +73,7 @@ export default class LRUCache {
     delete this.cacheMap[key]
     return true
   }
+
   public get(key: string): string {
     if (this.isStale(key)) {
       this.releaseBeforeKey(key)
@@ -76,15 +85,16 @@ export default class LRUCache {
         this.cacheQueue.erase(entry.node)
         entry.node = this.cacheQueue.push(key)
       }
-      // console.log('hit', key)
       return entry.value.toString()
     }
   }
+
   public reset() {
     while (!this.cacheQueue.empty()) {
       this.del()
     }
   }
+
   private isStale(key: string): boolean {
     let cacheEntry: Entry = this.cacheMap[key]
     if (!cacheEntry) {
@@ -103,12 +113,10 @@ export default class LRUCache {
     }
     while (this.cacheQueue.head().val !== key) {
       let k: string = this.cacheQueue.pop().val
-      // console.log('release key', key)
       this.tempCacheSize -= this.cacheMap[k].length
       delete this.cacheMap[k]
     }
     let k: string = this.cacheQueue.pop().val
-    // console.log('release key', k)
     this.tempCacheSize -= this.cacheMap[k].length
     delete this.cacheMap[k]
   }

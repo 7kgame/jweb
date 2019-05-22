@@ -12,7 +12,7 @@ const Path = require("path");
 const jbean_1 = require("jbean");
 const application_1 = require("../application");
 const base_1 = require("../base");
-function Controller(component, path) {
+function Controller(path) {
     return jbean_1.annotationHelper(arguments, controllerCallback);
 }
 exports.Controller = Controller;

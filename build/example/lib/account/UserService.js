@@ -23,6 +23,9 @@ let UserService = class UserService {
     constructor() {
         //console.log('new UserService')
     }
+    beforeCall() {
+        console.log('userService beforeCall');
+    }
     hello(user) {
         return __awaiter(this, void 0, void 0, function* () {
             // console.log(this.userRepository)

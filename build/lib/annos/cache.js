@@ -7,6 +7,9 @@ function Cache(expire) {
     return jbean_1.annotationHelper(arguments, callback);
 }
 exports.default = Cache;
+const callback = function (annoType, ctor, field, descriptor, expire) {
+    jbean_1.BeanFactory.addBeanMeta(annoType, ctor, field, Cache, [expire], null, retHook);
+};
 jbean_1.BeanFactory.registerStartBean(() => {
     let application = application_1.default.getIns();
     const configNS = application.configNS;
@@ -31,12 +34,12 @@ jbean_1.BeanFactory.registerStartBean(() => {
         expire
     });
 });
-function setCache(url, val, expire) {
-    LRUCache_1.default.getIns().set(url, val, expire);
-}
-function getCache(url) {
-    return LRUCache_1.default.getIns().get(url);
-}
+// function setCache(url: string, val: string, expire?: number) {
+//   LRUCache.getIns().set(url, val, expire)
+// }
+// function getCache(url: string):string {
+//   return LRUCache.getIns().get(url)
+// }
 function retHook(ret, expire, request, response) {
     if (ret.err) {
         return;
@@ -50,11 +53,8 @@ Cache.preCall = function (ret, expire, request, response) {
     }
     let cache = LRUCache_1.default.getIns().get(request.url.href);
     if (cache) {
+        console.log(cache);
         response.writeAndFlush(cache);
         return null;
     }
-    return ret;
-};
-const callback = function (annoType, ctor, field, descriptor, expire) {
-    jbean_1.BeanFactory.addBeanMeta(annoType, ctor, field, Cache, [expire], null, retHook);
 };

@@ -1,4 +1,4 @@
-import { AnnotationType, annotationHelper, BeanFactory, CTOR_ID, getObjectType, isAsyncFunction } from 'jbean'
+import { AnnotationType, annotationHelper, BeanFactory } from 'jbean'
 import { Request, Response } from '../../lib'
 
 export default function Auth (component?: any, options?: any) {

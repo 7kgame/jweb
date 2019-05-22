@@ -70,7 +70,6 @@ class LRUCache {
                 this.cacheQueue.erase(entry.node);
                 entry.node = this.cacheQueue.push(key);
             }
-            // console.log('hit', key)
             return entry.value.toString();
         }
     }
@@ -96,12 +95,10 @@ class LRUCache {
         }
         while (this.cacheQueue.head().val !== key) {
             let k = this.cacheQueue.pop().val;
-            // console.log('release key', key)
             this.tempCacheSize -= this.cacheMap[k].length;
             delete this.cacheMap[k];
         }
         let k = this.cacheQueue.pop().val;
-        // console.log('release key', k)
         this.tempCacheSize -= this.cacheMap[k].length;
         delete this.cacheMap[k];
     }

@@ -12,6 +12,10 @@ export default class UserService {
     //console.log('new UserService')
   }
 
+  public beforeCall () {
+    console.log('userService beforeCall')
+  }
+
   public async hello (user: UserEntity) {
     // console.log(this.userRepository)
     let res1 = this.userRepository.hello(user)

@@ -1,8 +1,10 @@
 const QUEUE_START = Symbol.for('QUEUE_START')
+
 export class DoubleLinkedNode {
   public val: any
   public next: DoubleLinkedNode
   public pre: DoubleLinkedNode
+
   constructor(val: any, pre: DoubleLinkedNode = null, next: DoubleLinkedNode = null) {
     this.val = val
     this.next = next
@@ -12,8 +14,8 @@ export class DoubleLinkedNode {
 
 export class DoubleLinkedQueue {
   // aim to reduce judgement when push and pop
-  private $head:DoubleLinkedNode = new DoubleLinkedNode(QUEUE_START, null)
-  private $tail:DoubleLinkedNode = this.$head
+  private $head: DoubleLinkedNode = new DoubleLinkedNode(QUEUE_START, null)
+  private $tail: DoubleLinkedNode = this.$head
   private $length: number = 0
 
   // push a node to the tail
@@ -24,6 +26,7 @@ export class DoubleLinkedQueue {
     this.$length++
     return node
   }
+
   // pop a node from the head
   public pop(): DoubleLinkedNode {
     let temp = this.$head.next
@@ -36,12 +39,15 @@ export class DoubleLinkedQueue {
     }
     return temp
   }
+
   public head() {
     return this.$head.next
   }
+
   public tail() {
     return this.$tail
   }
+
   public length(): number {
     return this.$length
   }
@@ -52,9 +58,11 @@ export class DoubleLinkedQueue {
     node.next.pre = preNode
     this.$length--
   }
+
   public empty(): boolean {
     return (this.$tail.val === Symbol.for('QUEUE_START'))
   }
+
   public forEach(fn: Function) {
     let temp = this.$head.next
     while (temp !== null) {

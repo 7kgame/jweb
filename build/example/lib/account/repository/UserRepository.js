@@ -24,7 +24,10 @@ let UserRepository = class UserRepository {
         //console.log('new userRepository')
     }
     postInit() {
-        //console.log('userRepository.postInit')
+        console.log('userRepository.postInit');
+    }
+    beforeCall() {
+        console.log('userRepository beforeCall');
     }
     hello(user) {
         return __awaiter(this, void 0, void 0, function* () {

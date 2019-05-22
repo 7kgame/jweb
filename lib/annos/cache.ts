@@ -2,8 +2,13 @@ import { AnnotationType, annotationHelper, BeanFactory, CTOR_ID } from 'jbean'
 import LRUCache from '../cache/LRUCache'
 import Application from '../application'
 import { Request, Response } from '../base'
+
 export default function Cache(expire?: number) {
   return annotationHelper(arguments, callback)
+}
+
+const callback = function (annoType: AnnotationType, ctor: object, field: string, descriptor: PropertyDescriptor, expire?:number) {
+  BeanFactory.addBeanMeta(annoType, ctor, field, Cache, [expire], null, retHook)
 }
 
 BeanFactory.registerStartBean(() => {
@@ -16,6 +21,7 @@ BeanFactory.registerStartBean(() => {
         LRUCache.create({})
     return
   }
+
   const cacheConfigs = applicationConfigs[configNS].cache
   let max_cache_size = cacheConfigs.maxCacheSize || undefined
   let expire = cacheConfigs.expire || undefined
@@ -31,12 +37,13 @@ BeanFactory.registerStartBean(() => {
   })
 })
 
-function setCache(url: string, val: string, expire?: number) {
-  LRUCache.getIns().set(url, val, expire)
-}
-function getCache(url: string):string {
-  return LRUCache.getIns().get(url)
-}
+// function setCache(url: string, val: string, expire?: number) {
+//   LRUCache.getIns().set(url, val, expire)
+// }
+
+// function getCache(url: string):string {
+//   return LRUCache.getIns().get(url)
+// }
 
 function retHook(ret: any, expire: number, request: Request, response: Response): void {
   if (ret.err) {
@@ -50,13 +57,10 @@ Cache.preCall = function (ret: any, expire: number, request: Request, response: 
   if (ret.err) {
     return ret
   }
+
   let cache = LRUCache.getIns().get(request.url.href)
   if (cache) {
     response.writeAndFlush(cache)
     return null
   }
-  return ret
-}
-const callback = function (annoType: AnnotationType, ctor: object, field: string, descriptor: PropertyDescriptor, expire?:number) {
-  BeanFactory.addBeanMeta(annoType, ctor, field, Cache, [expire], null, retHook)
 }

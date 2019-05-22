@@ -118,8 +118,7 @@ class User extends base_1.default {
         // console.log('user/info exec')
         // response.error('出错啦')
         // return null
-        let test = new Map();
-        test.set("a", { k: 1, k2: null, k3: false, k4: 'hello' });
+        let test = { "a": { k: 1, k2: null, k3: false, k4: 'hello' } };
         return test;
     }
 };
@@ -156,8 +155,8 @@ __decorate([
 __decorate([
     lib_1.Get('/info'),
     response_body_1.default('json'),
-    Auth_1.default('ignore'),
-    lib_1.Cache(1000 * 6),
+    Auth_1.default,
+    lib_1.Cache(1000 * 60),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [lib_1.Request, lib_1.Response]),
     __metadata("design:returntype", void 0)

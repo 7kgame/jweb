@@ -5,7 +5,7 @@ import { AnnotationType, annotationHelper, BeanFactory, BeanMeta, CTOR_ID, getOb
 import Application, { AppErrorEvent, ApplicationType } from '../application'
 import { Request, Response } from '../base'
 
-export function Controller(component?: any, path?: any) {
+export function Controller(path: string) {
   return annotationHelper(arguments, controllerCallback)
 }
 

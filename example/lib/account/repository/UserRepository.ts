@@ -21,7 +21,11 @@ export default class UserRepository {
   }
 
   private postInit (): void {
-    //console.log('userRepository.postInit')
+    console.log('userRepository.postInit')
+  }
+
+  public beforeCall () {
+    console.log('userRepository beforeCall')
   }
 
   public async hello (user: UserEntity) {

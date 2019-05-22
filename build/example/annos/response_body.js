@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const jbean_1 = require("jbean");
 const utils_1 = require("../../lib/utils");
-function ResponseBody(component, type) {
+function ResponseBody(type) {
     return jbean_1.annotationHelper(arguments, callback);
 }
 exports.default = ResponseBody;
@@ -30,8 +30,8 @@ ResponseBody.preCall = function rbdPreCall(ret, type, req, res) {
 ResponseBody.postCall = function rbdPostCall(ret, type, req, res) {
     switch (type) {
         case 'json':
-            if (typeof ret === 'object') {
-                ret.data = utils_1.jsonEncode(ret.data.data);
+            if (typeof ret.data === 'object') {
+                ret.data = utils_1.jsonEncode(ret.data);
             }
             break;
         case 'xml':
