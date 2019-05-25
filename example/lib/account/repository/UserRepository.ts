@@ -37,17 +37,19 @@ export default class UserRepository {
     let num = await this.mysql.count(UserEntity)
     console.log('count is ', num)
     // await this.mysql.delete(UserEntity, {uid: 14, age: 1})
+    let delNum = await this.mysql.deleteById(UserEntity, 1)
+    console.log(delNum, '==========')
     const data: UserEntity[] = await this.mysql.findAll(UserEntity)
     console.log(data)
-    const page: Page = await this.mysql.searchByPage(UserEntity, {$limit: {start: 0, limit: 3}, $orderby: {column: 'uid', op: 'desc'}})
+    const page: Page = await this.mysql.searchByPage(UserEntity, {$where: {uid: '> 10'}, $limit: {start: 2, limit: 4}, $orderby: {column: 'uid'}})
     console.log(page)
     const u:UserEntity = await this.mysql.find(UserEntity, {uid: 160})
     console.log(u)
 
-    const u0 = await this.mysql.findById(UserEntity, 160)
+    const u0 = await this.mysql.findById(UserEntity, 160, null, true)
     console.log('find by id', u0)
     //console.log(JSON.stringify(u))
-    return data
+    return page
   }
 
   public async helloMongo ()  {

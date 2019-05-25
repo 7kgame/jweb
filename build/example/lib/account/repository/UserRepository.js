@@ -39,16 +39,18 @@ let UserRepository = class UserRepository {
             let num = yield this.mysql.count(user_1.default);
             console.log('count is ', num);
             // await this.mysql.delete(UserEntity, {uid: 14, age: 1})
+            let delNum = yield this.mysql.deleteById(user_1.default, 1);
+            console.log(delNum, '==========');
             const data = yield this.mysql.findAll(user_1.default);
             console.log(data);
-            const page = yield this.mysql.searchByPage(user_1.default, { $limit: { start: 0, limit: 3 }, $orderby: { column: 'uid', op: 'desc' } });
+            const page = yield this.mysql.searchByPage(user_1.default, { $where: { uid: '> 10' }, $limit: { start: 2, limit: 4 }, $orderby: { column: 'uid' } });
             console.log(page);
             const u = yield this.mysql.find(user_1.default, { uid: 160 });
             console.log(u);
-            const u0 = yield this.mysql.findById(user_1.default, 160);
+            const u0 = yield this.mysql.findById(user_1.default, 160, null, true);
             console.log('find by id', u0);
             //console.log(JSON.stringify(u))
-            return data;
+            return page;
         });
     }
     helloMongo() {

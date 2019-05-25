@@ -19,11 +19,19 @@ let User = class User {
         this.name = undefined;
         this.age = undefined;
     }
+    static getTableNames(conditions, supportMulti, entity) {
+        console.log(conditions, '--------------');
+        if (!supportMulti) {
+            return 'user';
+        }
+        // return 'user'
+        return ['user_1', 'user_2'];
+    }
 };
 __decorate([
+    jbean_1.Id,
     lib_1.ValidationScene(REGISTER_SCENE1, MODIFY_SCENE2),
     lib_1.Required("uid是必填的参数"),
-    jbean_1.Id,
     __metadata("design:type", Object)
 ], User.prototype, "uid", void 0);
 __decorate([

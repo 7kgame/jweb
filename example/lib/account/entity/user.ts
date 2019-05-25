@@ -24,4 +24,13 @@ export default class User {
   @Between(18, 20, 'error exist $field : $min $val')
   public age = undefined
 
+  public static getTableNames (conditions, supportMulti: boolean, entity: any): string | string[] {
+    console.log(conditions, '--------------')
+    if (!supportMulti) {
+      return 'user'
+    }
+    // return 'user'
+    return ['user_1', 'user_2']
+  }
+
 }
