@@ -7,9 +7,9 @@ const MODIFY_SCENE2: string = 'modify'
 @Entity
 export default class User {
 
+  @Id
   @ValidationScene(REGISTER_SCENE1, MODIFY_SCENE2)
   @Required("uid是必填的参数")
-  @Id
   public uid = undefined
 
   @Required
