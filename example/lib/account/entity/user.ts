@@ -1,5 +1,5 @@
-import { Type } from 'jbean'
-import { Entity, Between, Regex, Required, Min, Max, Size, ValidationScene, Email } from '../../../../lib'
+import { Type, Entity, Id } from 'jbean'
+import { Between, Regex, Required, Min, Max, Size, ValidationScene, Email } from '../../../../lib'
 
 const REGISTER_SCENE1: string = 'register1'
 const MODIFY_SCENE2: string = 'modify'
@@ -9,6 +9,7 @@ export default class User {
 
   @ValidationScene(REGISTER_SCENE1, MODIFY_SCENE2)
   @Required("uid是必填的参数")
+  @Id
   public uid = undefined
 
   @Required

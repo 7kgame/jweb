@@ -6,7 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const lib_1 = require("../../../../lib");
+const jbean_1 = require("jbean");
 let UserTelephone = class UserTelephone {
     constructor() {
         this.uid = undefined;
@@ -14,6 +14,6 @@ let UserTelephone = class UserTelephone {
     }
 };
 UserTelephone = __decorate([
-    lib_1.Entity(lib_1.TableNameSeperatorType.underline)
+    jbean_1.Entity(jbean_1.TableNameSeperatorType.underline)
 ], UserTelephone);
 exports.default = UserTelephone;

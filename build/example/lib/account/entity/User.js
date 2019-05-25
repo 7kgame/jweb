@@ -23,6 +23,7 @@ let User = class User {
 __decorate([
     lib_1.ValidationScene(REGISTER_SCENE1, MODIFY_SCENE2),
     lib_1.Required("uid是必填的参数"),
+    jbean_1.Id,
     __metadata("design:type", Object)
 ], User.prototype, "uid", void 0);
 __decorate([
@@ -40,6 +41,6 @@ __decorate([
     __metadata("design:type", Object)
 ], User.prototype, "age", void 0);
 User = __decorate([
-    lib_1.Entity
+    jbean_1.Entity
 ], User);
 exports.default = User;

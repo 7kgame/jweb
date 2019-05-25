@@ -1,5 +1,4 @@
 import { Controller, Get, Post, Put, Patch, Options } from './controller'
-import Entity, {TableNameSeperatorType} from './entity'
 import Task from './task'
 import Transactional from './transactional'
 import Validation, { ValidationMode, ValidationScene } from './validation'
@@ -10,11 +9,9 @@ export {
   Controller,
   Get,
   Post,
-  TableNameSeperatorType,
   Put,
   Patch,
   Options,
-  Entity,
   Task,
   Cache,
   Transactional,

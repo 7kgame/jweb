@@ -6,12 +6,6 @@ export function Put(path: string)
 export function Patch(path: string)
 export function Options(path: string)
 
-export function Entity (name?: Function | string)
-
-export enum TableNameSeperatorType {
-  underline
-}
-
 export function Task (target?: any)
 export function Transactional (component?: any, type?: any)
 

@@ -53,7 +53,6 @@ Cache.preCall = function (ret, expire, request, response) {
     }
     let cache = LRUCache_1.default.getIns().get(request.url.href);
     if (cache) {
-        console.log(cache);
         response.writeAndFlush(cache);
         return null;
     }

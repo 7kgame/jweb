@@ -1,4 +1,4 @@
-import { Autowired, Service } from 'jbean'
+import { Autowired, Service, BusinessException } from 'jbean'
 import UserRepository from './repository/UserRepository'
 import UserEntity from './entity/user'
 

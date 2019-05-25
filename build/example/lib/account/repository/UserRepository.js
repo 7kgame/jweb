@@ -33,14 +33,20 @@ let UserRepository = class UserRepository {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.mysql.delete(user_1.default, { uid: user.uid });
             const id = yield this.mysql.insert(user);
-            // console.log('insert id ', id)
+            console.log('insert id ', id);
             user.name = 'hello';
             yield this.mysql.update(user, { uid: user.uid });
+            let num = yield this.mysql.count(user_1.default);
+            console.log('count is ', num);
             // await this.mysql.delete(UserEntity, {uid: 14, age: 1})
-            const data = yield this.mysql.select(user_1.default, { name: 'wumingliang' });
-            // console.log(data)
-            const u = yield this.mysql.getEntity(user_1.default, { uid: 123 });
-            // console.log(u)
+            const data = yield this.mysql.findAll(user_1.default);
+            console.log(data);
+            const page = yield this.mysql.searchByPage(user_1.default, { $limit: { start: 0, limit: 3 }, $orderby: { column: 'uid', op: 'desc' } });
+            console.log(page);
+            const u = yield this.mysql.find(user_1.default, { uid: 160 });
+            console.log(u);
+            const u0 = yield this.mysql.findById(user_1.default, 160);
+            console.log('find by id', u0);
             //console.log(JSON.stringify(u))
             return data;
         });

@@ -1,4 +1,4 @@
-import {Entity, TableNameSeperatorType} from '../../../../lib'
+import {Entity, TableNameSeperatorType} from 'jbean'
 
 @Entity(TableNameSeperatorType.underline)
 export default class UserTelephone {

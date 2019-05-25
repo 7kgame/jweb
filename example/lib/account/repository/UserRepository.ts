@@ -1,5 +1,5 @@
 import MongoDao from 'jweb-mongo'
-import MysqlDao from 'jweb-mysql'
+import MysqlDao, { SelectOptions, Page } from 'jweb-mysql'
 import RedisDao from 'jweb-redis'
 import { Autowired, Repository } from 'jbean'
 import UserEntity from '../entity/user'
@@ -31,14 +31,21 @@ export default class UserRepository {
   public async hello (user: UserEntity) {
     await this.mysql.delete(UserEntity, {uid: user.uid})
     const id = await this.mysql.insert(user)
-   // console.log('insert id ', id)
+    console.log('insert id ', id)
     user.name = 'hello'
     await this.mysql.update(user, {uid: user.uid})
+    let num = await this.mysql.count(UserEntity)
+    console.log('count is ', num)
     // await this.mysql.delete(UserEntity, {uid: 14, age: 1})
-    const data: UserEntity[] = await this.mysql.select(UserEntity, {name: 'wumingliang'})
-   // console.log(data)
-    const u:UserEntity = await this.mysql.getEntity(UserEntity, {uid: 123})
-   // console.log(u)
+    const data: UserEntity[] = await this.mysql.findAll(UserEntity)
+    console.log(data)
+    const page: Page = await this.mysql.searchByPage(UserEntity, {$limit: {start: 0, limit: 3}, $orderby: {column: 'uid', op: 'desc'}})
+    console.log(page)
+    const u:UserEntity = await this.mysql.find(UserEntity, {uid: 160})
+    console.log(u)
+
+    const u0 = await this.mysql.findById(UserEntity, 160)
+    console.log('find by id', u0)
     //console.log(JSON.stringify(u))
     return data
   }
