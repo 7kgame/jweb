@@ -80,6 +80,7 @@ class User extends base_1.default {
     }
     process(req, res, { uid }) {
         return __awaiter(this, void 0, void 0, function* () {
+            console.log(UserService_1.default);
             const user = req.entity;
             // throw new BusinessException('inner err', -100, null)
             console.log('inside call', user, uid);
@@ -123,7 +124,7 @@ class User extends base_1.default {
     }
 };
 __decorate([
-    jbean_1.Autowired('userService0'),
+    jbean_1.Autowired,
     __metadata("design:type", UserService_1.default)
 ], User.prototype, "userService", void 0);
 __decorate([

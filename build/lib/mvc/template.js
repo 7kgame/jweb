@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const FS = require("fs");
 const ejs = require("ejs");
-const Hoek = require("hoek");
+const jbean_1 = require("jbean");
 class Template {
     constructor() {
         this.isDev = process.env.NODE_ENV === 'development';
@@ -21,7 +21,7 @@ class Template {
     }
     assignFile(name, fileName, data, options) {
         data = data || {};
-        Hoek.merge(data, this.data);
+        jbean_1.merge(data, this.data);
         this.assign(name, this.render(fileName, data, options));
     }
     render(fileName, data, options) {

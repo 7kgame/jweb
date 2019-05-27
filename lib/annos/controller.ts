@@ -1,6 +1,6 @@
 import * as Path from 'path'
 import * as Hapi from 'hapi'
-import { AnnotationType, annotationHelper, BeanFactory, BeanMeta, CTOR_ID, getObjectType, ReflectHelper } from 'jbean'
+import { AnnotationType, annotationHelper, BeanFactory, BeanMeta, CTOR_ID, CTOR_JWEB_FILE_KEY, getObjectType, ReflectHelper } from 'jbean'
 
 import Application, { AppErrorEvent, ApplicationType } from '../application'
 import { Request, Response } from '../base'
@@ -31,7 +31,6 @@ export function Options(path: string) {
 
 const controllerCallback = function (annoType: AnnotationType, ctor: Function, path?: string) {
   controllers.push(ctor)
-  ctor[CONTROLLER_FILE_KEY] = BeanFactory.getCurrentSourceFile()
   addAnno(ctor, path)
 }
 
@@ -41,7 +40,6 @@ const methodCallback = function (annoType: AnnotationType, target: object, metho
 
 const URL_PATH_TRIM = /^\/*|\/*$/g
 const URL_END_PATH_TRIM = /\/*$/g
-const CONTROLLER_FILE_KEY: string = '__file'
 
 const controllerMetas = {}
 const controllers: Function[] = []
@@ -91,7 +89,7 @@ export const METHOD_KEY: string = '__method'
 const addTemplateDir = function (ctor: Function, ins: object | Function) {
   if (typeof ctor[METHOD_KEY] === 'undefined') {
     const application: Application = Application.getIns()
-    let controllerPath = ctor[CONTROLLER_FILE_KEY].split(application.controllerDir)
+    let controllerPath = ctor[CTOR_JWEB_FILE_KEY].split(application.controllerDir)
     let viewDir = application.viewDir
     if (!Path.isAbsolute(viewDir)) {
       viewDir = Path.join(application.root, viewDir)

@@ -1,6 +1,7 @@
 import { Application, AppErrorEvent } from '../lib'
 import { JBootApplication } from 'jbean'
 
+
 @JBootApplication
 class App {
 

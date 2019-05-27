@@ -1,4 +1,4 @@
-import * as Hoek from "hoek"
+import { merge } from 'jbean'
 
 const PrimaryTypes = ['boolean', 'number', 'string']
 
@@ -22,7 +22,7 @@ export default class ReqRes {
       } else if (PrimaryTypes.indexOf(dataType) >= 0) {
         this.data = data
       } else {
-        Hoek.merge(this.data, data)
+        merge(this.data, data)
       }
     }
   }

@@ -18,7 +18,7 @@ export class Application extends EventEmitter {
   readonly applicationConfigs: any
 
   static getIns (): Application
-  static start (): Promise<Application>
+  static start (options?: object): Promise<Application>
   route (option: object): Application
   getAppConfigs (): any
 }

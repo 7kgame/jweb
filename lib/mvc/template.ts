@@ -1,6 +1,6 @@
 import * as FS from 'fs'
 import * as ejs from 'ejs'
-import * as Hoek from "hoek"
+import { merge } from 'jbean'
 
 export default class Template {
 
@@ -24,7 +24,7 @@ export default class Template {
 
   public assignFile (name: string, fileName: string, data?: object, options?: object): void {
     data = data || {}
-    Hoek.merge(data, this.data)
+    merge(data, this.data)
     this.assign(name, this.render(fileName, data, options))
   }
 

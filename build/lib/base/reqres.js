@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const Hoek = require("hoek");
+const jbean_1 = require("jbean");
 const PrimaryTypes = ['boolean', 'number', 'string'];
 class ReqRes {
     constructor() {
@@ -21,7 +21,7 @@ class ReqRes {
                 this.data = data;
             }
             else {
-                Hoek.merge(this.data, data);
+                jbean_1.merge(this.data, data);
             }
         }
     }

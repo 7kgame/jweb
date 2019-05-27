@@ -18,31 +18,37 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const jbean_1 = require("jbean");
+const UserDao_1 = require("./repository/UserDao");
 const UserRepository_1 = require("./repository/UserRepository");
 let UserService = class UserService {
     constructor() {
-        //console.log('new UserService')
     }
     beforeCall() {
         console.log('userService beforeCall');
     }
     hello(user) {
         return __awaiter(this, void 0, void 0, function* () {
-            // console.log(this.userRepository)
-            let res1 = this.userRepository.hello(user);
-            let res2 = this.userRepository.helloMongo();
-            let res3 = this.userRepository.helloRedis();
+            let d = yield this.userRepository.find(user);
+            console.log('userRepository.find ', d);
+            let p = yield this.userRepository.searchByPage(null, 0, 2);
+            console.log('userRepository.searchByPage', p);
+            let res1 = this.userDao.hello(user);
+            let res2 = this.userDao.helloMongo();
+            let res3 = this.userDao.helloRedis();
             return Promise.all([res1, res2, res3]);
-            // return 'hello'
         });
     }
 };
 __decorate([
-    jbean_1.Autowired('userRepository0'),
+    jbean_1.Autowired,
+    __metadata("design:type", UserDao_1.default)
+], UserService.prototype, "userDao", void 0);
+__decorate([
+    jbean_1.Autowired,
     __metadata("design:type", UserRepository_1.default)
 ], UserService.prototype, "userRepository", void 0);
 UserService = __decorate([
-    jbean_1.Service('userService0'),
+    jbean_1.Service,
     __metadata("design:paramtypes", [])
 ], UserService);
 exports.default = UserService;

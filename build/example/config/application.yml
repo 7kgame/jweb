@@ -27,12 +27,13 @@ node-web:
       -
         dao: jweb-mysql
         bean: primary
+        master: true
         host: 127.0.0.1
         port: 3306
         user: root
         password: ''
         database: test
-        connectionLimit: 10
+        connectionLimit: 20
     redis:
       -
         dao: jweb-redis

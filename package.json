@@ -1,6 +1,6 @@
 {
   "name": "jweb",
-  "version": "1.1.8",
+  "version": "1.2.0",
   "description": "A typeScript httpServer support annotation",
   "main": "build/lib/index.js",
   "typings": "types/index.d.ts",
@@ -39,7 +39,6 @@
     "boom": "7.x.x",
     "ejs": "^2.x.x",
     "hapi": "^17.x.x",
-    "hoek": "^6.x.x",
     "inert": "^5.x.x",
     "yaml": "^1.x.x"
   },
@@ -47,7 +46,6 @@
     "@types/boom": "^7.x.x",
     "@types/ejs": "^2.x.x",
     "@types/hapi": "^17.x.x",
-    "@types/hoek": "^4.x.x",
     "@types/inert": "^5.x.x",
     "@types/node": "^10.12.18",
     "@types/yaml": "^1.x.x",

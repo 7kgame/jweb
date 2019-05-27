@@ -8,93 +8,17 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const jbean_1 = require("jbean");
+const jweb_mysql_1 = require("jweb-mysql");
 const user_1 = require("../entity/user");
-let UserRepository = class UserRepository {
+let UserRepository = class UserRepository extends jweb_mysql_1.MysqlRepository {
     constructor() {
-        //console.log('new userRepository')
-    }
-    postInit() {
-        console.log('userRepository.postInit');
-    }
-    beforeCall() {
-        console.log('userRepository beforeCall');
-    }
-    hello(user) {
-        return __awaiter(this, void 0, void 0, function* () {
-            yield this.mysql.delete(user_1.default, { uid: user.uid });
-            const id = yield this.mysql.insert(user);
-            console.log('insert id ', id);
-            user.name = 'hello';
-            yield this.mysql.update(user, { uid: user.uid });
-            let num = yield this.mysql.count(user_1.default);
-            console.log('count is ', num);
-            // await this.mysql.delete(UserEntity, {uid: 14, age: 1})
-            let delNum = yield this.mysql.deleteById(user_1.default, 1);
-            console.log(delNum, '==========');
-            const data = yield this.mysql.findAll(user_1.default);
-            console.log(data);
-            const page = yield this.mysql.searchByPage(user_1.default, { $where: { uid: '> 10' }, $limit: { start: 2, limit: 4 }, $orderby: { column: 'uid' } });
-            console.log(page);
-            const u = yield this.mysql.find(user_1.default, { uid: 160 });
-            console.log(u);
-            const u0 = yield this.mysql.findById(user_1.default, 160, null, true);
-            console.log('find by id', u0);
-            //console.log(JSON.stringify(u))
-            return page;
-        });
-    }
-    helloMongo() {
-        return __awaiter(this, void 0, void 0, function* () {
-            let dbName = 'test';
-            let client = this.mongo.getClient();
-            const db = client.db(dbName);
-            const col = db.collection('runoob');
-            let res = col.find({});
-            // return Util.promisify(res.toArray)()
-            return res.toArray();
-        });
-    }
-    helloRedis() {
-        return __awaiter(this, void 0, void 0, function* () {
-            let client = this.redis.getClient();
-            // return Util.promisify(client.get)("test")
-            return new Promise((resolve, reject) => {
-                client.get('test', (err, val) => {
-                    if (err) {
-                        reject(err);
-                    }
-                    else {
-                        resolve(val);
-                    }
-                });
-            });
-        });
+        super(user_1.default);
     }
 };
-__decorate([
-    jbean_1.Autowired('mongo.primary'),
-    __metadata("design:type", Object)
-], UserRepository.prototype, "mongo", void 0);
-__decorate([
-    jbean_1.Autowired('mysql.primary'),
-    __metadata("design:type", Object)
-], UserRepository.prototype, "mysql", void 0);
-__decorate([
-    jbean_1.Autowired('redis.primary'),
-    __metadata("design:type", Object)
-], UserRepository.prototype, "redis", void 0);
 UserRepository = __decorate([
-    jbean_1.Repository('userRepository0'),
+    jbean_1.Repository,
     __metadata("design:paramtypes", [])
 ], UserRepository);
 exports.default = UserRepository;

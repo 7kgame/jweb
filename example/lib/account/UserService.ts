@@ -1,15 +1,18 @@
-import { Autowired, Service, BusinessException } from 'jbean'
-import UserRepository from './repository/UserRepository'
+import { Autowired, Service, BusinessException, Page } from 'jbean'
+import UserDao from './repository/UserDao'
 import UserEntity from './entity/user'
+import UserRepository from './repository/UserRepository'
 
-@Service('userService0')
+@Service
 export default class UserService {
 
-  @Autowired('userRepository0')
+  @Autowired
+  private userDao: UserDao
+
+  @Autowired
   private userRepository: UserRepository
 
   constructor () {
-    //console.log('new UserService')
   }
 
   public beforeCall () {
@@ -17,12 +20,14 @@ export default class UserService {
   }
 
   public async hello (user: UserEntity) {
-    // console.log(this.userRepository)
-    let res1 = this.userRepository.hello(user)
-    let res2 = this.userRepository.helloMongo()
-    let res3 = this.userRepository.helloRedis()
+    let d: UserEntity = await this.userRepository.find(user)
+    console.log('userRepository.find ', d)
+    let p: Page = await this.userRepository.searchByPage(null, 0, 2)
+    console.log('userRepository.searchByPage', p)
+    let res1 = this.userDao.hello(user)
+    let res2 = this.userDao.helloMongo()
+    let res3 = this.userDao.helloRedis()
     return Promise.all([res1, res2, res3])
-    // return 'hello'
   }
 
 }

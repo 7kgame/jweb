@@ -1,11 +1,10 @@
 import * as Path from 'path'
 import * as Hapi from "hapi"
 import * as Inert from "inert"
-import * as Hoek from "hoek"
 import * as YAML from 'yaml'
 import { EventEmitter } from "events"
 
-import { BeanFactory, getApplicationConfigs, isAsyncFunction, ReflectHelper, registerConfigParser } from 'jbean'
+import { BeanFactory, getApplicationConfigs, isAsyncFunction, merge, ReflectHelper, registerConfigParser } from 'jbean'
 import starters from './starters'
 
 const defaultOptions = {
@@ -74,7 +73,9 @@ export default class Application extends EventEmitter {
 
   private static create (options?: object): Application {
     const ins = Application.ins = new Application()
-    ins.appOptions = Hoek.applyToDefaults(defaultOptions, options || {})
+    ins.appOptions = {}
+    merge(ins.appOptions, defaultOptions)
+    merge(ins.appOptions, options)
     ins.configNS = ins.appOptions.configNS
     ins.applicationConfigs = getApplicationConfigs()
     return ins
@@ -84,10 +85,10 @@ export default class Application extends EventEmitter {
     return Application.ins
   }
 
-  public static async start (): Promise<Application> {
+  public static async start (options?: object): Promise<Application> {
     BeanFactory.initBean()
 
-    const application = Application.create()
+    const application = Application.create(options)
     application.registerExit()
     application.init()
 

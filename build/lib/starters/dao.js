@@ -47,7 +47,7 @@ function daoInit(application) {
                         yield daoIns.connect();
                     }
                 }
-                jbean_1.BeanFactory.addBean(beanName, daoIns);
+                jbean_1.BeanFactory.addBean(beanName, daoIns, true);
             }
         }
     });

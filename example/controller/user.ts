@@ -14,7 +14,7 @@ import BaseController from './base'
 // @ResponseXML
 export default class User extends BaseController {
 
-  @Autowired('userService0')
+  @Autowired
   private userService: UserService
 
   @Autowired
@@ -79,6 +79,7 @@ export default class User extends BaseController {
   @Validation(UserEntity)
   @Transactional
   public async process (req: Request, res: Response, { uid }) {
+    console.log(UserService)
     const user: UserEntity = req.entity
     // throw new BusinessException('inner err', -100, null)
     console.log('inside call', user, uid)

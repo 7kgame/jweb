@@ -40,7 +40,7 @@ export default async function daoInit (application: Application) {
           await daoIns.connect()
         }
       }
-      BeanFactory.addBean(beanName, daoIns)
+      BeanFactory.addBean(beanName, daoIns, true)
     }
   }
 }

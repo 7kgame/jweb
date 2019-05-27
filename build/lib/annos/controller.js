@@ -38,7 +38,6 @@ function Options(path) {
 exports.Options = Options;
 const controllerCallback = function (annoType, ctor, path) {
     controllers.push(ctor);
-    ctor[CONTROLLER_FILE_KEY] = jbean_1.BeanFactory.getCurrentSourceFile();
     addAnno(ctor, path);
 };
 const methodCallback = function (annoType, target, method, descriptor, requestMethod, path) {
@@ -46,7 +45,6 @@ const methodCallback = function (annoType, target, method, descriptor, requestMe
 };
 const URL_PATH_TRIM = /^\/*|\/*$/g;
 const URL_END_PATH_TRIM = /\/*$/g;
-const CONTROLLER_FILE_KEY = '__file';
 const controllerMetas = {};
 const controllers = [];
 const addAnno = function (target, path, method, requestMethod, requestMapping) {
@@ -92,7 +90,7 @@ exports.METHOD_KEY = '__method';
 const addTemplateDir = function (ctor, ins) {
     if (typeof ctor[exports.METHOD_KEY] === 'undefined') {
         const application = application_1.default.getIns();
-        let controllerPath = ctor[CONTROLLER_FILE_KEY].split(application.controllerDir);
+        let controllerPath = ctor[jbean_1.CTOR_JWEB_FILE_KEY].split(application.controllerDir);
         let viewDir = application.viewDir;
         if (!Path.isAbsolute(viewDir)) {
             viewDir = Path.join(application.root, viewDir);

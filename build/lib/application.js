@@ -11,7 +11,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Path = require("path");
 const Hapi = require("hapi");
 const Inert = require("inert");
-const Hoek = require("hoek");
 const YAML = require("yaml");
 const events_1 = require("events");
 const jbean_1 = require("jbean");
@@ -55,7 +54,9 @@ class Application extends events_1.EventEmitter {
     }
     static create(options) {
         const ins = Application.ins = new Application();
-        ins.appOptions = Hoek.applyToDefaults(defaultOptions, options || {});
+        ins.appOptions = {};
+        jbean_1.merge(ins.appOptions, defaultOptions);
+        jbean_1.merge(ins.appOptions, options);
         ins.configNS = ins.appOptions.configNS;
         ins.applicationConfigs = jbean_1.getApplicationConfigs();
         return ins;
@@ -63,10 +64,10 @@ class Application extends events_1.EventEmitter {
     static getIns() {
         return Application.ins;
     }
-    static start() {
+    static start(options) {
         return __awaiter(this, void 0, void 0, function* () {
             jbean_1.BeanFactory.initBean();
-            const application = Application.create();
+            const application = Application.create(options);
             application.registerExit();
             application.init();
             jbean_1.BeanFactory.startBean();
