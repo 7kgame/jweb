@@ -29,6 +29,9 @@ export default class UserDao {
   }
 
   public async hello (user: UserEntity) {
+    console.log(await this.redis.get('a'), '=====redis 1')
+    console.log(await this.redis.sendCommand('hmget', 'hk', 'm0', 'm1'), '=====redis 2')
+    console.log(await this.redis.sendCommand('hmget', 'hk12', 'm0', 'm1'), '=====redis 3')
     await this.mysql.delete(UserEntity, {uid: user.uid})
     const id = await this.mysql.insert(user)
     console.log('insert id ', id)

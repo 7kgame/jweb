@@ -31,6 +31,9 @@ let UserDao = class UserDao {
     }
     hello(user) {
         return __awaiter(this, void 0, void 0, function* () {
+            console.log(yield this.redis.get('a'), '=====redis 1');
+            console.log(yield this.redis.sendCommand('hmget', 'hk', 'm0', 'm1'), '=====redis 2');
+            console.log(yield this.redis.sendCommand('hmget', 'hk12', 'm0', 'm1'), '=====redis 3');
             yield this.mysql.delete(user_1.default, { uid: user.uid });
             const id = yield this.mysql.insert(user);
             console.log('insert id ', id);
