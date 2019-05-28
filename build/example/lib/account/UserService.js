@@ -32,8 +32,8 @@ let UserService = class UserService {
             console.log(yield this.userCacheRepository.get('a'), '===== userCacheRepository.redis 1');
             console.log(yield this.userCacheRepository.sendCommand('hmget', 'hk', 'm0', 'm1'), '=====userCacheRepository.redis 2');
             console.log(yield this.userCacheRepository.sendCommand('hmget', 'hk12', 'm0', 'm1'), '=====userCacheRepository.redis 3');
-            let d = yield this.userRepository.find(user);
-            console.log('userRepository.find ', d);
+            let d = yield this.userRepository.find(user, []);
+            console.log('userRepository.find ', d, d['toObject']());
             let where = {
                 $where: []
             };

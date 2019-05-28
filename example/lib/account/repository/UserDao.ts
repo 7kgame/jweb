@@ -44,7 +44,7 @@ export default class UserDao {
     console.log(delNum, '==========')
     const data: UserEntity[] = await this.mysql.findAll(UserEntity)
     // console.log(data)
-    const page: Page = await this.mysql.searchByPage(UserEntity, {uid: '> 1'}, 0, 4, {column: 'uid', op: 'desc'})
+    const page: Page<UserEntity> = await this.mysql.searchByPage<UserEntity>(UserEntity, {uid: '> 1'}, 0, 4, {column: 'uid', op: 'desc'})
     console.log(page)
     const u:UserEntity = await this.mysql.find(UserEntity, {uid: 160})
     console.log(u)

@@ -28,7 +28,7 @@ export default class UserService {
     console.log(await this.userCacheRepository.sendCommand('hmget', 'hk', 'm0', 'm1'), '=====userCacheRepository.redis 2')
     console.log(await this.userCacheRepository.sendCommand('hmget', 'hk12', 'm0', 'm1'), '=====userCacheRepository.redis 3')
     let d: UserEntity = await this.userRepository.find(user)
-    console.log('userRepository.find ', d)
+    console.log('userRepository.find ', d, d['toObject']())
     let where: any = {
       $where: []
     }
@@ -37,7 +37,7 @@ export default class UserService {
     where.$where.push({age: '< 60'})
 
     // where = {uid: '> 1'}
-    let p: Page = await this.userRepository.searchByPage(where, 0, 2)
+    let p: Page<UserEntity> = await this.userRepository.searchByPage<UserEntity>(where, 0, 2)
     console.log('userRepository.searchByPage', p)
     let res1 = this.userDao.hello(user)
     let res2 = this.userDao.helloMongo()

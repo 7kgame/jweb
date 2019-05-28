@@ -16,9 +16,22 @@ let UserCacheRepository = class UserCacheRepository extends jweb_redis_1.RedisRe
     constructor() {
         super(user_1.default);
     }
-    test() {
-        const client = this.getClient();
-        client.multi();
+    testMulti() {
+        return new Promise((res, rej) => {
+            const client = this.getClient();
+            client.multi().
+                get('key1').
+                set('key2', 'val2').
+                exec((err, data) => {
+                if (err) {
+                    rej(err);
+                }
+                else {
+                    console.log(data);
+                    res(data);
+                }
+            });
+        });
     }
 };
 UserCacheRepository = __decorate([
