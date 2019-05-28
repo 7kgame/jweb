@@ -34,6 +34,26 @@ node-web:
         password: ''
         database: test
         connectionLimit: 20
+      -
+        dao: jweb-mysql
+        bean: lib.game
+        master: false
+        host: 127.0.0.1
+        port: 3307
+        user: root
+        password: ''
+        database: test
+        connectionLimit: 20
+      -
+        dao: jweb-mysql
+        bean: lib.game
+        master: false
+        host: 127.0.0.1
+        port: 3308
+        user: root
+        password: ''
+        database: test
+        connectionLimit: 20
     redis:
       -
         dao: jweb-redis

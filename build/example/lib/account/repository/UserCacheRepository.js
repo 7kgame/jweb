@@ -16,6 +16,10 @@ let UserCacheRepository = class UserCacheRepository extends jweb_redis_1.RedisRe
     constructor() {
         super(user_1.default);
     }
+    test() {
+        const client = this.getClient();
+        client.multi();
+    }
 };
 UserCacheRepository = __decorate([
     jbean_1.Repository,

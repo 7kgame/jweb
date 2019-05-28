@@ -15,6 +15,7 @@ const user_1 = require("../entity/user");
 let UserRepository = class UserRepository extends jweb_mysql_1.MysqlRepository {
     constructor() {
         super(user_1.default);
+        console.log(typeof jweb_mysql_1.escape, ' [mysql escape]');
     }
 };
 UserRepository = __decorate([
