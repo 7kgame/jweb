@@ -1,5 +1,5 @@
 import * as Path from 'path'
-import * as Hapi from 'hapi'
+import * as Hapi from '@hapi/hapi'
 import { AnnotationType, annotationHelper, BeanFactory, CTOR_ID, CTOR_JWEB_FILE_KEY, getObjectType, ReflectHelper, checkSupportTransition, emitBegin, emitCommit, emitRollback } from 'jbean'
 
 import Application, { AppErrorEvent, ApplicationType } from '../application'

@@ -103,7 +103,6 @@ class User extends base_1.default {
         });
     }
     list() {
-        console.log(this);
         this.templateValue('contentInfo', './header/css/main.css');
         this.templateValue('uid', 1);
         this.templateValue('name', '<span>Jim</span>');

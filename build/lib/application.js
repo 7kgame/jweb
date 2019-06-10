@@ -9,8 +9,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const Path = require("path");
-const Hapi = require("hapi");
-const Inert = require("inert");
+const Hapi = require("@hapi/hapi");
+const Inert = require("@hapi/inert");
 const YAML = require("yaml");
 const events_1 = require("events");
 const jbean_1 = require("jbean");

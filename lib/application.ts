@@ -1,6 +1,6 @@
 import * as Path from 'path'
-import * as Hapi from "hapi"
-import * as Inert from "inert"
+import * as Hapi from "@hapi/hapi"
+import * as Inert from "@hapi/inert"
 import * as YAML from 'yaml'
 import { EventEmitter } from "events"
 
