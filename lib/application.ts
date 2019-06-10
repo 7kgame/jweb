@@ -6,6 +6,7 @@ import { EventEmitter } from "events"
 
 import { BeanFactory, getApplicationConfigs, isAsyncFunction, merge, ReflectHelper, registerConfigParser } from 'jbean'
 import starters from './starters'
+import Task from './annos/task'
 
 const defaultOptions = {
   port: 3000,
@@ -255,6 +256,7 @@ export default class Application extends EventEmitter {
     try {
       // TODO 重复执行次数，循环执行次数
       const ins = new task()
+      Task.checkTransactional(task, ins, 'process')
       const args = {}
       Object.assign(args, this.cmdArgs)
       delete args[TASK_ARG_KEY.task]

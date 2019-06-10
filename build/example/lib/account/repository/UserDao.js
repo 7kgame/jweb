@@ -31,27 +31,35 @@ let UserDao = class UserDao {
     }
     hello(user) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log(yield this.redis.get('a'), '=====redis 1');
-            console.log(yield this.redis.sendCommand('hmget', 'hk', 'm0', 'm1'), '=====redis 2');
-            console.log(yield this.redis.sendCommand('hmget', 'hk12', 'm0', 'm1'), '=====redis 3');
-            yield this.mysql.delete(user_1.default, { uid: user.uid });
-            const id = yield this.mysql.insert(user);
+            // const data: UserEntity[] = await this.mysql.find(UserEntity, {uid: null})
+            // console.log(data, 'find null ,,,,,,,,,,,,,,,,,,,,,,,,,,')
+            // const data1: UserEntity[] = await this.mysql.find(UserEntity)
+            // console.log(data1, 'find ,,,,,,,,,,,,,,,,,,,,,,,,,,')
+            // const data2: UserEntity[] = await this.mysql.findAll(UserEntity)
+            // console.log(data2, 'find all ,,,,,,,,,,,,,,,,,,,,,,,,,,')
+            // const data3: UserEntity[] = await this.mysql.findAll(UserEntity, [{uid: null, $op: 'is not'}, {name: ['hello', 'world'], $op: 'in'}, {age: [10, 13], $op: 'between'}])
+            // console.log(data3, 'find by multi condition ,,,,,,,,,,,,,,,,,,,,,,,,,,')
+            // console.log(await this.redis.get('a'), '=====redis 1')
+            // console.log(await this.redis.sendCommand('hmget', 'hk', 'm0', 'm1'), '=====redis 2')
+            // console.log(await this.redis.sendCommand('hmget', 'hk12', 'm0', 'm1'), '=====redis 3')
+            yield this.mysql.delete(user_1.default, { uid: user.uid }, jbean_1.BeanFactory.getRequestId(this));
+            user.uid = 100;
+            const id = yield this.mysql.insert(user, jbean_1.BeanFactory.getRequestId(this));
             console.log('insert id ', id);
-            user.name = 'hello';
-            yield this.mysql.update(user, { uid: user.uid });
+            // user.name = 'hello'
+            // let u1 = await this.mysql.update(user, {uid: user.uid})
+            // console.log('update result', u1)
             let num = yield this.mysql.count(user_1.default);
             console.log('count is ', num);
             // await this.mysql.delete(UserEntity, {uid: 14, age: 1})
-            let delNum = yield this.mysql.deleteById(user_1.default, 1);
-            console.log(delNum, '==========');
-            const data = yield this.mysql.findAll(user_1.default);
-            // console.log(data)
+            // let delNum = await this.mysql.deleteById(UserEntity, 1)
+            // console.log(delNum, '==========')
             const page = yield this.mysql.searchByPage(user_1.default, { uid: '> 1' }, 0, 4, { column: 'uid', op: 'desc' });
-            console.log(page);
+            // console.log(page)
             const u = yield this.mysql.find(user_1.default, { uid: 160 });
-            console.log(u);
-            const u0 = yield this.mysql.findById(user_1.default, 160, null, true);
-            console.log('find by id', u0);
+            // console.log(u)
+            // const u0 = await this.mysql.findById(UserEntity, 160, null, true)
+            // console.log('find by id', u0)
             //console.log(JSON.stringify(u))
             return page;
         });

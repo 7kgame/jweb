@@ -1,5 +1,5 @@
-import { Autowired, BusinessException } from 'jbean'
-import { Controller, Get, Post, Request, Response, Transactional, Validation, ValidationMode, Cache } from '../../lib'
+import { Autowired, BusinessException, Transactional, checkSupportTransition } from 'jbean'
+import { Controller, Get, Post, Request, Response, Validation, ValidationMode, Cache } from '../../lib'
 import UserService from '../lib/account/UserService'
 import PayService from '../lib/account/PayService'
 import Auth from '../annos/Auth'
@@ -9,7 +9,6 @@ import UserEntity from '../lib/account/entity/user'
 import BaseController from './base'
 
 @Controller('/user')
-@Transactional
 // @Auth
 // @ResponseXML
 export default class User extends BaseController {
@@ -79,10 +78,9 @@ export default class User extends BaseController {
   @Validation(UserEntity)
   @Transactional
   public async process (req: Request, res: Response, { uid }) {
-    console.log(UserService)
     const user: UserEntity = req.entity
     // throw new BusinessException('inner err', -100, null)
-    console.log('inside call', user, uid)
+    // console.log('inside call', user, uid)
     // console.log(user['toObject']())
     // console.log('userService is', this.userService)
     // throw new Error('hdhhsh')

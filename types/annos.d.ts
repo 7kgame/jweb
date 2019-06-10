@@ -7,7 +7,6 @@ export function Patch(path: string)
 export function Options(path: string)
 
 export function Task (target?: any)
-export function Transactional (component?: any, type?: any)
 
 export function Cache(expire?: number)
 

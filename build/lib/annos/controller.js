@@ -83,10 +83,10 @@ jbean_1.BeanFactory.registerInitBean(() => {
 const controllerIns = {};
 const TEMPLATE_DIR_NAME = 'template';
 const LAYOUT_DIR_NAME = 'layout';
-exports.TPL_DIR_KEY = '__tplDir';
-exports.LAYOUT_DIR_KEY = '__layoutDir';
-exports.EXT_KEY = '__tplExt';
-exports.METHOD_KEY = '__method';
+exports.TPL_DIR_KEY = '$__tplDir';
+exports.LAYOUT_DIR_KEY = '$__layoutDir';
+exports.EXT_KEY = '$__tplExt';
+exports.METHOD_KEY = '$__method';
 const addTemplateDir = function (ctor, ins) {
     if (typeof ctor[exports.METHOD_KEY] === 'undefined') {
         const application = application_1.default.getIns();
@@ -124,58 +124,70 @@ jbean_1.BeanFactory.registerStartBean(() => {
                 method: requestMethod,
                 path: routePath,
                 handler: (request, h) => __awaiter(this, void 0, void 0, function* () {
-                    return new Promise((resolve, reject) => {
-                        const req = new base_1.Request(request, h);
-                        const res = new base_1.Response(request, h);
-                        if (supportCors) {
-                            res.setHeader('Access-Control-Allow-Credentials', true);
-                            res.setHeader('Access-Control-Allow-Origin', request.headers.origin || '*');
-                            res.setHeader('Access-Control-Allow-Headers', '*, X-Requested-With, Content-Type');
-                            res.setHeader('Access-Control-Allow-Methods', request.method);
-                            res.setHeader('Access-Control-Max-Age', 86400);
-                            res.setHeader('Access-Control-Expose-Headers', 'WWW-Authenticate,Server-Authorization');
-                        }
-                        let ins = target;
-                        if (typeof target !== 'function') {
-                            if (typeof controllerIns[ctor[jbean_1.CTOR_ID]] === 'undefined') {
-                                controllerIns[ctor[jbean_1.CTOR_ID]] = new ctor();
-                            }
-                            ins = controllerIns[ctor[jbean_1.CTOR_ID]];
-                            addTemplateDir(ctor, ins);
-                        }
-                        ins[exports.METHOD_KEY] = method.toLowerCase();
-                        let params = [req, res];
-                        if (request.params && Object.keys(request.params).length > 0) {
-                            params.push(request.params);
-                        }
-                        try {
-                            res.type('text/html');
-                            const ret = ins[method](...params);
-                            if (ret === null) {
-                                /** done nothing, cause res is solved by annotation which returns null*/
-                                res.flush();
-                            }
-                            else if (jbean_1.getObjectType(ret) === 'promise') {
-                                ret.then(data => {
-                                    res.writeAndFlush(data);
-                                    // resolve()
-                                }).catch(e => {
-                                    app.emit(application_1.AppErrorEvent.REQUEST, e);
-                                    res.error('Internal Server Error');
-                                });
-                            }
-                            else {
-                                res.writeAndFlush(ret);
-                                // resolve()
-                            }
-                        }
-                        catch (e) {
-                            app.emit(application_1.AppErrorEvent.REQUEST, e);
-                            res.error('Internal Server Error');
-                        }
+                    return new Promise(function (resolve, reject) {
+                        doRequest(ctor, target, app, request, h, supportCors, method);
                     });
                 })
             });
         });
     });
 });
+const doRequest = function (ctor, target, app, request, h, supportCors, method) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const req = new base_1.Request(request, h);
+        const res = new base_1.Response(request, h);
+        if (supportCors) {
+            res.setHeader('Access-Control-Allow-Credentials', true);
+            res.setHeader('Access-Control-Allow-Origin', request.headers.origin || '*');
+            res.setHeader('Access-Control-Allow-Headers', '*, X-Requested-With, Content-Type');
+            res.setHeader('Access-Control-Allow-Methods', request.method);
+            res.setHeader('Access-Control-Max-Age', 86400);
+            res.setHeader('Access-Control-Expose-Headers', 'WWW-Authenticate,Server-Authorization');
+        }
+        let ins = target;
+        if (typeof target !== 'function') {
+            if (jbean_1.checkSupportTransition(ctor, method)) {
+                ins = new ctor();
+                jbean_1.BeanFactory.genRequestId(ins);
+            }
+            else {
+                if (typeof controllerIns[ctor[jbean_1.CTOR_ID]] === 'undefined') {
+                    controllerIns[ctor[jbean_1.CTOR_ID]] = new ctor();
+                }
+                ins = controllerIns[ctor[jbean_1.CTOR_ID]];
+            }
+            addTemplateDir(ctor, ins);
+        }
+        const requestId = jbean_1.BeanFactory.getRequestId(ins);
+        ins[exports.METHOD_KEY] = method.toLowerCase();
+        let params = [req, res];
+        if (request.params && Object.keys(request.params).length > 0) {
+            params.push(request.params);
+        }
+        try {
+            if (requestId) {
+                yield jbean_1.emitBegin(requestId);
+            }
+            res.type('text/html');
+            const ret = yield ins[method](...params);
+            if (requestId) {
+                yield jbean_1.emitCommit(requestId);
+            }
+            if (ret === null) {
+                /** done nothing, cause res is solved by annotation which returns null*/
+                res.flush();
+            }
+            else {
+                res.writeAndFlush(ret);
+                // resolve()
+            }
+        }
+        catch (e) {
+            if (requestId) {
+                yield jbean_1.emitRollback(requestId);
+            }
+            app.emit(application_1.AppErrorEvent.REQUEST, e);
+            res.error('Internal Server Error');
+        }
+    });
+};

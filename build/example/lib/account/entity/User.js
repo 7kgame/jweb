@@ -20,7 +20,7 @@ let User = class User {
         this.age = undefined;
     }
     static getTableNames(conditions, supportMulti, entity) {
-        console.log(conditions, '--------------');
+        // console.log('getTableNames.conditions', conditions)
         if (!supportMulti) {
             return 'user';
         }

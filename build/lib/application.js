@@ -15,6 +15,7 @@ const YAML = require("yaml");
 const events_1 = require("events");
 const jbean_1 = require("jbean");
 const starters_1 = require("./starters");
+const task_1 = require("./annos/task");
 const defaultOptions = {
     port: 3000,
     host: 'localhost',
@@ -227,6 +228,7 @@ class Application extends events_1.EventEmitter {
             try {
                 // TODO 重复执行次数，循环执行次数
                 const ins = new task();
+                task_1.default.checkTransactional(task, ins, 'process');
                 const args = {};
                 Object.assign(args, this.cmdArgs);
                 delete args[TASK_ARG_KEY.task];

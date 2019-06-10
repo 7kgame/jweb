@@ -80,10 +80,9 @@ class User extends base_1.default {
     }
     process(req, res, { uid }) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log(UserService_1.default);
             const user = req.entity;
             // throw new BusinessException('inner err', -100, null)
-            console.log('inside call', user, uid);
+            // console.log('inside call', user, uid)
             // console.log(user['toObject']())
             // console.log('userService is', this.userService)
             // throw new Error('hdhhsh')
@@ -104,6 +103,7 @@ class User extends base_1.default {
         });
     }
     list() {
+        console.log(this);
         this.templateValue('contentInfo', './header/css/main.css');
         this.templateValue('uid', 1);
         this.templateValue('name', '<span>Jim</span>');
@@ -136,7 +136,7 @@ __decorate([
     Auth_1.default,
     response_body_1.default('json'),
     lib_1.Validation(user_1.default),
-    lib_1.Transactional,
+    jbean_1.Transactional,
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [lib_1.Request, lib_1.Response, Object]),
     __metadata("design:returntype", Promise)
@@ -163,8 +163,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], User.prototype, "info", null);
 User = __decorate([
-    lib_1.Controller('/user'),
-    lib_1.Transactional
+    lib_1.Controller('/user')
     // @Auth
     // @ResponseXML
     ,

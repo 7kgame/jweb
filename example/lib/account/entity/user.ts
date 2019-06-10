@@ -25,7 +25,7 @@ export default class User {
   public age = undefined
 
   public static getTableNames (conditions, supportMulti: boolean, entity: any): string | string[] {
-    console.log(conditions, '--------------')
+    // console.log('getTableNames.conditions', conditions)
     if (!supportMulti) {
       return 'user'
     }
