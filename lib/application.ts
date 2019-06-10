@@ -6,7 +6,7 @@ import { EventEmitter } from "events"
 
 import { BeanFactory, getApplicationConfigs, isAsyncFunction, merge, ReflectHelper, registerConfigParser, checkSupportTransition, emitBegin, emitCommit, emitRollback } from 'jbean'
 import starters from './starters'
-import { exec } from './utils'
+import { exec, sleep } from './utils'
 
 const defaultOptions = {
   port: 3000,
@@ -242,15 +242,14 @@ export default class Application extends EventEmitter {
   public async runTask () {
     const scriptFile = require.main.filename.substring(process.cwd().length + 1)
     const cmd = 'ps aux | grep \'' + scriptFile + '\' | grep -v grep | grep -E \'\\-t ?' + this.cmdArgs[TASK_ARG_KEY.task] + ' ?\''
-    // cmd = 'ps aux|grep -E \'\\-u ?root\''
     let out = await exec(cmd)
     out = out.replace(/^\s*|\s*$/g, '')
     out = out.split("\n")
-    // console.log(out, out.length, typeof out)
     if (out.length > 1) {
       process.emit('exit', 0)
       return
     }
+
     let task = require(this.taskScript)
     if (task.default) {
       task = task.default
@@ -266,34 +265,48 @@ export default class Application extends EventEmitter {
       process.emit('exit', 0)
       return
     }
-    const sleepSeconds = this.cmdArgs[TASK_ARG_KEY.sleep] || 0
-    const loopTimes = this.cmdArgs[TASK_ARG_KEY.loop] || 1
-    const ins = new task()
-    if (checkSupportTransition(task, taskMethod)) {
-      BeanFactory.genRequestId(ins)
+
+    let sleepSeconds = this.cmdArgs[TASK_ARG_KEY.sleep] || 0
+    let loopTimes = this.cmdArgs[TASK_ARG_KEY.loop] || 1
+    if (sleepSeconds < 0) {
+      sleepSeconds = 0
     }
-    const requestId = BeanFactory.getRequestId(ins)
-    try {
-      // TODO 重复执行次数，循环执行次数
-      if (requestId) {
-        await emitBegin(requestId)
+    if (loopTimes < 1) {
+      loopTimes = 1
+    }
+
+    const ins = new task()
+    for (let i = 0; i < loopTimes; i++) {
+      if (checkSupportTransition(task, taskMethod)) {
+        BeanFactory.genRequestId(ins)
       }
-      const args = {}
-      Object.assign(args, this.cmdArgs)
-      Object.keys(TASK_ARG_KEY).forEach(k => {
-        delete args[TASK_ARG_KEY[k]]
-      })
-      await ins[taskMethod](this, args)
-      if (requestId) {
-        await emitCommit(requestId)
-        await BeanFactory.releaseBeans(requestId)
+      const requestId = BeanFactory.getRequestId(ins)
+      try {
+        if (requestId) {
+          await emitBegin(requestId)
+        }
+        const args = {}
+        Object.assign(args, this.cmdArgs)
+        Object.keys(TASK_ARG_KEY).forEach(k => {
+          delete args[TASK_ARG_KEY[k]]
+        })
+        await ins[taskMethod](this, args)
+        if (requestId) {
+          await emitCommit(requestId)
+          await BeanFactory.releaseBeans(requestId)
+        }
+      } catch (e) {
+        if (requestId) {
+          await emitRollback(requestId)
+          await BeanFactory.releaseBeans(requestId)
+        }
+        console.error(e)
+        process.emit('exit', 0)
+        return
       }
-    } catch (e) {
-      if (requestId) {
-        await emitRollback(requestId)
-        await BeanFactory.releaseBeans(requestId)
+      if (sleepSeconds > 0) {
+        sleep(sleepSeconds)
       }
-      console.error(e)
     }
     process.emit('exit', 0)
   }

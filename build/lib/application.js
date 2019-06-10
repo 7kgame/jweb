@@ -211,13 +211,18 @@ class Application extends events_1.EventEmitter {
     }
     runTask() {
         return __awaiter(this, void 0, void 0, function* () {
+            console.log(Atomics);
+            const t0 = +(new Date());
+            utils_1.sleep(3);
+            const t1 = +(new Date());
+            console.log(t1 - t0, '========');
             const scriptFile = require.main.filename.substring(process.cwd().length + 1);
             const cmd = 'ps aux | grep \'' + scriptFile + '\' | grep -v grep | grep -E \'\\-t ?' + this.cmdArgs[TASK_ARG_KEY.task] + ' ?\'';
             // cmd = 'ps aux|grep -E \'\\-u ?root\''
             let out = yield utils_1.exec(cmd);
             out = out.replace(/^\s*|\s*$/g, '');
             out = out.split("\n");
-            console.log(out, out.length, typeof out);
+            // console.log(out, out.length, typeof out)
             if (out.length > 1) {
                 process.emit('exit', 0);
                 return;
@@ -237,35 +242,48 @@ class Application extends events_1.EventEmitter {
                 process.emit('exit', 0);
                 return;
             }
-            const sleepSeconds = this.cmdArgs[TASK_ARG_KEY.sleep] || 0;
-            const loopTimes = this.cmdArgs[TASK_ARG_KEY.loop] || 1;
+            let sleepSeconds = this.cmdArgs[TASK_ARG_KEY.sleep] || 0;
+            let loopTimes = this.cmdArgs[TASK_ARG_KEY.loop] || 1;
+            if (sleepSeconds < 0) {
+                sleepSeconds = 0;
+            }
+            if (loopTimes < 1) {
+                loopTimes = 1;
+            }
             const ins = new task();
-            if (jbean_1.checkSupportTransition(task, taskMethod)) {
-                jbean_1.BeanFactory.genRequestId(ins);
-            }
-            const requestId = jbean_1.BeanFactory.getRequestId(ins);
-            try {
-                // TODO 重复执行次数，循环执行次数
-                if (requestId) {
-                    yield jbean_1.emitBegin(requestId);
+            for (let i = 0; i < loopTimes; i++) {
+                if (jbean_1.checkSupportTransition(task, taskMethod)) {
+                    jbean_1.BeanFactory.genRequestId(ins);
                 }
-                const args = {};
-                Object.assign(args, this.cmdArgs);
-                Object.keys(TASK_ARG_KEY).forEach(k => {
-                    delete args[TASK_ARG_KEY[k]];
-                });
-                yield ins[taskMethod](this, args);
-                if (requestId) {
-                    yield jbean_1.emitCommit(requestId);
-                    yield jbean_1.BeanFactory.releaseBeans(requestId);
+                const requestId = jbean_1.BeanFactory.getRequestId(ins);
+                try {
+                    // TODO 重复执行次数，循环执行次数
+                    if (requestId) {
+                        yield jbean_1.emitBegin(requestId);
+                    }
+                    const args = {};
+                    Object.assign(args, this.cmdArgs);
+                    Object.keys(TASK_ARG_KEY).forEach(k => {
+                        delete args[TASK_ARG_KEY[k]];
+                    });
+                    yield ins[taskMethod](this, args);
+                    if (requestId) {
+                        yield jbean_1.emitCommit(requestId);
+                        yield jbean_1.BeanFactory.releaseBeans(requestId);
+                    }
                 }
-            }
-            catch (e) {
-                if (requestId) {
-                    yield jbean_1.emitRollback(requestId);
-                    yield jbean_1.BeanFactory.releaseBeans(requestId);
+                catch (e) {
+                    if (requestId) {
+                        yield jbean_1.emitRollback(requestId);
+                        yield jbean_1.BeanFactory.releaseBeans(requestId);
+                    }
+                    console.error(e);
+                    process.emit('exit', 0);
+                    return;
                 }
-                console.error(e);
+                if (sleepSeconds > 0) {
+                    utils_1.sleep(sleepSeconds);
+                }
             }
             process.emit('exit', 0);
         });
