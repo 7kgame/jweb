@@ -6,9 +6,3 @@ export default function Task (target?: any) {
 
 const callback = function (annoType: AnnotationType, ctor: object | Function) {
 }
-
-Task.checkTransactional = function (ctor: Function, ins: object, method: string) {
-  if (checkSupportTransition(ctor, method)) {
-    BeanFactory.genRequestId(ins)
-  }
-}

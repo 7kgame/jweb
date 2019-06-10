@@ -7,8 +7,3 @@ function Task(target) {
 exports.default = Task;
 const callback = function (annoType, ctor) {
 };
-Task.checkTransactional = function (ctor, ins, method) {
-    if (jbean_1.checkSupportTransition(ctor, method)) {
-        jbean_1.BeanFactory.genRequestId(ins);
-    }
-};

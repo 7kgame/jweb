@@ -4,9 +4,9 @@ import * as Inert from "@hapi/inert"
 import * as YAML from 'yaml'
 import { EventEmitter } from "events"
 
-import { BeanFactory, getApplicationConfigs, isAsyncFunction, merge, ReflectHelper, registerConfigParser } from 'jbean'
+import { BeanFactory, getApplicationConfigs, isAsyncFunction, merge, ReflectHelper, registerConfigParser, checkSupportTransition, emitBegin, emitCommit, emitRollback } from 'jbean'
 import starters from './starters'
-import Task from './annos/task'
+import { exec } from './utils'
 
 const defaultOptions = {
   port: 3000,
@@ -34,6 +34,8 @@ export enum ApplicationType {
   web,
   task
 }
+
+const taskMethod = 'process'
 
 registerConfigParser('yml', function (content: any) {
   if (!content) {
@@ -238,37 +240,61 @@ export default class Application extends EventEmitter {
   }
 
   public async runTask () {
+    const scriptFile = require.main.filename.substring(process.cwd().length + 1)
+    const cmd = 'ps aux | grep \'' + scriptFile + '\' | grep -v grep | grep -E \'\\-t ?' + this.cmdArgs[TASK_ARG_KEY.task] + ' ?\''
+    // cmd = 'ps aux|grep -E \'\\-u ?root\''
+    let out = await exec(cmd)
+    out = out.replace(/^\s*|\s*$/g, '')
+    out = out.split("\n")
+    // console.log(out, out.length, typeof out)
+    if (out.length > 1) {
+      process.emit('exit', 0)
+      return
+    }
     let task = require(this.taskScript)
     if (task.default) {
       task = task.default
     }
     if (typeof task !== 'function') {
       console.error('typeof ' + this.taskScript + ' is not class.')
-      process.emit('exit', -1)
+      process.emit('exit', 0)
       return
     }
     const methods: string[] = ReflectHelper.getMethods(task)
-    if (methods.indexOf('process') < 0) {
-      console.error('process method of ' + task.name + ' is not exist.')
-      process.emit('exit', -1)
+    if (methods.indexOf(taskMethod) < 0) {
+      console.error(taskMethod + ' method of ' + task.name + ' is not exist.')
+      process.emit('exit', 0)
       return
     }
+    const sleepSeconds = this.cmdArgs[TASK_ARG_KEY.sleep] || 0
+    const loopTimes = this.cmdArgs[TASK_ARG_KEY.loop] || 1
+    const ins = new task()
+    if (checkSupportTransition(task, taskMethod)) {
+      BeanFactory.genRequestId(ins)
+    }
+    const requestId = BeanFactory.getRequestId(ins)
     try {
       // TODO 重复执行次数，循环执行次数
-      const ins = new task()
-      Task.checkTransactional(task, ins, 'process')
+      if (requestId) {
+        await emitBegin(requestId)
+      }
       const args = {}
       Object.assign(args, this.cmdArgs)
-      delete args[TASK_ARG_KEY.task]
-      if (isAsyncFunction(ins['process'])) {
-        await ins['process'](this, args)
-      } else {
-        ins['process'](this, args)
+      Object.keys(TASK_ARG_KEY).forEach(k => {
+        delete args[TASK_ARG_KEY[k]]
+      })
+      await ins[taskMethod](this, args)
+      if (requestId) {
+        await emitCommit(requestId)
+        await BeanFactory.releaseBeans(requestId)
       }
     } catch (e) {
+      if (requestId) {
+        await emitRollback(requestId)
+        await BeanFactory.releaseBeans(requestId)
+      }
       console.error(e)
     }
-
     process.emit('exit', 0)
   }
 
@@ -294,9 +320,11 @@ export default class Application extends EventEmitter {
   public registerExit (): void {
     let exitHandler = function (options, code) {
       if (options && options.exit) {
-        console.log('application exit at', code)
+        if (this.applicationType !== ApplicationType.task) {
+          console.log('application exit at', code)
+        }
         BeanFactory.destroyBean()
-        process.exit()
+        process.exit(code)
       } else {
         console.error('exception', code)
       }

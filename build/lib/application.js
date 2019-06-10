@@ -15,7 +15,7 @@ const YAML = require("yaml");
 const events_1 = require("events");
 const jbean_1 = require("jbean");
 const starters_1 = require("./starters");
-const task_1 = require("./annos/task");
+const utils_1 = require("./utils");
 const defaultOptions = {
     port: 3000,
     host: 'localhost',
@@ -39,6 +39,7 @@ var ApplicationType;
     ApplicationType[ApplicationType["web"] = 0] = "web";
     ApplicationType[ApplicationType["task"] = 1] = "task";
 })(ApplicationType = exports.ApplicationType || (exports.ApplicationType = {}));
+const taskMethod = 'process';
 jbean_1.registerConfigParser('yml', function (content) {
     if (!content) {
         return null;
@@ -210,36 +211,60 @@ class Application extends events_1.EventEmitter {
     }
     runTask() {
         return __awaiter(this, void 0, void 0, function* () {
+            const scriptFile = require.main.filename.substring(process.cwd().length + 1);
+            const cmd = 'ps aux | grep \'' + scriptFile + '\' | grep -v grep | grep -E \'\\-t ?' + this.cmdArgs[TASK_ARG_KEY.task] + ' ?\'';
+            // cmd = 'ps aux|grep -E \'\\-u ?root\''
+            let out = yield utils_1.exec(cmd);
+            out = out.replace(/^\s*|\s*$/g, '');
+            out = out.split("\n");
+            console.log(out, out.length, typeof out);
+            if (out.length > 1) {
+                process.emit('exit', 0);
+                return;
+            }
             let task = require(this.taskScript);
             if (task.default) {
                 task = task.default;
             }
             if (typeof task !== 'function') {
                 console.error('typeof ' + this.taskScript + ' is not class.');
-                process.emit('exit', -1);
+                process.emit('exit', 0);
                 return;
             }
             const methods = jbean_1.ReflectHelper.getMethods(task);
-            if (methods.indexOf('process') < 0) {
-                console.error('process method of ' + task.name + ' is not exist.');
-                process.emit('exit', -1);
+            if (methods.indexOf(taskMethod) < 0) {
+                console.error(taskMethod + ' method of ' + task.name + ' is not exist.');
+                process.emit('exit', 0);
                 return;
             }
+            const sleepSeconds = this.cmdArgs[TASK_ARG_KEY.sleep] || 0;
+            const loopTimes = this.cmdArgs[TASK_ARG_KEY.loop] || 1;
+            const ins = new task();
+            if (jbean_1.checkSupportTransition(task, taskMethod)) {
+                jbean_1.BeanFactory.genRequestId(ins);
+            }
+            const requestId = jbean_1.BeanFactory.getRequestId(ins);
             try {
                 // TODO 重复执行次数，循环执行次数
-                const ins = new task();
-                task_1.default.checkTransactional(task, ins, 'process');
+                if (requestId) {
+                    yield jbean_1.emitBegin(requestId);
+                }
                 const args = {};
                 Object.assign(args, this.cmdArgs);
-                delete args[TASK_ARG_KEY.task];
-                if (jbean_1.isAsyncFunction(ins['process'])) {
-                    yield ins['process'](this, args);
-                }
-                else {
-                    ins['process'](this, args);
+                Object.keys(TASK_ARG_KEY).forEach(k => {
+                    delete args[TASK_ARG_KEY[k]];
+                });
+                yield ins[taskMethod](this, args);
+                if (requestId) {
+                    yield jbean_1.emitCommit(requestId);
+                    yield jbean_1.BeanFactory.releaseBeans(requestId);
                 }
             }
             catch (e) {
+                if (requestId) {
+                    yield jbean_1.emitRollback(requestId);
+                    yield jbean_1.BeanFactory.releaseBeans(requestId);
+                }
                 console.error(e);
             }
             process.emit('exit', 0);
@@ -266,9 +291,11 @@ class Application extends events_1.EventEmitter {
     registerExit() {
         let exitHandler = function (options, code) {
             if (options && options.exit) {
-                console.log('application exit at', code);
+                if (this.applicationType !== ApplicationType.task) {
+                    console.log('application exit at', code);
+                }
                 jbean_1.BeanFactory.destroyBean();
-                process.exit();
+                process.exit(code);
             }
             else {
                 console.error('exception', code);

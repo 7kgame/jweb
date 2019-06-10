@@ -181,10 +181,14 @@ const doRequest = function (ctor, target, app, request, h, supportCors, method) 
                 res.writeAndFlush(ret);
                 // resolve()
             }
+            if (requestId) {
+                yield jbean_1.BeanFactory.releaseBeans(requestId);
+            }
         }
         catch (e) {
             if (requestId) {
                 yield jbean_1.emitRollback(requestId);
+                yield jbean_1.BeanFactory.releaseBeans(requestId);
             }
             app.emit(application_1.AppErrorEvent.REQUEST, e);
             res.error('Internal Server Error');

@@ -181,9 +181,13 @@ const doRequest = async function (ctor, target, app: Application, request: Hapi.
       res.writeAndFlush(ret)
       // resolve()
     }
+    if (requestId) {
+      await BeanFactory.releaseBeans(requestId)
+    }
   } catch (e) {
     if (requestId) {
       await emitRollback(requestId)
+      await BeanFactory.releaseBeans(requestId)
     }
     app.emit(AppErrorEvent.REQUEST, e)
     res.error('Internal Server Error')

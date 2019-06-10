@@ -18,17 +18,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const lib_1 = require("../../lib");
+const jbean_1 = require("jbean");
 let HelloTask = class HelloTask {
     constructor() {
     }
     process(application, args) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log('hello task', args);
+            console.log('hello task', args, this);
         });
     }
 };
 HelloTask = __decorate([
     lib_1.Task,
+    jbean_1.Transactional,
     __metadata("design:paramtypes", [])
 ], HelloTask);
 exports.default = HelloTask;
