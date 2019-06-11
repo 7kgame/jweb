@@ -275,12 +275,12 @@ export default class Application extends EventEmitter {
       loopTimes = 1
     }
 
-    const ins = new task()
+    const taskIns = new task()
     for (let i = 0; i < loopTimes; i++) {
       if (checkSupportTransition(task, taskMethod)) {
-        BeanFactory.genRequestId(ins)
+        BeanFactory.genRequestId(taskIns)
       }
-      const requestId = BeanFactory.getRequestId(ins)
+      const requestId = BeanFactory.getRequestId(taskIns)
       try {
         if (requestId) {
           await emitBegin(requestId)
@@ -290,7 +290,7 @@ export default class Application extends EventEmitter {
         Object.keys(TASK_ARG_KEY).forEach(k => {
           delete args[TASK_ARG_KEY[k]]
         })
-        await ins[taskMethod](this, args)
+        await taskIns[taskMethod](this, args)
         if (requestId) {
           await emitCommit(requestId)
           await BeanFactory.releaseBeans(requestId)
