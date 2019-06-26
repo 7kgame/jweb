@@ -211,18 +211,11 @@ class Application extends events_1.EventEmitter {
     }
     runTask() {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log(Atomics);
-            const t0 = +(new Date());
-            utils_1.sleep(3);
-            const t1 = +(new Date());
-            console.log(t1 - t0, '========');
             const scriptFile = require.main.filename.substring(process.cwd().length + 1);
             const cmd = 'ps aux | grep \'' + scriptFile + '\' | grep -v grep | grep -E \'\\-t ?' + this.cmdArgs[TASK_ARG_KEY.task] + ' ?\'';
-            // cmd = 'ps aux|grep -E \'\\-u ?root\''
             let out = yield utils_1.exec(cmd);
             out = out.replace(/^\s*|\s*$/g, '');
             out = out.split("\n");
-            // console.log(out, out.length, typeof out)
             if (out.length > 1) {
                 process.emit('exit', 0);
                 return;
@@ -250,14 +243,13 @@ class Application extends events_1.EventEmitter {
             if (loopTimes < 1) {
                 loopTimes = 1;
             }
-            const ins = new task();
+            const taskIns = new task();
             for (let i = 0; i < loopTimes; i++) {
                 if (jbean_1.checkSupportTransition(task, taskMethod)) {
-                    jbean_1.BeanFactory.genRequestId(ins);
+                    jbean_1.BeanFactory.genRequestId(taskIns);
                 }
-                const requestId = jbean_1.BeanFactory.getRequestId(ins);
+                const requestId = jbean_1.BeanFactory.getRequestId(taskIns);
                 try {
-                    // TODO 重复执行次数，循环执行次数
                     if (requestId) {
                         yield jbean_1.emitBegin(requestId);
                     }
@@ -266,7 +258,7 @@ class Application extends events_1.EventEmitter {
                     Object.keys(TASK_ARG_KEY).forEach(k => {
                         delete args[TASK_ARG_KEY[k]];
                     });
-                    yield ins[taskMethod](this, args);
+                    yield taskIns[taskMethod](this, args);
                     if (requestId) {
                         yield jbean_1.emitCommit(requestId);
                         yield jbean_1.BeanFactory.releaseBeans(requestId);
