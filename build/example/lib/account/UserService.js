@@ -30,6 +30,7 @@ let UserService = class UserService {
     hello(user) {
         return __awaiter(this, void 0, void 0, function* () {
             let res1 = yield this.userDao.hello(user);
+            this.userCacheRepository.getUser(123);
             // console.log(await this.userCacheRepository.get('a'), '===== userCacheRepository.redis 1')
             // console.log(await this.userCacheRepository.sendCommand('hmget', 'hk', 'm0', 'm1'), '=====userCacheRepository.redis 2')
             // console.log(await this.userCacheRepository.sendCommand('hmget', 'hk12', 'm0', 'm1'), '=====userCacheRepository.redis 3')

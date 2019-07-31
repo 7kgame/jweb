@@ -15,12 +15,12 @@ node-web:
       #auth:
         #  user: ''
         #  password: ''
-    mongo:
-      -
-        dao: jweb-mongo
-        bean: primary
-        url: mongodb://localhost:27017
-        poolSize: 10
+    #mongo:
+    #  -
+    #    dao: jweb-mongo
+    #    bean: primary
+    #    url: mongodb://localhost:27017
+    #    poolSize: 10
      #-
         #url: mongodb://localhost:27017
     mysql:

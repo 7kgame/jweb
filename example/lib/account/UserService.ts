@@ -25,6 +25,7 @@ export default class UserService {
 
   public async hello (user: UserEntity) {
     let res1 = await this.userDao.hello(user)
+    this.userCacheRepository.getUser(123)
 
     // console.log(await this.userCacheRepository.get('a'), '===== userCacheRepository.redis 1')
     // console.log(await this.userCacheRepository.sendCommand('hmget', 'hk', 'm0', 'm1'), '=====userCacheRepository.redis 2')

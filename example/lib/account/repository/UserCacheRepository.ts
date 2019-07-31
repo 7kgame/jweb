@@ -26,4 +26,17 @@ export default class UserCacheRepository extends RedisRepository<User> {
     })
   }
 
+  public async getUser (uid: number|string) {
+    let a = {
+      name: 'cyij',
+      sex: 1
+    }
+    await this.set(uid, JSON.stringify(a))
+    let user = await this.get(uid)
+    console.log(user, '-------')
+
+    user = await this.get(uid, JSON.parse)
+    console.log(user, '---======----')
+  }
+
 }
