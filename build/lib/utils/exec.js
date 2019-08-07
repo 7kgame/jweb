@@ -5,10 +5,10 @@ function exec(cmd) {
     return new Promise((resolve, reject) => {
         child_process.exec(cmd, function (err, out, stderr) {
             if (err) {
-                reject({ code: err.code, message: JSON.stringify(stderr) });
+                reject({ err: err.code, message: JSON.stringify(stderr) });
                 return;
             }
-            resolve(out);
+            resolve({ err: null, data: out, message: null });
         });
     });
 }
