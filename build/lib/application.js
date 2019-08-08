@@ -211,12 +211,21 @@ class Application extends events_1.EventEmitter {
     }
     runTask() {
         return __awaiter(this, void 0, void 0, function* () {
-            const scriptFile = require.main.filename.substring(process.cwd().length + 1);
-            const cmd = 'ps aux | grep \'' + scriptFile + '\' | grep -v grep | grep -E \'\\-t ?' + this.cmdArgs[TASK_ARG_KEY.task] + ' ?\'';
-            let out = yield utils_1.exec(cmd);
-            out = out.replace(/^\s*|\s*$/g, '');
-            out = out.split("\n");
-            if (out.length > 1) {
+            const scriptFile = require.main.filename;
+            let args = process.argv.slice(2).join(' ');
+            if (args.startsWith('-')) {
+                args = '\\' + args;
+            }
+            const cmd = 'ps aux | grep \'' + scriptFile + '\' | grep -v grep | grep \'' + args + '\'';
+            let { err, data, message } = yield utils_1.exec(cmd, true);
+            if (err) {
+                console.error(message);
+                process.emit('exit', 0);
+                return;
+            }
+            data = data.replace(/^\s*|\s*$/g, '');
+            data = data.split("\n");
+            if (data.length > 1) {
                 process.emit('exit', 0);
                 return;
             }
