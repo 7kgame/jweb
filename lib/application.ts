@@ -240,12 +240,13 @@ export default class Application extends EventEmitter {
   }
 
   public async runTask () {
-    const scriptFile = require.main.filename
+    //const scriptFile = require.main.filename
+    const entryFile = process.argv[1]
     let args = process.argv.slice(2).join(' ')
     if (args.startsWith('-')) {
       args = '\\' + args
     }
-    const cmd = 'ps aux | grep \'' + scriptFile + '\' | grep -v grep | grep \'' + args + '\''
+    const cmd = 'ps aux | grep \'' + entryFile + '\' | grep -v grep | grep \'' + args + '\''
     let { err, data, message } = await exec(cmd, true)
     if (err) {
       console.error(message)
