@@ -246,7 +246,7 @@ export default class Application extends EventEmitter {
     if (args.startsWith('-')) {
       args = '\\' + args
     }
-    const cmd = 'ps aux | grep \'' + entryFile + '\' | grep -v grep | grep \'' + args + '\''
+    const cmd = 'ps aux | grep \'' + entryFile + '\' | grep -v grep | grep -v \'/bin/sh \\-c\' | grep \'' + args + '\''
     let { err, data, message } = await exec(cmd, true)
     if (err) {
       console.error(message)
