@@ -19,7 +19,7 @@ gulp.task('clean', function () {
  * Lint all custom TypeScript files.
  */
 gulp.task('tslint', () => {
-  return gulp.src('example/**/*.ts')
+  return gulp.src('lib/**/*.ts')
     .pipe(tslint({
       formatter: 'prose'
     }))
@@ -53,33 +53,9 @@ gulp.task('watch', shell.task([
 ]))
 
 /**
- * Copy config files
- */
-gulp.task('configs', (cb) => {
-  return gulp.src(['example/config/**/*.yml', 'example/config/**/*.json'])
-    .pipe(gulp.dest('./build/example/config'));
-});
-
-/**
- * Copy assets files
- */
-gulp.task('assets', (cb) => {
-  return gulp.src('example/assets/**/*.*')
-    .pipe(gulp.dest('./build/assets'));
-});
-
-/**
- * Copy view files
- */
-gulp.task('view', (cb) => {
-  return gulp.src('example/view/**/*.*')
-    .pipe(gulp.dest('./build/example/view'));
-});
-
-/**
  * Build the project.
  */
-gulp.task('build', gulp.series('tslint', 'compile', 'configs', 'view', 'assets', (done) => {
+gulp.task('build', gulp.series('compile', (done) => {
   console.log('Building the project ...');
   done && done();
 }));
