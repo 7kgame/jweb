@@ -34,4 +34,44 @@ export default class Request extends ReqRes {
     this.response = response
   }
 
+  public getParam (key: string, defaultValue: any): any {
+    if (this.params && typeof this.params[key] !== 'undefined') {
+      return this.params[key]
+    }
+    if (this.query && typeof this.query[key] !== 'undefined') {
+      return this.query[key]
+    }
+    if (this.payload && typeof this.payload[key] !== 'undefined') {
+      return this.payload[key]
+    }
+    return null
+  }
+
+  public getNum (key: string, defaultValue: number): number {
+    const val = this.getParam(key, defaultValue)
+    if (val === null) {
+      return defaultValue
+    }
+    if (!val) {
+      return 0
+    }
+    return val - 0
+  }
+
+  public getString (key: string, defaultValue: string): string {
+    const val = this.getParam(key, defaultValue)
+    if (val === null) {
+      return defaultValue
+    }
+    return String(val)
+  }
+
+  public getBool (key: string, defaultValue: boolean): boolean {
+    const val = this.getParam(key, defaultValue)
+    if (val === null) {
+      return defaultValue
+    }
+    return Boolean(val)
+  }
+
 }

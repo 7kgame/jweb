@@ -16,5 +16,41 @@ class Request extends reqres_1.default {
         this.request = request;
         this.response = response;
     }
+    getParam(key, defaultValue) {
+        if (this.params && typeof this.params[key] !== 'undefined') {
+            return this.params[key];
+        }
+        if (this.query && typeof this.query[key] !== 'undefined') {
+            return this.query[key];
+        }
+        if (this.payload && typeof this.payload[key] !== 'undefined') {
+            return this.payload[key];
+        }
+        return null;
+    }
+    getNum(key, defaultValue) {
+        const val = this.getParam(key, defaultValue);
+        if (val === null) {
+            return defaultValue;
+        }
+        if (!val) {
+            return 0;
+        }
+        return val - 0;
+    }
+    getString(key, defaultValue) {
+        const val = this.getParam(key, defaultValue);
+        if (val === null) {
+            return defaultValue;
+        }
+        return String(val);
+    }
+    getBool(key, defaultValue) {
+        const val = this.getParam(key, defaultValue);
+        if (val === null) {
+            return defaultValue;
+        }
+        return Boolean(val);
+    }
 }
 exports.default = Request;
