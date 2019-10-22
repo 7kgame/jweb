@@ -120,16 +120,20 @@ export default class Application extends EventEmitter {
   }
 
   public getAppConfigs (): any {
-    const appConfigs = this.getApplicationConfigs()
-    return appConfigs.app
+    return this.getApplicationConfigs('app')
   }
 
-  public getApplicationConfigs (): any {
+  public getApplicationConfigs (key?: string): any {
     if (typeof this.applicationConfigs[this.configNS] === 'undefined'
         || typeof this.applicationConfigs[this.configNS].app === 'undefined') {
       return {}
     }
-    return this.applicationConfigs[this.configNS]
+    const appConfigs = this.applicationConfigs[this.configNS]
+    if (key) {
+      return appConfigs[key]
+    } else {
+      return appConfigs
+    }
   }
 
   private parseCmdArgs (): void {

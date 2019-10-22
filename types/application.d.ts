@@ -21,7 +21,7 @@ export class Application extends EventEmitter {
   static start (options?: object): Promise<Application>
   route (option: object): Application
   getAppConfigs (): any
-  getApplicationConfigs (): any
+  getApplicationConfigs (key?: string): any
 }
 
 export enum AppErrorEvent {
