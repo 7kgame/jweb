@@ -97,15 +97,15 @@ class Application extends events_1.EventEmitter {
         });
     }
     getAppConfigs() {
-        const appConfigs = this.getApplicationConfigs();
-        return appConfigs.app;
+        return this.getApplicationConfigs('app');
     }
-    getApplicationConfigs() {
+    getApplicationConfigs(key) {
         if (typeof this.applicationConfigs[this.configNS] === 'undefined'
             || typeof this.applicationConfigs[this.configNS].app === 'undefined') {
             return {};
         }
-        return this.applicationConfigs[this.configNS];
+        const appConfigs = this.applicationConfigs[this.configNS];
+        return key ? appConfigs[key] : appConfigs;
     }
     parseCmdArgs() {
         const args = process.argv;

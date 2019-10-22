@@ -129,11 +129,7 @@ export default class Application extends EventEmitter {
       return {}
     }
     const appConfigs = this.applicationConfigs[this.configNS]
-    if (key) {
-      return appConfigs[key]
-    } else {
-      return appConfigs
-    }
+    return key ? appConfigs[key] : appConfigs
   }
 
   private parseCmdArgs (): void {
