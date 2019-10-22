@@ -13,10 +13,10 @@ export interface Request {
   append (data: any): void
   setData (data: any): void
   getData (key?: string): any
-  getNum (key: string, defaultValue: number): number
-  getString (key: string, defaultValue: string): string
-  getBool (key: string, defaultValue: boolean): boolean
-  getParam (key: string, defaultValue: any): any
+  getNum (key: string, defaultValue?: number): number
+  getString (key: string, defaultValue?: string): string
+  getBool (key: string, defaultValue?: boolean): boolean
+  getParam (key: string, defaultValue?: any): any
 }
 
 export interface Response {

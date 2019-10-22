@@ -26,12 +26,12 @@ class Request extends reqres_1.default {
         if (this.payload && typeof this.payload[key] !== 'undefined') {
             return this.payload[key];
         }
-        return null;
+        return defaultValue || null;
     }
     getNum(key, defaultValue) {
         const val = this.getParam(key, defaultValue);
         if (val === null) {
-            return defaultValue;
+            return defaultValue || null;
         }
         if (!val) {
             return 0;
@@ -41,14 +41,14 @@ class Request extends reqres_1.default {
     getString(key, defaultValue) {
         const val = this.getParam(key, defaultValue);
         if (val === null) {
-            return defaultValue;
+            return defaultValue || null;
         }
         return String(val);
     }
     getBool(key, defaultValue) {
         const val = this.getParam(key, defaultValue);
         if (val === null) {
-            return defaultValue;
+            return defaultValue || null;
         }
         return Boolean(val);
     }

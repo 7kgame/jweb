@@ -34,7 +34,7 @@ export default class Request extends ReqRes {
     this.response = response
   }
 
-  public getParam (key: string, defaultValue: any): any {
+  public getParam (key: string, defaultValue?: any): any {
     if (this.params && typeof this.params[key] !== 'undefined') {
       return this.params[key]
     }
@@ -44,13 +44,13 @@ export default class Request extends ReqRes {
     if (this.payload && typeof this.payload[key] !== 'undefined') {
       return this.payload[key]
     }
-    return null
+    return defaultValue || null
   }
 
-  public getNum (key: string, defaultValue: number): number {
+  public getNum (key: string, defaultValue?: number): number {
     const val = this.getParam(key, defaultValue)
     if (val === null) {
-      return defaultValue
+      return defaultValue || null
     }
     if (!val) {
       return 0
@@ -58,18 +58,18 @@ export default class Request extends ReqRes {
     return val - 0
   }
 
-  public getString (key: string, defaultValue: string): string {
+  public getString (key: string, defaultValue?: string): string {
     const val = this.getParam(key, defaultValue)
     if (val === null) {
-      return defaultValue
+      return defaultValue || null
     }
     return String(val)
   }
 
-  public getBool (key: string, defaultValue: boolean): boolean {
+  public getBool (key: string, defaultValue?: boolean): boolean {
     const val = this.getParam(key, defaultValue)
     if (val === null) {
-      return defaultValue
+      return defaultValue || null
     }
     return Boolean(val)
   }
