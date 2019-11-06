@@ -1,11 +1,33 @@
-import * as Hapi from 'hapi'
+import * as Http from 'http'
+import * as querystring from 'querystring'
+import * as formidable from 'formidable'
 
 import ReqRes from './reqres'
 
+export const HTTP_METHODS = {
+  get: 'get',
+  head: 'head',
+  post: 'post',
+  put: 'put',
+  delete: 'delete',
+  connect: 'connect',
+  options: 'options',
+  trace: 'trace',
+  patch: 'patch'
+}
+
+export const NO_BODY_REQUESTS = [
+  HTTP_METHODS.get,
+  HTTP_METHODS.head,
+  HTTP_METHODS.delete,
+  HTTP_METHODS.options
+]
+
 export default class Request extends ReqRes {
 
-  public url
-  public path
+  public method: string
+  public url: string
+  public path: string
   public payload
   public query
   public params
@@ -15,20 +37,29 @@ export default class Request extends ReqRes {
   public entity: any
   public innerParams: {}
 
-  private request: Hapi.Request
-  private response: Hapi.ResponseToolkit
+  private request: Http.IncomingMessage
+  private response: Http.ServerResponse
 
-  // constructor (request: Hapi.Request, response: Hapi.ResponseToolkit, resolve: any, reject: any) {
-  constructor (request: Hapi.Request, response: Hapi.ResponseToolkit) {
+  constructor (request: Http.IncomingMessage, response: Http.ServerResponse) {
     super()
-    this.url = request.url
-    this.path = request.path
-    this.payload = request.payload
-    this.query = request.query
-    this.params = request.params
-    this.paramsArray = request.paramsArray
+
+    this.method = request.method.toLowerCase()
+    const url: string = request.url || '/'
+    const queryStartPos = url.indexOf('?')
+    let path: string = url, queryParams = null
+    if (queryStartPos >= 0) {
+      path = url.substr(0, queryStartPos)
+      queryParams = querystring.decode(url.substr(queryStartPos + 1))
+    }
+
+    this.url = request.headers.host + request.url
+    this.path = request.url
+    // this.payload = request.payload
+    // this.query = request.query
+    // this.params = request.params
+    // this.paramsArray = request.paramsArray
     this.headers = request.headers
-    this.cookies = request.state
+    // this.cookies = request.state
 
     this.request = request
     this.response = response

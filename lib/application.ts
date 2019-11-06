@@ -1,4 +1,9 @@
+import * as Http from 'http'
 import * as Path from 'path'
+import * as util from 'util'
+import * as querystring from 'querystring'
+import * as formidable from 'formidable'
+
 import * as Hapi from "@hapi/hapi"
 import * as Inert from "@hapi/inert"
 import * as YAML from 'yaml'
@@ -7,6 +12,7 @@ import { EventEmitter } from "events"
 import { BeanFactory, getApplicationConfigs, isAsyncFunction, merge, ReflectHelper, registerConfigParser, checkSupportTransition, emitBegin, emitCommit, emitRollback } from 'jbean'
 import starters from './starters'
 import { exec, sleep } from './utils'
+import Router from './base/router'
 
 const defaultOptions = {
   port: 3000,
@@ -27,7 +33,8 @@ const TASK_ARG_KEY = {
 }
 
 export enum AppErrorEvent {
-  REQUEST = 'error_request'
+  REQUEST = 'error_request',
+  NOT_FOUND = '404'
 }
 
 export enum ApplicationType {
@@ -226,6 +233,50 @@ export default class Application extends EventEmitter {
   }
 
   public async runWebServer () {
+
+    var callProcess = async function (req: Http.IncomingMessage, res: Http.ServerResponse) {
+      var form = new formidable.IncomingForm()
+      console.log(req.method)
+      console.log(req.url)
+      console.log(req.headers.host)
+      form.parse(req, function(err, fields: formidable.Fields, files: formidable.Files) {
+        // console.log(fields)
+        console.log(files)
+        if (fields['a']) {
+          // console.log('start sleep', +(new Date))
+          // sleep(5)
+          // console.log('end sleep', +(new Date))
+          setTimeout(() => {
+            res.writeHead(200, {'content-type': 'text/plain'})
+            res.write('set timeout\n\n')
+            // res.end()
+            res.end(util.inspect({fields: fields, files: files}))
+          }, 3000)
+        } else {
+          res.writeHead(200, {'content-type': 'text/plain'})
+          res.write('received\n\n')
+          // res.end()
+          res.end(util.inspect({fields: fields, files: files}))
+        }
+      })
+      form.on('file', function(name, file: formidable.File) {
+        console.log(name, '====')
+        // console.log(file, '00000')
+      })
+      form.on('progress', function(bytesReceived, bytesExpected) {
+        // console.log(bytesReceived, '------')
+      })
+      form.on('field', function(name, value) {
+        // console.log(name, value)
+      })
+    }
+
+    Http.createServer(function (req: Http.IncomingMessage, res: Http.ServerResponse) {
+      // callProcess(req, res)
+      Router.dispatch(req, res)
+    }).listen(8080)
+    return
+
     await this.server.register(Inert)
     if (this.assets) {
       this.route({

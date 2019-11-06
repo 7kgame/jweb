@@ -25,6 +25,10 @@ function Post(path) {
     return jbean_1.annotationHelper(['POST', path], methodCallback);
 }
 exports.Post = Post;
+function GetPost(path) {
+    return jbean_1.annotationHelper(['GETPOST', path], methodCallback);
+}
+exports.GetPost = GetPost;
 function Put(path) {
     return jbean_1.annotationHelper(['PUT', path], methodCallback);
 }
@@ -121,15 +125,18 @@ jbean_1.BeanFactory.registerStartBean(() => {
             const app = application_1.default.getIns();
             const supportCors = app.getAppConfigs().cors;
             const routePath = (path + subPath).replace(URL_END_PATH_TRIM, '') || '/';
-            app.route({
-                method: requestMethod,
-                path: routePath,
-                handler: (request, h) => __awaiter(void 0, void 0, void 0, function* () {
-                    return new Promise(function (resolve, reject) {
-                        doRequest(ctor, target, app, request, h, supportCors, method);
-                    });
-                })
-            });
+            // app.route({
+            //   method: requestMethod,
+            //   path: routePath,
+            //   handler: async (request: Hapi.Request, h: Hapi.ResponseToolkit) => {
+            //     return new Promise(function(resolve, reject) {
+            //       doRequest(ctor, target, app, request, h, supportCors, method)
+            //     })
+            //   }
+            // })
+            base_1.Router.add(requestMethod, routePath, (req, res, method, path, args, pathParams) => __awaiter(void 0, void 0, void 0, function* () {
+                return [path, pathParams];
+            }), [ctor, target, method]);
         });
     });
 });

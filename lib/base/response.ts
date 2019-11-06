@@ -1,5 +1,4 @@
-import * as Hapi from 'hapi'
-import * as Boom from 'boom'
+import * as Http from 'http'
 
 import ReqRes from './reqres'
 
@@ -7,10 +6,10 @@ export default class Response extends ReqRes {
 
   public static primaryTypes = ['boolean', 'number', 'string']
 
-  private request: Hapi.Request
-  private response: Hapi.ResponseToolkit
-  // constructor (request: Hapi.Request, response: Hapi.ResponseToolkit, resolve: any, reject: any) {
-  constructor (request: Hapi.Request, response: Hapi.ResponseToolkit) {
+  private request: Http.IncomingMessage
+  private response: Http.ServerResponse
+
+  constructor (request: Http.IncomingMessage, response: Http.ServerResponse) {
     super()
     this.request = request
     this.response = response
@@ -23,11 +22,11 @@ export default class Response extends ReqRes {
     if (typeof data !== 'string') {
       data = JSON.stringify(data)
     }
-    this.request.raw.res.write(data)
+    this.response.write(data)
   }
 
   public flush (): void {
-    this.request.raw.res.end()
+    this.response.end()
   }
 
   public writeAndFlush (data?: any): void {
@@ -39,18 +38,18 @@ export default class Response extends ReqRes {
     if (code === undefined) {
       code = 302
     }
-    this.request.raw.res.writeHead(code, {
+    this.response.writeHead(code, {
       Location: url
     })
     this.flush()
   }
 
   public writeHeader (code: number, reason?: string) {
-    this.request.raw.res.writeHead(code, reason)
+    this.response.writeHead(code, reason)
   }
 
   public setHeader (name: string, value: any): void {
-    this.request.raw.res.setHeader(name, value)
+    this.response.setHeader(name, value)
   }
 
   public type (mimeType: string): void {
@@ -58,11 +57,11 @@ export default class Response extends ReqRes {
   }
 
   public setCookie (name: string, value: object | string, options?: any): void {
-    this.response.response().state(name, value, options)
+    // this.response.response().state(name, value, options)
   }
 
   public delCookie (name: string, options?: any): void {
-    this.response.response().unstate(name, options)
+    // this.response.response().unstate(name, options)
   }
 
   public error(message?: string): void {

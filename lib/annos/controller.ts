@@ -3,7 +3,7 @@ import * as Hapi from '@hapi/hapi'
 import { AnnotationType, annotationHelper, BeanFactory, CTOR_ID, CTOR_JWEB_FILE_KEY, getObjectType, ReflectHelper, checkSupportTransition, emitBegin, emitCommit, emitRollback } from 'jbean'
 
 import Application, { AppErrorEvent, ApplicationType } from '../application'
-import { Request, Response } from '../base'
+import { Request, Response, Router } from '../base'
 
 export function Controller(path: string) {
   return annotationHelper(arguments, controllerCallback)
@@ -15,6 +15,10 @@ export function Get(path: string) {
 
 export function Post(path: string) {
   return annotationHelper(['POST', path], methodCallback)
+}
+
+export function GetPost(path: string) {
+  return annotationHelper(['GETPOST', path], methodCallback)
 }
 
 export function Put(path: string) {
@@ -121,15 +125,18 @@ BeanFactory.registerStartBean(() => {
       const app = Application.getIns()
       const supportCors = app.getAppConfigs().cors
       const routePath = (path + subPath).replace(URL_END_PATH_TRIM, '') || '/'
-      app.route({
-        method: requestMethod,
-        path: routePath,
-        handler: async (request: Hapi.Request, h: Hapi.ResponseToolkit) => {
-          return new Promise(function(resolve, reject) {
-            doRequest(ctor, target, app, request, h, supportCors, method)
-          })
-        }
-      })
+      // app.route({
+      //   method: requestMethod,
+      //   path: routePath,
+      //   handler: async (request: Hapi.Request, h: Hapi.ResponseToolkit) => {
+      //     return new Promise(function(resolve, reject) {
+      //       doRequest(ctor, target, app, request, h, supportCors, method)
+      //     })
+      //   }
+      // })
+      Router.add(requestMethod, routePath, async (req, res, method, path, args, pathParams) => {
+        return [path, pathParams]
+      }, [ctor, target, method])
     })
   })
 })
