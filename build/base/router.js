@@ -1,7 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const pathToRegexp = require("path-to-regexp");
-const httpparser_1 = require("./httpparser");
+const request_1 = require("./request");
+const httpparser_1 = require("./http/httpparser");
 const StaticPaths = {};
 const RegPatternPaths = {
     pp: {},
@@ -11,36 +12,36 @@ class Router {
     static dispatch(req, res) {
         const method = req.method.toLowerCase();
         const path = (req.url || '/').split('?')[0];
-        const host = req.headers.host;
-        const { handler, args, pathParams, options } = Router.getRouterHandler(method, path);
+        const { handler, args, pathParams, options, firstPath } = Router.getRouterHandler(method, path);
         if (!handler) {
+            if (method === request_1.HTTP_METHODS.options) {
+                httpparser_1.setCorsHeader(req, res, options);
+            }
+            // emit 404
             res.end();
         }
         else {
-            // TODO: 1、请求类型判断，2、跨域，3、头处理?，4、参数解析（query | payload | cookies）
-            httpparser_1.default(req, res, options);
-            const out = handler(req, res, method, path, args, pathParams);
-            console.log('output ', out);
-            if (out === null) {
-                return;
-            }
-            if (!out) {
-                res.end();
-            }
-            else {
-                switch (typeof out) {
-                    case 'boolean':
-                    case 'string':
-                    case 'number':
+            httpparser_1.default(req, res, options, function (request, response) {
+                const out = handler(request, response, method, path, args, pathParams);
+                if (out === null) {
+                    return;
+                }
+                if (!out) {
+                    res.end();
+                }
+                else {
+                    const outType = typeof out;
+                    if (outType === 'boolean' || outType === 'string' || outType === 'number') {
                         res.end(out);
-                        break;
-                    case 'object':
+                    }
+                    else if (outType === 'object') {
                         if (out.toString() !== '[object Promise]') {
                             res.end(JSON.stringify(out));
                         }
                         else {
                             out.then((data) => {
-                                const dataType = typeof out;
+                                console.log(data, 'out', typeof data);
+                                const dataType = typeof data;
                                 if (dataType === 'boolean' || dataType === 'string' || dataType === 'number') {
                                     res.end(data);
                                 }
@@ -52,11 +53,13 @@ class Router {
                                 res.end(JSON.stringify(err));
                             });
                         }
-                        break;
-                    default:
+                    }
+                    else {
                         res.end();
+                    }
                 }
-            }
+            }, function (error, request, response) {
+            });
         }
     }
     static getRouterHandler(method, path) {
@@ -65,7 +68,8 @@ class Router {
             handler: null,
             args: null,
             pathParams: null,
-            options: null
+            options: null,
+            firstPath: firstPath
         };
         // StaticPaths struct: method => len => firstPath => path
         // pathHandler struct: {handler, args, options}
@@ -113,9 +117,6 @@ class Router {
             routerHandler.handler = pathHandler.handler;
             routerHandler.args = pathHandler.args;
             routerHandler.options = pathHandler.options;
-        }
-        else {
-            // routerHandler.handler = emit('not found', (StaticPaths[method] && StaticPaths[method][firstPath]) || (RegPatternPaths.pp[method] && RegPatternPaths.pp[method][firstPath]) || null )
         }
         return routerHandler;
     }

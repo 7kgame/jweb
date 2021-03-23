@@ -45,7 +45,8 @@ export default class Router {
               res.end(JSON.stringify(out))
             } else {
               out.then((data: any) => {
-                const dataType = typeof out
+                console.log(data, 'out', typeof data)
+                const dataType = typeof data
                 if (dataType === 'boolean' || dataType === 'string' || dataType === 'number') {
                   res.end(data)
                 } else {
@@ -60,7 +61,7 @@ export default class Router {
             res.end()
           }
         }
-      }, function (request: Request, response: Response, error: any) {
+      }, function (error: any, request: Request, response: Response) {
       })
     }
   }

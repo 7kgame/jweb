@@ -1,6 +1,5 @@
 import * as Http from 'http'
 import * as querystring from 'querystring'
-import * as formidable from 'formidable'
 
 import ReqRes from './reqres'
 
@@ -27,6 +26,7 @@ export default class Request extends ReqRes {
 
   public method: string
   public url: string
+  public href: string
   public path: string
   public payload
   public query
@@ -75,13 +75,13 @@ export default class Request extends ReqRes {
     if (this.payload && typeof this.payload[key] !== 'undefined') {
       return this.payload[key]
     }
-    return defaultValue || null
+    return defaultValue === undefined ? null : defaultValue
   }
 
   public getNum (key: string, defaultValue?: number): number {
     const val = this.getParam(key, defaultValue)
     if (val === null) {
-      return defaultValue || null
+      return defaultValue === undefined ? null : defaultValue
     }
     if (!val) {
       return 0
@@ -92,7 +92,7 @@ export default class Request extends ReqRes {
   public getString (key: string, defaultValue?: string): string {
     const val = this.getParam(key, defaultValue)
     if (val === null) {
-      return defaultValue || null
+      return defaultValue === undefined ? null : defaultValue
     }
     return String(val)
   }
@@ -100,7 +100,7 @@ export default class Request extends ReqRes {
   public getBool (key: string, defaultValue?: boolean): boolean {
     const val = this.getParam(key, defaultValue)
     if (val === null) {
-      return defaultValue || null
+      return defaultValue === undefined ? null : defaultValue
     }
     return Boolean(val)
   }

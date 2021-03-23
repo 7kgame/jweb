@@ -134,24 +134,47 @@ BeanFactory.registerStartBean(() => {
       //     })
       //   }
       // })
-      Router.add(requestMethod, routePath, async (req, res, method, path, args, pathParams) => {
-        return [path, pathParams]
-      }, [ctor, target, method])
+      const args = [ctor, target, method]
+      if (typeof target !== 'function' && checkSupportTransition(ctor, method)) {
+        // async callback
+        Router.add(requestMethod, routePath, (request, response, requestMethod, path, args, pathParams) => {
+          // return [path, pathParams]
+          const [ctor, target, method] = args
+          return doRequest(ctor, target, request, response, supportCors, method)
+        }, args)
+      } else {
+        Router.add(requestMethod, routePath, (request, response, requestMethod, path, args, pathParams) => {
+          // return [path, pathParams]
+          const [ctor, target, method] = args
+          return doRequestSync(ctor, target, request, response, supportCors, method)
+        }, args)
+      }
+
+      Router.add(requestMethod, routePath, (request, response, requestMethod, path, args, pathParams) => {
+        // return [path, pathParams]
+        const [ctor, target, method] = args
+        return doRequest(ctor, target, request, response, supportCors, method)
+      }, args)
     })
   })
 })
 
-const doRequest = async function (ctor, target, app: Application, request: Hapi.Request, h: Hapi.ResponseToolkit, supportCors, method: string) {
-  const req = new Request(request, h)
-  const res = new Response(request, h)
-  if (supportCors) {
-    res.setHeader('Access-Control-Allow-Credentials', true)
-    res.setHeader('Access-Control-Allow-Origin', request.headers.origin || '*')
-    res.setHeader('Access-Control-Allow-Headers', '*, X-Requested-With, Content-Type')
-    res.setHeader('Access-Control-Allow-Methods', request.method)
-    res.setHeader('Access-Control-Max-Age', 86400)
-    res.setHeader('Access-Control-Expose-Headers', 'WWW-Authenticate,Server-Authorization')
-  }
+const doRequestSync = function (ctor, target, method: string, request: Request, response: Response) {
+  const app = Application.getIns()
+}
+
+const doRequest = async function (ctor, target, request: Request, response: Response, supportCors, method: string) {
+  const app = Application.getIns()
+  // const req = new Request(request, h)
+  // const res = new Response(request, h)
+  // if (supportCors) {
+  //   request.setHeader('Access-Control-Allow-Credentials', true)
+  //   request.setHeader('Access-Control-Allow-Origin', request.headers.origin || '*')
+  //   request.setHeader('Access-Control-Allow-Headers', '*, X-Requested-With, Content-Type')
+  //   request.setHeader('Access-Control-Allow-Methods', request.method)
+  //   request.setHeader('Access-Control-Max-Age', 86400)
+  //   request.setHeader('Access-Control-Expose-Headers', 'WWW-Authenticate,Server-Authorization')
+  // }
   let ins = target
   if (typeof target !== 'function') {
     if (checkSupportTransition(ctor, method)) {
@@ -167,7 +190,7 @@ const doRequest = async function (ctor, target, app: Application, request: Hapi.
   }
   const requestId = BeanFactory.getRequestId(ins)
   ins[METHOD_KEY] = method.toLowerCase()
-  let params: any[] = [req, res]
+  let params: any[] = [request, response]
   if (request.params && Object.keys(request.params).length > 0) {
     params.push(request.params)
   }
@@ -176,27 +199,30 @@ const doRequest = async function (ctor, target, app: Application, request: Hapi.
     if (requestId) {
       await emitBegin(requestId)
     }
-    res.type('text/html')
+    // res.type('text/html')
     const ret = await ins[method](...params)
     if (requestId) {
       await emitCommit(requestId)
     }
     if (ret === null) {
       /** done nothing, cause res is solved by annotation which returns null*/
-      res.flush()
+      // res.flush()
     } else {
-      res.writeAndFlush(ret)
+      // res.writeAndFlush(ret)
       // resolve()
     }
     if (requestId) {
       await BeanFactory.releaseBeans(requestId)
     }
+    console.log('this is ret', ret)
+    return ret
   } catch (e) {
     if (requestId) {
       await emitRollback(requestId)
       await BeanFactory.releaseBeans(requestId)
     }
     app.emit(AppErrorEvent.REQUEST, e)
-    res.error('Internal Server Error')
+    throw e
+    // res.error('Internal Server Error')
   }
 }

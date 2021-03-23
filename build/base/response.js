@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const reqres_1 = require("./reqres");
 class Response extends reqres_1.default {
-    // constructor (request: Hapi.Request, response: Hapi.ResponseToolkit, resolve: any, reject: any) {
     constructor(request, response) {
         super();
         this.request = request;
@@ -15,10 +14,10 @@ class Response extends reqres_1.default {
         if (typeof data !== 'string') {
             data = JSON.stringify(data);
         }
-        this.request.raw.res.write(data);
+        this.response.write(data);
     }
     flush() {
-        this.request.raw.res.end();
+        this.response.end();
     }
     writeAndFlush(data) {
         this.write(data);
@@ -28,25 +27,25 @@ class Response extends reqres_1.default {
         if (code === undefined) {
             code = 302;
         }
-        this.request.raw.res.writeHead(code, {
+        this.response.writeHead(code, {
             Location: url
         });
         this.flush();
     }
     writeHeader(code, reason) {
-        this.request.raw.res.writeHead(code, reason);
+        this.response.writeHead(code, reason);
     }
     setHeader(name, value) {
-        this.request.raw.res.setHeader(name, value);
+        this.response.setHeader(name, value);
     }
     type(mimeType) {
         this.setHeader('Content-Type', mimeType);
     }
     setCookie(name, value, options) {
-        this.response.response().state(name, value, options);
+        // this.response.response().state(name, value, options)
     }
     delCookie(name, options) {
-        this.response.response().unstate(name, options);
+        // this.response.response().unstate(name, options)
     }
     error(message) {
         this.writeHeader(500, message);

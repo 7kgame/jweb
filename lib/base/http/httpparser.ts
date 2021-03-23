@@ -1,7 +1,4 @@
 import * as Http from 'http'
-import * as Path from 'path'
-import * as util from 'util'
-import * as querystring from 'querystring'
 
 import * as formidable from 'formidable'
 
@@ -20,25 +17,22 @@ export default function httpParser (req: Http.IncomingMessage, res: Http.ServerR
   const hasBody = NO_BODY_REQUESTS.indexOf(request.method) < 0
   let form: formidable.IncomingForm = null
   if (hasBody) {
-    form = this.processFormData(req, res)
-  }
-
-  if (hasBody) {
-    success && success(request, response)
+    // https://github.com/node-formidable/node-formidable
+    form = new formidable.IncomingForm()
+    form.parse(req, function(err, fields: formidable.Fields, files: formidable.Files) {
+      if (err) {
+        return fail(err, request, response)
+      }
+      console.log(fields)
+      success(request, response)
+    })
+    // form.on('file', function(name, file: formidable.File) {
+    // })
+    // form.on('progress', function(bytesReceived, bytesExpected) {
+    // })
+    // form.on('field', function(name, value) {
+    // })
   } else {
-    success && success(request, response)
+    success(request, response)
   }
-}
-
-function processFormData (request: Http.IncomingMessage, response: Http.ServerResponse): formidable.IncomingForm {
-  const form = new formidable.IncomingForm()
-  form.parse(request, function(err, fields: formidable.Fields, files: formidable.Files) {
-  })
-  form.on('file', function(name, file: formidable.File) {
-  })
-  form.on('progress', function(bytesReceived, bytesExpected) {
-  })
-  form.on('field', function(name, value) {
-  })
-  return form
 }

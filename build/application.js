@@ -11,8 +11,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const Http = require("http");
 const Path = require("path");
-const util = require("util");
-const formidable = require("formidable");
 const Hapi = require("@hapi/hapi");
 const Inert = require("@hapi/inert");
 const YAML = require("yaml");
@@ -20,6 +18,7 @@ const events_1 = require("events");
 const jbean_1 = require("jbean");
 const starters_1 = require("./starters");
 const utils_1 = require("./utils");
+const router_1 = require("./base/router");
 const defaultOptions = {
     port: 3000,
     host: 'localhost',
@@ -200,48 +199,9 @@ class Application extends events_1.EventEmitter {
     }
     runWebServer() {
         return __awaiter(this, void 0, void 0, function* () {
-            var callProcess = function (req, res) {
-                return __awaiter(this, void 0, void 0, function* () {
-                    var form = new formidable.IncomingForm();
-                    console.log(req.method);
-                    console.log(req.url);
-                    console.log(req.headers.host);
-                    form.parse(req, function (err, fields, files) {
-                        // console.log(fields)
-                        console.log(files);
-                        if (fields['a']) {
-                            // console.log('start sleep', +(new Date))
-                            // sleep(5)
-                            // console.log('end sleep', +(new Date))
-                            setTimeout(() => {
-                                res.writeHead(200, { 'content-type': 'text/plain' });
-                                res.write('set timeout\n\n');
-                                // res.end()
-                                res.end(util.inspect({ fields: fields, files: files }));
-                            }, 3000);
-                        }
-                        else {
-                            res.writeHead(200, { 'content-type': 'text/plain' });
-                            res.write('received\n\n');
-                            // res.end()
-                            res.end(util.inspect({ fields: fields, files: files }));
-                        }
-                    });
-                    form.on('file', function (name, file) {
-                        console.log(name, '====');
-                        // console.log(file, '00000')
-                    });
-                    form.on('progress', function (bytesReceived, bytesExpected) {
-                        // console.log(bytesReceived, '------')
-                    });
-                    form.on('field', function (name, value) {
-                        // console.log(name, value)
-                    });
-                });
-            };
             Http.createServer(function (req, res) {
-                callProcess(req, res);
-                // Router.dispatch(req, res)
+                // callProcess(req, res)
+                router_1.default.dispatch(req, res);
             }).listen(8080);
             return;
             yield this.server.register(Inert);

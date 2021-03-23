@@ -134,24 +134,27 @@ jbean_1.BeanFactory.registerStartBean(() => {
             //     })
             //   }
             // })
-            base_1.Router.add(requestMethod, routePath, (req, res, method, path, args, pathParams) => __awaiter(void 0, void 0, void 0, function* () {
-                return [path, pathParams];
-            }), [ctor, target, method]);
+            base_1.Router.add(requestMethod, routePath, (request, response, requestMethod, path, args, pathParams) => {
+                // return [path, pathParams]
+                const [ctor, target, method] = args;
+                return doRequest(ctor, target, request, response, supportCors, method);
+            }, [ctor, target, method]);
         });
     });
 });
-const doRequest = function (ctor, target, app, request, h, supportCors, method) {
+const doRequest = function (ctor, target, request, response, supportCors, method) {
     return __awaiter(this, void 0, void 0, function* () {
-        const req = new base_1.Request(request, h);
-        const res = new base_1.Response(request, h);
-        if (supportCors) {
-            res.setHeader('Access-Control-Allow-Credentials', true);
-            res.setHeader('Access-Control-Allow-Origin', request.headers.origin || '*');
-            res.setHeader('Access-Control-Allow-Headers', '*, X-Requested-With, Content-Type');
-            res.setHeader('Access-Control-Allow-Methods', request.method);
-            res.setHeader('Access-Control-Max-Age', 86400);
-            res.setHeader('Access-Control-Expose-Headers', 'WWW-Authenticate,Server-Authorization');
-        }
+        const app = application_1.default.getIns();
+        // const req = new Request(request, h)
+        // const res = new Response(request, h)
+        // if (supportCors) {
+        //   request.setHeader('Access-Control-Allow-Credentials', true)
+        //   request.setHeader('Access-Control-Allow-Origin', request.headers.origin || '*')
+        //   request.setHeader('Access-Control-Allow-Headers', '*, X-Requested-With, Content-Type')
+        //   request.setHeader('Access-Control-Allow-Methods', request.method)
+        //   request.setHeader('Access-Control-Max-Age', 86400)
+        //   request.setHeader('Access-Control-Expose-Headers', 'WWW-Authenticate,Server-Authorization')
+        // }
         let ins = target;
         if (typeof target !== 'function') {
             if (jbean_1.checkSupportTransition(ctor, method)) {
@@ -168,7 +171,7 @@ const doRequest = function (ctor, target, app, request, h, supportCors, method) 
         }
         const requestId = jbean_1.BeanFactory.getRequestId(ins);
         ins[exports.METHOD_KEY] = method.toLowerCase();
-        let params = [req, res];
+        let params = [request, response];
         if (request.params && Object.keys(request.params).length > 0) {
             params.push(request.params);
         }
@@ -176,22 +179,24 @@ const doRequest = function (ctor, target, app, request, h, supportCors, method) 
             if (requestId) {
                 yield jbean_1.emitBegin(requestId);
             }
-            res.type('text/html');
+            // res.type('text/html')
             const ret = yield ins[method](...params);
             if (requestId) {
                 yield jbean_1.emitCommit(requestId);
             }
             if (ret === null) {
                 /** done nothing, cause res is solved by annotation which returns null*/
-                res.flush();
+                // res.flush()
             }
             else {
-                res.writeAndFlush(ret);
+                // res.writeAndFlush(ret)
                 // resolve()
             }
             if (requestId) {
                 yield jbean_1.BeanFactory.releaseBeans(requestId);
             }
+            console.log('this is ret', ret);
+            return ret;
         }
         catch (e) {
             if (requestId) {
@@ -199,7 +204,8 @@ const doRequest = function (ctor, target, app, request, h, supportCors, method) 
                 yield jbean_1.BeanFactory.releaseBeans(requestId);
             }
             app.emit(application_1.AppErrorEvent.REQUEST, e);
-            res.error('Internal Server Error');
+            throw e;
+            // res.error('Internal Server Error')
         }
     });
 };

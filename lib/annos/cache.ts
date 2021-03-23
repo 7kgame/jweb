@@ -50,7 +50,7 @@ function retHook(ret: any, expire: number, request: Request, response: Response)
     return
   }
   let lruCache = LRUCache.getIns()
-  lruCache.set(request.url.href, ret.data, expire)
+  lruCache.set(request.href, ret.data, expire)
 }
 
 Cache.preCall = function (ret: any, expire: number, request: Request, response: Response) {
@@ -58,7 +58,7 @@ Cache.preCall = function (ret: any, expire: number, request: Request, response: 
     return ret
   }
 
-  let cache = LRUCache.getIns().get(request.url.href)
+  let cache = LRUCache.getIns().get(request.href)
   if (cache) {
     response.writeAndFlush(cache)
     return null

@@ -45,13 +45,13 @@ function retHook(ret, expire, request, response) {
         return;
     }
     let lruCache = LRUCache_1.default.getIns();
-    lruCache.set(request.url.href, ret.data, expire);
+    lruCache.set(request.href, ret.data, expire);
 }
 Cache.preCall = function (ret, expire, request, response) {
     if (ret.err) {
         return ret;
     }
-    let cache = LRUCache_1.default.getIns().get(request.url.href);
+    let cache = LRUCache_1.default.getIns().get(request.href);
     if (cache) {
         response.writeAndFlush(cache);
         return null;
